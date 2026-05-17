@@ -824,11 +824,14 @@ export default function LabPage() {
   const [historyOpen, setHistoryOpen] = useState(false)
 
   // Sounds — hoisted here so they fire within the user gesture chain
-  const [playRising] = useSound(risingPercent, { volume: 0.5 })
+  const [playRising, { stop: stopRising }] = useSound(risingPercent, { volume: 0.3 })
   const [playFail] = useSound(labFail, { volume: 0.6 })
 
   useEffect(() => {
-    if (result && result.scorePercent < 60) playFail()
+    if (!result) return
+    const stop = setTimeout(() => stopRising(), 1500)
+    if (result.scorePercent < 60) playFail()
+    return () => clearTimeout(stop)
   }, [result]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load lab

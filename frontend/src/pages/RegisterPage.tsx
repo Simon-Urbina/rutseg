@@ -330,8 +330,8 @@ export default function RegisterPage() {
             type="button"
             role="checkbox"
             aria-checked={privacyAccepted}
-            onMouseDown={() => playActive()}
             onClick={() => {
+              playActive()
               if (!privacyAccepted) playOn()
               else playOff()
               setPrivacyAccepted(v => !v)
