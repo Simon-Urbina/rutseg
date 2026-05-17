@@ -20,7 +20,7 @@ const SECTIONS = [
             { k: 'Institución', v: 'Universidad Santo Tomás — Tunja, Colombia' },
             { k: 'Proyecto', v: 'Semillero de Investigación en Ciberseguridad y Desarrollo de Software' },
             { k: 'Correo de contacto', v: 'jacobitourbinalol@gmail.com' },
-            { k: 'Sitio web', v: 'https://cyberseclabs.vercel.app' },
+            { k: 'Sitio web', v: 'https://rutseg.vercel.app' },
           ].map(({ k, v }) => (
             <p key={k} className="font-mono text-[13px]">
               <span style={{ color: '#2596be' }}>{k}</span>
@@ -269,7 +269,7 @@ const SECTIONS = [
         </div>
         <p className="mt-4 text-[13px]" style={{ color: '#9ca3af' }}>
           Ningún sistema es 100% infalible. Si descubres una vulnerabilidad de seguridad, repórtala responsablemente a través de{' '}
-          <a href="https://github.com/Simon-Urbina/cyberseclabs/issues" target="_blank" rel="noopener noreferrer" style={{ color: '#2596be' }}>
+          <a href="https://github.com/Simon-Urbina/rutseg/issues" target="_blank" rel="noopener noreferrer" style={{ color: '#2596be' }}>
             GitHub Issues
           </a>.
         </p>
@@ -328,7 +328,7 @@ const SECTIONS = [
         <div className="mt-4 space-y-3">
           {[
             { label: 'Correo electrónico', value: 'jacobitourbinalol@gmail.com', href: 'mailto:jacobitourbinalol@gmail.com' },
-            { label: 'GitHub Issues', value: 'github.com/Simon-Urbina/cyberseclabs/issues', href: 'https://github.com/Simon-Urbina/cyberseclabs/issues' },
+            { label: 'GitHub Issues', value: 'github.com/Simon-Urbina/rutseg/issues', href: 'https://github.com/Simon-Urbina/rutseg/issues' },
           ].map(({ label, value, href }) => (
             <div key={label} className="flex items-center gap-4 rounded-xl px-5 py-4" style={{ background: 'rgba(26,63,150,0.05)', border: '1px solid rgba(26,63,150,0.12)' }}>
               <span className="font-mono text-[11px] tracking-[0.1em] uppercase w-36 shrink-0" style={{ color: '#3A5AB8' }}>{label}</span>

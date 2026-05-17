@@ -32,7 +32,7 @@ async function sendRawEmail(to: string, subject: string, html: string): Promise<
   const accessToken = await getAccessToken()
 
   const mime = [
-    `From: =?UTF-8?B?${Buffer.from('CyberSec Labs', 'utf-8').toString('base64')}?= <${from}>`,
+    `From: =?UTF-8?B?${Buffer.from('RutSeg', 'utf-8').toString('base64')}?= <${from}>`,
     `To: ${to}`,
     `Subject: ${encodeHeader(subject)}`,
     'MIME-Version: 1.0',
@@ -73,7 +73,7 @@ function emailHeader(title: string, subtitle: string): string {
             🔐
           </td>
           <td style="padding-left:14px;vertical-align:middle">
-            <div style="color:#F5C500;font-family:'Segoe UI',Arial,sans-serif;font-size:19px;font-weight:700;letter-spacing:0.04em;line-height:1.2">CyberSec Labs</div>
+            <div style="color:#F5C500;font-family:'Segoe UI',Arial,sans-serif;font-size:19px;font-weight:700;letter-spacing:0.04em;line-height:1.2">RutSeg</div>
             <div style="color:#3A5AB8;font-family:'Courier New',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-top:3px">// plataforma de aprendizaje</div>
           </td>
         </tr>
@@ -96,7 +96,7 @@ function emailFooter(note: string): string {
       </p>
     </div>
     <div style="background:#060D1F;padding:14px 36px;text-align:center">
-      <span style="color:#3A5AB8;font-size:11px;font-family:'Courier New',monospace;letter-spacing:0.1em">cyberseclabs.vercel.app</span>
+      <span style="color:#3A5AB8;font-size:11px;font-family:'Courier New',monospace;letter-spacing:0.1em">rutseg.vercel.app</span>
     </div>
   `
 }
@@ -110,7 +110,7 @@ export async function sendVerificationEmail(to: string, username: string, code: 
         ${emailHeader('Verificación de correo', '// activa tu cuenta')}
         <div style="background:#ffffff;padding:0 36px 8px">
           <p style="color:#374151;line-height:1.7;font-size:15px;font-family:'Segoe UI',Arial,sans-serif;margin:0 0 28px">
-            Hola <strong style="color:#0A1545">${username}</strong>, gracias por unirte a CyberSec Labs.<br/>
+            Hola <strong style="color:#0A1545">${username}</strong>, gracias por unirte a RutSeg.<br/>
             Ingresa el siguiente código en la plataforma para activar tu cuenta.
             Expira en <strong>15 minutos</strong>.
           </p>
@@ -119,12 +119,12 @@ export async function sendVerificationEmail(to: string, username: string, code: 
             <div style="color:#1A3F96;font-size:11px;font-family:'Courier New',monospace;letter-spacing:0.1em;margin-top:10px;text-transform:uppercase">código de verificación</div>
           </div>
         </div>
-        ${emailFooter('Si no creaste esta cuenta en CyberSec Labs, puedes ignorar este correo de forma segura.')}
+        ${emailFooter('Si no creaste esta cuenta en RutSeg, puedes ignorar este correo de forma segura.')}
       </div>
     </div>
   `
 
-  await sendRawEmail(to, 'Verifica tu correo — CyberSec Labs', html)
+  await sendRawEmail(to, 'Verifica tu correo — RutSeg', html)
 }
 
 export async function sendPasswordResetEmail(to: string, resetLink: string): Promise<void> {
@@ -135,7 +135,7 @@ export async function sendPasswordResetEmail(to: string, resetLink: string): Pro
         <div style="background:#ffffff;padding:0 36px 8px">
           <p style="color:#374151;line-height:1.7;font-size:15px;font-family:'Segoe UI',Arial,sans-serif;margin:0 0 28px">
             Recibimos una solicitud para restablecer la contraseña de tu cuenta en
-            <strong style="color:#0A1545">CyberSec Labs</strong>.
+            <strong style="color:#0A1545">RutSeg</strong>.
             Haz clic en el botón para continuar. El enlace expira en <strong>1 hora</strong>.
           </p>
           <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px">
@@ -154,5 +154,5 @@ export async function sendPasswordResetEmail(to: string, resetLink: string): Pro
     </div>
   `
 
-  await sendRawEmail(to, 'Restablece tu contraseña — CyberSec Labs', html)
+  await sendRawEmail(to, 'Restablece tu contraseña — RutSeg', html)
 }

@@ -69,7 +69,7 @@ const SOCIAL = [
   {
     label: 'GitHub',
     handle: 'Simon-Urbina',
-    href: 'https://github.com/Simon-Urbina/cyberseclabs',
+    href: 'https://github.com/Simon-Urbina/rutseg',
     color: '#C8D5EE',
     svg: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -347,7 +347,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ─── POR QUÉ CYBERSEC LABS ─── */}
+      {/* ─── POR QUÉ RUTSEG ─── */}
       <section
         className="border-t relative overflow-hidden"
         style={{
@@ -572,7 +572,7 @@ export default function AboutPage() {
                   // reportar un bug
                 </p>
                 <p className="font-mono text-[13px]" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
-                  github.com/Simon-Urbina/cyberseclabs
+                  github.com/Simon-Urbina/rutseg
                 </p>
               </div>
             </a>

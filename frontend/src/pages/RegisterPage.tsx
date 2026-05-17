@@ -1,5 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import useSound from 'use-sound'
+import popDown from '../sounds/pop-down.wav'
+import popUpOn from '../sounds/pop-up-on.wav'
+import popUpOff from '../sounds/pop-up-off.wav'
 import { useTheme } from '../context/ThemeContext'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
@@ -84,6 +88,10 @@ export default function RegisterPage() {
   const [code, setCode] = useState('')
   const [resendCooldown, setResendCooldown] = useState(0)
   const [privacyAccepted, setPrivacyAccepted] = useState(false)
+  // Ref: https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
+  const [playActive] = useSound(popDown, { volume: 0.25 })
+  const [playOn] = useSound(popUpOn, { volume: 0.25 })
+  const [playOff] = useSound(popUpOff, { volume: 0.25 })
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -322,7 +330,12 @@ export default function RegisterPage() {
             type="button"
             role="checkbox"
             aria-checked={privacyAccepted}
-            onClick={() => setPrivacyAccepted(v => !v)}
+            onMouseDown={() => playActive()}
+            onClick={() => {
+              if (!privacyAccepted) playOn()
+              else playOff()
+              setPrivacyAccepted(v => !v)
+            }}
             className="mt-0.5 w-5 h-5 shrink-0 rounded flex items-center justify-center transition-all"
             style={{
               background: privacyAccepted ? '#1A3F96' : 'transparent',
