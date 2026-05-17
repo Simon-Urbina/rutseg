@@ -1,4 +1,4 @@
-# Documentación Técnica del Frontend — Cybersec Labs
+# Documentación Técnica del Frontend — RutSeg
 
 > **Audience:** Desarrolladores o estudiantes que quieran entender cómo está construido el frontend de esta plataforma.  
 > **Fecha:** 2026-05-16
@@ -36,7 +36,7 @@ El frontend de Cybersec Labs es una **SPA** (*Single Page Application*) construi
 - Mostrar un asistente de IA ("Uchi") disponible en todas las páginas autenticadas.
 - Proveer un foro comunitario donde los usuarios autenticados pueden publicar comentarios y respuestas.
 
-> **Iniciativa académica:** CyberSec Labs nació como proyecto del **Semillero de Investigación en Ciberseguridad y Desarrollo de Software** de la Universidad Santo Tomás — Tunja, bajo la iniciativa y dirección del docente **Harrizon Alexander Soler Galindo**.
+> **Iniciativa académica:** RutSeg nació como proyecto del **Semillero de Investigación en Ciberseguridad y Desarrollo de Software** de la Universidad Santo Tomás — Tunja, bajo la iniciativa y dirección del docente **Harrizon Alexander Soler Galindo**.
 
 El frontend es completamente estático una vez compilado: solo contiene HTML, CSS y JavaScript. Toda la lógica de negocio y el acceso a la base de datos ocurre en el backend (Railway). El chatbot Uchi se comunica con un microservicio Python separado.
 
@@ -54,6 +54,8 @@ El frontend es completamente estático una vez compilado: solo contiene HTML, CS
 | **Dev server / Build** | [Vite](https://vite.dev) | Inicia el servidor de desarrollo en milisegundos. Compila el proyecto para producción con Rolldown. |
 | **Linter** | ESLint + typescript-eslint | Detecta errores de código y malas prácticas. |
 | **Analytics** | `@vercel/analytics` + `@vercel/speed-insights` | Métricas de uso y rendimiento real de la aplicación, integradas con Vercel. |
+| **Sonido** | [use-sound](https://github.com/joshwcomeau/use-sound) | Hook React para efectos de sonido. Ref: [Josh W. Comeau](https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/) |
+| **Animaciones** | Componentes propios (`Boop`, `Sparkles`) | Micro-interacciones sin dependencias. Ref: [Boop](https://www.joshwcomeau.com/react/boop/) · [Sparkles](https://www.joshwcomeau.com/react/animated-sparkles-in-react/) |
 
 ---
 
@@ -76,6 +78,8 @@ frontend/
 │   ├── lib/
 │   │   └── api.ts               ← Cliente HTTP centralizado (get, post, put, patch, delete)
 │   ├── components/
+│   │   ├── Boop.tsx               ← Hook useBoop + componente de wiggle en hover para el logo
+│   │   ├── Sparkles.tsx           ← Hook useRandomInterval + destellos animados para ResultModal
 │   │   ├── Header.tsx           ← Barra de navegación superior (incluye enlace "Foro")
 │   │   ├── Footer.tsx           ← Pie de página con columnas Plataforma y Legal
 │   │   ├── Logo.tsx             ← Logo SVG con enlace a la raíz
@@ -255,6 +259,28 @@ Asistente de IA "Uchi" disponible en toda la plataforma como un widget flotante 
 | **Mobile** | Panel adaptativo: `calc(100vw - 3rem)` de ancho, `70svh` de alto; overlay de cierre táctil |
 | **Teclado** | `Enter` envía el mensaje; `Shift+Enter` agrega una nueva línea; `Escape` cierra el panel |
 | **SSE** | Lee el stream del microservicio Python línea a línea con buffer acumulativo |
+
+### `Boop`
+
+Componente de micro-interacción para el logo. Al pasar el cursor sobre `LogoIcon`, aplica una rotación de 12° + escala 1.12x con una animación de 150ms de ida y un spring-back (`cubic-bezier(0.34, 1.56, 0.64, 1)`) al soltar.
+
+Se aplica en 4 puntos:
+- `LogoWordmark` en `Logo.tsx` (cubre el Header)
+- Logo de marca del panel izquierdo en `AuthLayout.tsx`
+- Logo de marca del top bar móvil en `AuthLayout.tsx`
+- Logo en `Footer.tsx`
+
+Implementación basada en [Boop! — Josh W. Comeau](https://www.joshwcomeau.com/react/boop/).
+
+### `Sparkles`
+
+Componente que genera destellos animados (SVG de 4 puntas) alrededor de su contenido. Acepta prop `active: boolean` — cuando `false`, detiene la generación sin desmontar.
+
+Usado en `ResultModal` de `LabPage`: se activa (`active={true}`) al terminar la animación de count-up del porcentaje, si el laboratorio fue aprobado. Wrappea el texto `¡Lab completado!`/`¡Bien hecho!` y el badge `+X pts`.
+
+Colores usados: `#F5C500` (gold), `#2596be` (cyan), `#C8D5EE` (blue-gray), `#ffffff`.
+
+Implementación basada en [Animated Sparkles — Josh W. Comeau](https://www.joshwcomeau.com/react/animated-sparkles-in-react/).
 
 ### `CookieBanner`
 
@@ -496,6 +522,7 @@ Las páginas usan animaciones de entrada escalonadas definidas con clases person
 - `cursor-blink` — efecto de cursor parpadeante. Usado en la AboutPage y en el indicador de streaming del chatbot (`▋`).
 - `glowPulse` — efecto de brillo pulsante en los orbs decorativos.
 - `slideInRight` — entrada desde la derecha, usada por los toasts de `ToastContext`.
+- `sparkle-spin` — animación de 700ms para cada destello: aparece escalado desde 0, rota 90°, llega a opacidad máxima en el 50%, luego desaparece. Usada por `Sparkles`.
 
 ### Scrollbar del chat
 
@@ -610,7 +637,7 @@ VITE_API_URL=https://backend-production-64fa7.up.railway.app
 VITE_CHATBOT_URL=https://chatbot-production-2003.up.railway.app
 ```
 
-Vercel genera una URL de producción estable (`cyberseclabs.vercel.app`) y URLs de preview únicas por cada deploy (`cyberseclabs-xxxx.vercel.app`).
+Vercel genera una URL de producción estable (`rutseg.vercel.app`) y URLs de preview únicas por cada deploy (`cyberseclabs-xxxx.vercel.app`).
 
 ### Configuración SPA requerida
 

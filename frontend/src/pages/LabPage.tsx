@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import useSound from 'use-sound'
+import risingPercent from '../sounds/rising-percent.wav'
+import labFail from '../sounds/lab-fail.wav'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { api } from '../lib/api'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { LogoIcon } from '../components/Logo'
+import { Sparkles } from '../components/Sparkles'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -423,6 +427,36 @@ function ResultModal({
   const passed = result.scorePercent >= 60
   const accent = passed ? '#4ade80' : '#f87171'
 
+  const [displayScore, setDisplayScore] = useState(0)
+  const [showSparkles, setShowSparkles] = useState(false)
+  // Ref: https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
+  const [playRising] = useSound(risingPercent, { volume: 0.5 })
+  const [playPass] = useSound('', { volume: 0.6 })
+  const [playFail] = useSound(labFail, { volume: 0.6 })
+
+  useEffect(() => {
+    playRising()
+    const target = Math.round(result.scorePercent)
+    const duration = 1500
+    const steps = 60
+    let step = 0
+    const timer = setInterval(() => {
+      step++
+      setDisplayScore(Math.round((target * step) / steps))
+      if (step >= steps) {
+        clearInterval(timer)
+        setDisplayScore(target)
+        if (passed) {
+          playPass()
+          setShowSparkles(true)
+        } else {
+          playFail()
+        }
+      }
+    }, duration / steps)
+    return () => clearInterval(timer)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-6"
@@ -439,7 +473,7 @@ function ResultModal({
         {/* Score */}
         <div>
           <p className="num-display" style={{ fontSize: '4.5rem', lineHeight: 1, color: accent }}>
-            {Math.round(result.scorePercent)}%
+            {displayScore}%
           </p>
           <p className="font-mono text-[11px] tracking-[0.2em] uppercase mt-2" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
             {result.correctAnswersCount}/{result.totalQuestions} respuestas correctas
@@ -449,13 +483,18 @@ function ResultModal({
         {/* Status + points */}
         <div className="space-y-2">
           <p className="font-display text-xl" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
-            {passed ? (result.pointsEarned > 0 ? '¡Lab completado!' : '¡Bien hecho!') : 'Inténtalo de nuevo'}
+            {passed
+              ? <Sparkles active={showSparkles}>{result.pointsEarned > 0 ? '¡Lab completado!' : '¡Bien hecho!'}</Sparkles>
+              : 'Inténtalo de nuevo'
+            }
           </p>
           {result.pointsEarned > 0 && (
             <div className="flex items-center justify-center gap-2">
-              <span className="font-mono text-[13px] font-semibold" style={{ color: '#F5C500' }}>
-                +{result.pointsEarned} pts
-              </span>
+              <Sparkles active={showSparkles}>
+                <span className="font-mono text-[13px] font-semibold" style={{ color: '#F5C500' }}>
+                  +{result.pointsEarned} pts
+                </span>
+              </Sparkles>
               <span className="font-mono text-[11px]" style={{ color: isDark ? '#4A70CC' : '#2451C8' }}>
                 añadidos a tu perfil
               </span>

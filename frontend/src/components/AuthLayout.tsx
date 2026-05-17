@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { LogoIcon } from './Logo'
+import { Boop } from './Boop'
 import ThemeToggle from './ThemeToggle'
 import { api } from '../lib/api'
 
@@ -94,7 +95,9 @@ export default function AuthLayout({
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 w-fit animate-fade-up-1">
-            <LogoIcon className="w-8 h-8" />
+            <Boop rotation={12} scale={1.12}>
+              <LogoIcon className="w-8 h-8" />
+            </Boop>
             <span
               className="font-mono text-[11px] tracking-[0.24em] uppercase"
               style={{ color: '#3A5AB8' }}
@@ -198,7 +201,9 @@ export default function AuthLayout({
         {/* Top bar */}
         <div className="flex items-center justify-between px-8 py-5 lg:px-10">
           <Link to="/" className="lg:hidden flex items-center gap-2.5">
-            <LogoIcon className="w-7 h-7" />
+            <Boop rotation={12} scale={1.12}>
+              <LogoIcon className="w-7 h-7" />
+            </Boop>
             <span
               className="font-display text-[17px]"
               style={{ color: isDark ? '#EEF3FC' : '#0A1545' }}

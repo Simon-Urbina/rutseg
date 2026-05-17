@@ -148,6 +148,8 @@ bun dev          # → http://localhost:5173
 | `@vitejs/plugin-react` | ^5.1.1 | Plugin React para Vite |
 | `@vercel/analytics` | ^2.0.1 | Analytics de Vercel |
 | `@vercel/speed-insights` | ^2.0.0 | Speed Insights de Vercel |
+| `use-sound` | ^5.0.0 | Reproducción de efectos de sonido con React hooks |
+| `@types/howler` | ^2.2.12 | Tipos TypeScript para Howler.js (peer dep de use-sound) |
 | `typescript` | ~5.9.3 | Compilador TypeScript |
 | `eslint` | ^9.39.1 | Linter |
 | `typescript-eslint` | ^8.48.0 | Reglas ESLint para TS |
@@ -328,7 +330,7 @@ Variables de entorno requeridas:
 DATABASE_URL
 JWT_SECRET
 PORT
-FRONTEND_URL=https://cyberseclabs.vercel.app
+FRONTEND_URL=https://rutseg.vercel.app
 GMAIL_USER
 GMAIL_CLIENT_ID
 GMAIL_CLIENT_SECRET
@@ -361,3 +363,12 @@ VITE_CHATBOT_URL=https://tu-chatbot.up.railway.app
 ```
 
 El archivo `frontend/vercel.json` configura el enrutamiento SPA — todas las rutas se redirigen a `index.html` para que React Router funcione correctamente al acceder directamente a una URL (ej: `/reset-password`, `/dashboard`).
+
+---
+
+## Créditos y referencias
+
+- **[Josh W. Comeau](https://www.joshwcomeau.com/)** — Implementación de animaciones interactivas (`Boop`, `Sparkles`) y efectos de sonido (`use-sound`). Artículos de referencia:
+  - [Announcing use-sound](https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/)
+  - [Boop!](https://www.joshwcomeau.com/react/boop/)
+  - [Animated Sparkles in React](https://www.joshwcomeau.com/react/animated-sparkles-in-react/)

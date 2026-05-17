@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { LogoIcon } from './Logo'
+import { Boop } from './Boop'
 
 const FOOTER_COLUMNS = [
   {
@@ -96,7 +97,9 @@ export default function Footer() {
           {/* Brand block */}
           <div className="md:col-span-5">
             <Link to="/" className="flex items-center gap-3 mb-5 w-fit">
-              <LogoIcon className="w-9 h-9" />
+              <Boop rotation={12} scale={1.12}>
+                <LogoIcon className="w-9 h-9" />
+              </Boop>
               <div>
                 <p
                   className="font-display text-[18px] leading-none"
