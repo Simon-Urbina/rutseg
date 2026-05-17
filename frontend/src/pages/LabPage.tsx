@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import useSound from 'use-sound'
 import risingPercent from '../sounds/rising-percent.wav'
 import labFail from '../sounds/lab-fail.wav'
+import labSuccess from '../sounds/success.wav'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { api } from '../lib/api'
@@ -826,11 +827,13 @@ export default function LabPage() {
   // Sounds — hoisted here so they fire within the user gesture chain
   const [playRising, { stop: stopRising }] = useSound(risingPercent, { volume: 0.3 })
   const [playFail] = useSound(labFail, { volume: 0.6 })
+  const [playSuccess] = useSound(labSuccess, { volume: 0.6 })
 
   useEffect(() => {
     if (!result) return
     const stop = setTimeout(() => stopRising(), 1500)
-    if (result.scorePercent < 60) playFail()
+    if (result.scorePercent >= 60) playSuccess()
+    else playFail()
     return () => clearTimeout(stop)
   }, [result]) // eslint-disable-line react-hooks/exhaustive-deps
 
