@@ -429,13 +429,8 @@ function ResultModal({
 
   const [displayScore, setDisplayScore] = useState(0)
   const [showSparkles, setShowSparkles] = useState(false)
-  // Ref: https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
-  const [playRising] = useSound(risingPercent, { volume: 0.5 })
-  const [playPass] = useSound('', { volume: 0.6 })
-  const [playFail] = useSound(labFail, { volume: 0.6 })
 
   useEffect(() => {
-    playRising()
     const target = Math.round(result.scorePercent)
     const duration = 1500
     const steps = 60
@@ -446,12 +441,7 @@ function ResultModal({
       if (step >= steps) {
         clearInterval(timer)
         setDisplayScore(target)
-        if (passed) {
-          playPass()
-          setShowSparkles(true)
-        } else {
-          playFail()
-        }
+        if (passed) setShowSparkles(true)
       }
     }, duration / steps)
     return () => clearInterval(timer)
@@ -833,6 +823,14 @@ export default function LabPage() {
   const [attemptHistory, setAttemptHistory] = useState<SubmissionHistory[]>([])
   const [historyOpen, setHistoryOpen] = useState(false)
 
+  // Sounds — hoisted here so they fire within the user gesture chain
+  const [playRising] = useSound(risingPercent, { volume: 0.5 })
+  const [playFail] = useSound(labFail, { volume: 0.6 })
+
+  useEffect(() => {
+    if (result && result.scorePercent < 60) playFail()
+  }, [result]) // eslint-disable-line react-hooks/exhaustive-deps
+
   // Load lab
   useEffect(() => {
     if (!slug || !moduleSlug || !labSlug) return
@@ -940,6 +938,7 @@ export default function LabPage() {
     })
     setSubmitting(true)
     setSubmitError(null)
+    playRising()
     try {
       const res = await api.post<SubmissionResult>(`/api/labs/${data.lab.id}/submit`, { answers: answersArray })
       setResult(res)
