@@ -54,7 +54,7 @@ El frontend es completamente estático una vez compilado: solo contiene HTML, CS
 | **Dev server / Build** | [Vite](https://vite.dev) | Inicia el servidor de desarrollo en milisegundos. Compila el proyecto para producción con Rolldown. |
 | **Linter** | ESLint + typescript-eslint | Detecta errores de código y malas prácticas. |
 | **Analytics** | `@vercel/analytics` + `@vercel/speed-insights` | Métricas de uso y rendimiento real de la aplicación, integradas con Vercel. |
-| **Sonido** | [use-sound](https://github.com/joshwcomeau/use-sound) | Hook React para efectos de sonido. Ref: [Josh W. Comeau](https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/) |
+| **Sonido** | [use-sound](https://github.com/joshwcomeau/use-sound) | Hook React para efectos de sonido. Los hooks deben instanciarse en el componente que tiene el evento de usuario (no en componentes hijos montados tras un `await`), para respetar la browser autoplay policy. Ref: [Josh W. Comeau](https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/) |
 | **Animaciones** | Componentes propios (`Boop`, `Sparkles`) | Micro-interacciones sin dependencias. Ref: [Boop](https://www.joshwcomeau.com/react/boop/) · [Sparkles](https://www.joshwcomeau.com/react/animated-sparkles-in-react/) |
 
 ---
@@ -99,7 +99,7 @@ frontend/
 │       ├── ResetPasswordPage.tsx  ← Formulario de nueva contraseña con token
 │       ├── DashboardPage.tsx    ← Panel principal del usuario autenticado
 │       ├── CoursePage.tsx       ← Detalle de un curso con sus módulos y labs
-│       ├── LabPage.tsx          ← Laboratorio con contenido Markdown, actividades y quiz
+│       ├── LabPage.tsx          ← Laboratorio con contenido Markdown, actividades, quiz y sonidos de resultado
 │       ├── PublicProfilePage.tsx ← Perfil público de cualquier usuario (/u/:username)
 │       ├── AboutPage.tsx        ← Sobre el proyecto, su autor y la iniciativa académica
 │       ├── ForumPage.tsx        ← Foro comunitario con comentarios y respuestas paginados
