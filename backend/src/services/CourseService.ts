@@ -16,7 +16,7 @@ import { LaboratoryQuestionOptionDAO } from '../daos/LaboratoryQuestionOptionDAO
 import { QuestionActivityDAO } from '../daos/QuestionActivityDAO.js'
 import { UserActivityProgressDAO } from '../daos/UserActivityProgressDAO.js'
 import { UserLaboratoryProgressDAO } from '../daos/UserLaboratoryProgressDAO.js'
-import { HTTPError } from '../utils/errors.js'
+import { NotFoundError, ForbiddenError, ConflictError } from '../utils/errors.js'
 import type { UserRole, CourseEnrollment } from '../types.js'
 
 export class CourseService {
@@ -30,13 +30,13 @@ export class CourseService {
   static async getCourse(slug: string, userId?: string, role?: UserRole) {
     const course = await CourseDAO.findBySlugWithStats(slug, userId)
     if (!course || (!course.isPublished && role !== 'admin'))
-      throw new HTTPError(404, 'Curso no encontrado.')
+      throw new NotFoundError('Curso no encontrado.')
     return course
   }
 
   static async getCourseNav(courseSlug: string) {
     const course = await CourseDAO.findBySlug(courseSlug)
-    if (!course || !course.isPublished) throw new HTTPError(404, 'Curso no encontrado.')
+    if (!course || !course.isPublished) throw new NotFoundError('Curso no encontrado.')
     const modules = await CourseModuleDAO.findByCourseId(course.id)
     const modulesWithLabs = await Promise.all(
       modules.map(async m => {
@@ -49,25 +49,25 @@ export class CourseService {
 
   static async enrollUser(userId: string, courseSlug: string): Promise<CourseEnrollment> {
     const course = await CourseDAO.findBySlug(courseSlug)
-    if (!course || !course.isPublished) throw new HTTPError(404, 'Curso no encontrado.')
+    if (!course || !course.isPublished) throw new NotFoundError('Curso no encontrado.')
     if (await CourseEnrollmentDAO.find(userId, course.id))
-      throw new HTTPError(409, 'Ya estás inscrito en este curso.')
+      throw new ConflictError('Ya estás inscrito en este curso.')
     return CourseEnrollmentDAO.create(userId, course.id)
   }
 
   static async getModules(courseSlug: string, role?: UserRole) {
     const course = await CourseDAO.findBySlug(courseSlug)
     if (!course || (!course.isPublished && role !== 'admin'))
-      throw new HTTPError(404, 'Curso no encontrado.')
+      throw new NotFoundError('Curso no encontrado.')
     return CourseModuleDAO.findByCourseId(course.id)
   }
 
   static async getLaboratories(courseSlug: string, moduleSlug: string, userId?: string, role?: UserRole) {
     const course = await CourseDAO.findBySlug(courseSlug)
     if (!course || (!course.isPublished && role !== 'admin'))
-      throw new HTTPError(404, 'Curso no encontrado.')
+      throw new NotFoundError('Curso no encontrado.')
     const module = await CourseModuleDAO.findBySlug(course.id, moduleSlug)
-    if (!module) throw new HTTPError(404, 'Módulo no encontrado.')
+    if (!module) throw new NotFoundError('Módulo no encontrado.')
     return LaboratoryDAO.findByModuleId(module.id, role !== 'admin', userId)
   }
 
@@ -80,20 +80,20 @@ export class CourseService {
   ) {
     const course = await CourseDAO.findBySlug(courseSlug)
     if (!course || (!course.isPublished && role !== 'admin'))
-      throw new HTTPError(404, 'Curso no encontrado.')
+      throw new NotFoundError('Curso no encontrado.')
 
-    // Enrollment gate (admin bypasses)
+    // Verificación de inscripción (admin omite esta validación)
     if (role !== 'admin') {
       if (!(await CourseEnrollmentDAO.find(userId, course.id)))
-        throw new HTTPError(403, 'Debes inscribirte al curso para acceder a este laboratorio.')
+        throw new ForbiddenError('Debes inscribirte al curso para acceder a este laboratorio.')
     }
 
     const module = await CourseModuleDAO.findBySlug(course.id, moduleSlug)
-    if (!module) throw new HTTPError(404, 'Módulo no encontrado.')
+    if (!module) throw new NotFoundError('Módulo no encontrado.')
 
     const lab = await LaboratoryDAO.findBySlug(module.id, labSlug)
     if (!lab || (!lab.isPublished && role !== 'admin'))
-      throw new HTTPError(404, 'Laboratorio no encontrado.')
+      throw new NotFoundError('Laboratorio no encontrado.')
 
     const questions = await LaboratoryQuestionDAO.findByLaboratoryId(lab.id)
 
@@ -134,7 +134,7 @@ export class CourseService {
                 title: activity.title,
                 instructionsMarkdown: activity.instructionsMarkdown,
                 isCompleted: progress?.status === 'completed',
-                // Only reveal the response after the user completed the activity
+                // Solo revelar la respuesta después de que el usuario completó la actividad
                 generatedResponse:
                   progress?.status === 'completed' ? progress.generatedResponse : null,
               }

@@ -1,7 +1,7 @@
 import type { MiddlewareHandler } from 'hono'
 import { verify } from 'jsonwebtoken'
 import type { TokenPayload } from '../types.js'
-import { HTTPError } from '../utils/errors.js'
+import { UnauthorizedError, ForbiddenError } from '../utils/errors.js'
 
 function getSecret(): string {
   const s = process.env.JWT_SECRET
@@ -11,7 +11,7 @@ function getSecret(): string {
 
 function extractToken(c: Parameters<MiddlewareHandler>[0]): string {
   const auth = c.req.header('Authorization')
-  if (!auth?.startsWith('Bearer ')) throw new HTTPError(401, 'No autorizado.')
+  if (!auth?.startsWith('Bearer ')) throw new UnauthorizedError('No autorizado.')
   return auth.slice(7)
 }
 
@@ -22,7 +22,7 @@ export const optionalAuth: MiddlewareHandler = async (c, next) => {
       const payload = verify(auth.slice(7), getSecret()) as TokenPayload
       c.set('user', payload)
     } catch {
-      // ignore invalid tokens — endpoint is reachable without auth
+      // ignorar tokens inválidos — el endpoint es accesible sin autenticación
     }
   }
   await next()
@@ -33,8 +33,8 @@ export const requireAuth: MiddlewareHandler = async (c, next) => {
     const payload = verify(extractToken(c), getSecret()) as TokenPayload
     c.set('user', payload)
   } catch (e) {
-    if (e instanceof HTTPError) throw e
-    throw new HTTPError(401, 'Token inválido o expirado.')
+    if (e instanceof UnauthorizedError) throw e
+    throw new UnauthorizedError('Token inválido o expirado.')
   }
   await next()
 }
@@ -42,11 +42,11 @@ export const requireAuth: MiddlewareHandler = async (c, next) => {
 export const requireAdmin: MiddlewareHandler = async (c, next) => {
   try {
     const payload = verify(extractToken(c), getSecret()) as TokenPayload
-    if (payload.role !== 'admin') throw new HTTPError(403, 'Acceso denegado.')
+    if (payload.role !== 'admin') throw new ForbiddenError('Acceso denegado.')
     c.set('user', payload)
   } catch (e) {
-    if (e instanceof HTTPError) throw e
-    throw new HTTPError(401, 'Token inválido o expirado.')
+    if (e instanceof UnauthorizedError || e instanceof ForbiddenError) throw e
+    throw new UnauthorizedError('Token inválido o expirado.')
   }
   await next()
 }

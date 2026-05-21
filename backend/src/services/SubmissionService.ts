@@ -7,7 +7,7 @@ import { UserLaboratoryProgressDAO } from '../daos/UserLaboratoryProgressDAO.js'
 import { SubmissionDAO } from '../daos/SubmissionDAO.js'
 import { CourseEnrollmentDAO } from '../daos/CourseEnrollmentDAO.js'
 import { CourseModuleDAO } from '../daos/CourseModuleDAO.js'
-import { HTTPError } from '../utils/errors.js'
+import { NotFoundError, ForbiddenError, BadRequestError } from '../utils/errors.js'
 import type { SubmissionAnswer } from '../types.js'
 
 export class SubmissionService {
@@ -17,17 +17,17 @@ export class SubmissionService {
     answers: SubmissionAnswer[],
   ) {
     const lab = await LaboratoryDAO.findById(laboratoryId)
-    if (!lab || !lab.isPublished) throw new HTTPError(404, 'Laboratorio no encontrado.')
+    if (!lab || !lab.isPublished) throw new NotFoundError('Laboratorio no encontrado.')
 
     if (answers.length !== lab.quizQuestionsRequired)
-      throw new HTTPError(400, `Debes responder exactamente ${lab.quizQuestionsRequired} preguntas.`)
+      throw new BadRequestError(`Debes responder exactamente ${lab.quizQuestionsRequired} preguntas.`)
 
-    // Enrollment gate
+    // Verificación de inscripción
     const module = await CourseModuleDAO.findById(lab.moduleId)
     if (module) {
       const enrollment = await CourseEnrollmentDAO.find(userId, module.courseId)
       if (!enrollment)
-        throw new HTTPError(403, 'Debes estar inscrito en el curso para enviar este laboratorio.')
+        throw new ForbiddenError('Debes estar inscrito en el curso para enviar este laboratorio.')
     }
 
     const questions = await LaboratoryQuestionDAO.findByLaboratoryId(laboratoryId)
@@ -35,13 +35,10 @@ export class SubmissionService {
 
     for (const a of answers) {
       if (!questionIds.has(a.questionId))
-        throw new HTTPError(
-          400,
-          `La pregunta ${a.questionId} no pertenece a este laboratorio.`,
-        )
+        throw new BadRequestError(`La pregunta ${a.questionId} no pertenece a este laboratorio.`)
     }
 
-    // Grade each answer
+    // Calificar cada respuesta
     let correctCount = 0
     for (const answer of answers) {
       const question = questions.find((q) => q.id === answer.questionId)!
@@ -51,7 +48,7 @@ export class SubmissionService {
         const option = await LaboratoryQuestionOptionDAO.findById(answer.selectedOptionId)
         if (option?.questionId === question.id && option.isCorrect) correctCount++
       } else {
-        // activity_response: correct only if it matches the user's own generated response
+        // activity_response: correcta solo si coincide con la respuesta generada del usuario
         if (!answer.responseText) continue
         const activity = await QuestionActivityDAO.findByQuestionId(question.id)
         if (!activity) continue
@@ -70,11 +67,11 @@ export class SubmissionService {
     )
     const attemptNumber = await SubmissionDAO.getNextAttemptNumber(userId, laboratoryId)
 
-    // Check previous completion status before inserting (to detect first-time completion)
+    // Verificar estado de completitud previo antes de insertar (para detectar la primera completitud)
     const prevProgress = await UserLaboratoryProgressDAO.find(userId, laboratoryId)
     const wasAlreadyCompleted = prevProgress?.status === 'completed'
 
-    // Insert → DB trigger updates user_laboratory_progress and awards points on first completion
+    // Insertar → el trigger de la BD actualiza user_laboratory_progress y otorga puntos en la primera completitud
     const submission = await SubmissionDAO.create({
       userId,
       laboratoryId,
@@ -115,7 +112,7 @@ export class SubmissionService {
   ) {
     const question = await LaboratoryQuestionDAO.findById(questionId)
     if (!question || question.laboratoryId !== labId || question.questionType !== 'multiple_choice')
-      throw new HTTPError(400, 'Pregunta no válida.')
+      throw new BadRequestError('Pregunta no válida.')
 
     const options = await LaboratoryQuestionOptionDAO.findByQuestionId(questionId)
     const selected = options.find(o => o.id === selectedOptionId)

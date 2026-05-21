@@ -3,10 +3,10 @@ import { AuthService } from '../services/AuthService.js'
 import { UserDAO } from '../daos/UserDAO.js'
 import { sendPasswordResetEmail, sendVerificationEmail } from '../utils/email.js'
 
-// In-memory reset tokens (key → {userId, expiresAt}). Resets on server restart.
+// Tokens de restablecimiento en memoria (clave → {userId, expiresAt}). Se reinician al reiniciar el servidor.
 const resetTokens = new Map<string, { userId: string; expiresAt: number }>()
 
-// Pending registrations awaiting email verification (key = email). Resets on server restart.
+// Registros pendientes en espera de verificación de correo (clave = email). Se reinician al reiniciar el servidor.
 const pendingRegistrations = new Map<string, {
   username: string
   email: string
@@ -70,7 +70,7 @@ export class AuthController {
         console.error('[resend-verification] Error enviando email:', err)
       }
     }
-    // Always return same message to avoid enumeration
+    // Siempre retornar el mismo mensaje para evitar enumeración
     return c.json({ message: 'Si hay un registro pendiente, se enviará un nuevo código.' })
   }
 
@@ -98,7 +98,7 @@ export class AuthController {
         console.error('[forgot-password] Error enviando email:', err)
       }
     }
-    // Always return same message to avoid email enumeration
+    // Siempre retornar el mismo mensaje para evitar enumeración de correos
     return c.json({ message: 'Si el correo está registrado, recibirás las instrucciones.' })
   }
 

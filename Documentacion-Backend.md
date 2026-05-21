@@ -122,7 +122,7 @@ backend/
 │   │   ├── ForumComment.ts      ← Modelo del foro: validate(), isDeleted, toPublic()
 │   │   └── index.ts             ← Re-exporta todos los modelos
 │   └── utils/
-│       ├── errors.ts            ← Clases de error personalizadas (HTTPError, ValidationError)
+│       ├── errors.ts            ← Jerarquía de errores de dominio (AppError y subclases, sin acoplamiento HTTP)
 │       ├── response.ts          ← Generador de respuestas para actividades
 │       └── email.ts             ← Envío de correos vía Gmail REST API (verificación y reset)
 ├── database/
@@ -241,7 +241,7 @@ Request body (datos crudos del HTTP)
   Service llama a Model.validate(datos)
         ↓ ← si hay errores, lanza ValidationError (HTTP 400)
   Service verifica reglas de negocio con DB
-        ↓ ← si hay conflictos, lanza HTTPError (HTTP 409/403/404)
+        ↓ ← si hay conflictos, lanza ConflictError / NotFoundError / ForbiddenError, etc.
   DAO inserta datos válidos en PostgreSQL
 ```
 
@@ -358,18 +358,18 @@ LaboratoryQuestion.validate({ questionOrder, questionType, questionText })
 
 Además del formato, los Services verifican reglas que requieren consultar la base de datos:
 
-| Service | Validación | Error HTTP |
-|---|---|---|
-| `AuthService.prepareRegistration` | Email no registrado previamente | 409 `'El email ya está registrado.'` |
-| `AuthService.prepareRegistration` | Username no tomado | 409 `'El username ya está en uso.'` |
-| `AuthService.login` | Usuario existe y contraseña coincide | 401 `'Credenciales inválidas.'` |
-| `SubmissionService.submit` | Laboratorio existe y está publicado | 404 `'Laboratorio no encontrado.'` |
-| `SubmissionService.submit` | Exactamente 5 respuestas enviadas | 400 `'Debes responder exactamente 5 preguntas.'` |
-| `SubmissionService.submit` | Usuario inscrito en el curso padre | 403 `'Debes estar inscrito en el curso para enviar este laboratorio.'` |
-| `SubmissionService.submit` | Cada `questionId` pertenece al lab | 400 `'La pregunta X no pertenece a este laboratorio.'` |
-| `CourseService.getLaboratory` | Usuario inscrito para ver el lab | 403 `'Debes estar matriculado'` |
-| `ForumService.createReply` | El comentario padre existe y es raíz (no es ya una respuesta) | 400 `'No se puede responder a una respuesta.'` |
-| `ForumService.deleteComment` | El solicitante es dueño del comentario o tiene rol `admin` | 403 `'No tienes permiso para eliminar este comentario.'` |
+| Service | Validación | Tipo de error | HTTP |
+|---|---|---|---|
+| `AuthService.prepareRegistration` | Email no registrado previamente | `ConflictError` | 409 |
+| `AuthService.prepareRegistration` | Username no tomado | `ConflictError` | 409 |
+| `AuthService.login` | Usuario existe y contraseña coincide | `UnauthorizedError` | 401 |
+| `SubmissionService.submit` | Laboratorio existe y está publicado | `NotFoundError` | 404 |
+| `SubmissionService.submit` | Exactamente 5 respuestas enviadas | `BadRequestError` | 400 |
+| `SubmissionService.submit` | Usuario inscrito en el curso padre | `ForbiddenError` | 403 |
+| `SubmissionService.submit` | Cada `questionId` pertenece al lab | `BadRequestError` | 400 |
+| `CourseService.getLaboratory` | Usuario inscrito para ver el lab | `ForbiddenError` | 403 |
+| `ForumService.createReply` | El comentario padre existe y es raíz (no es ya una respuesta) | `BadRequestError` | 400 |
+| `ForumService.deleteComment` | El solicitante es dueño del comentario o tiene rol `admin` | `ForbiddenError` | 403 |
 
 ### 5.4 Proyecciones de Datos (Principio de Mínimo Privilegio)
 
@@ -977,7 +977,7 @@ CourseService.getLaboratory():
   2. Busca el módulo por slug dentro de ese curso
   3. Busca el laboratorio por slug dentro de ese módulo
   4. Busca la matrícula: CourseEnrollmentDAO.find(userId, courseId)
-  5. Si no hay matrícula → throw HTTPError(403, "Debes estar matriculado")
+  5. Si no hay matrícula → throw ForbiddenError("Debes estar matriculado")
   6. Si hay matrícula → devuelve lab con todas las preguntas y el progreso del usuario
 ```
 
@@ -987,38 +987,83 @@ Los administradores saltan este control (para poder revisar el contenido sin mat
 
 ## 10. Manejo de Errores
 
-### 10.1 Clases de Error
+### 10.1 Sistema de Errores Unificado
 
-En `src/utils/errors.ts` hay dos clases:
+El backend usa un **sistema de errores de dominio**: los errores se definen con semántica del negocio, sin acoplarlos al protocolo HTTP. Esto significa que un `Service` puede lanzar un `NotFoundError` sin saber que el transporte es HTTP; es el adaptador HTTP (el manejador global en `index.ts`) el único lugar del sistema que traduce cada tipo de error a un código de estado.
+
+**¿Por qué importa?** Si el sistema se integra con otra interfaz (una aplicación de escritorio, una CLI, o tests automatizados), los Services se reutilizan sin cambios porque no contienen códigos HTTP.
+
+### 10.2 Jerarquía de Clases de Error
+
+En `src/utils/errors.ts` se define la jerarquía completa:
 
 ```typescript
-class HTTPError extends Error {
-  // Representa cualquier error HTTP. Guarda el status code (404, 401, etc.)
-}
+// Clase base — todos los errores de dominio heredan de aquí
+class AppError extends Error { }
 
-class ValidationError extends HTTPError {
-  // Hereda de HTTPError con status 400.
-  // Recibe un array de mensajes en español.
-  // Ejemplo: ["El username debe tener entre 3 y 50 caracteres", "El email no es válido"]
+// Subclases — cada una representa una situación de negocio específica
+class NotFoundError     extends AppError { }  // El recurso solicitado no existe
+class ForbiddenError    extends AppError { }  // El usuario no tiene permiso
+class ConflictError     extends AppError { }  // El recurso ya existe o hay un conflicto
+class UnauthorizedError extends AppError { }  // El usuario no está autenticado
+class BadRequestError   extends AppError { }  // La petición tiene datos inválidos
+
+// Caso especial: lleva un array de mensajes de validación
+class ValidationError extends AppError {
+  constructor(public readonly errors: string[]) {
+    super(errors.join(' | '))  // Cada mensaje separado por " | "
+  }
 }
 ```
 
-### 10.2 Manejador Global de Errores
+**Cuándo usar cada tipo:**
 
-En `src/index.ts` hay un manejador global que captura cualquier error lanzado en cualquier parte de la aplicación:
+| Clase | Se lanza cuando | HTTP resultante |
+|---|---|---|
+| `NotFoundError` | El recurso no existe en la base de datos | 404 |
+| `UnauthorizedError` | No hay token, el token es inválido, o las credenciales son incorrectas | 401 |
+| `ForbiddenError` | El usuario está autenticado pero no tiene permisos | 403 |
+| `ConflictError` | El recurso ya existe (email, username duplicado) | 409 |
+| `BadRequestError` | La petición viola una regla de negocio puntual (no es validación de campos) | 400 |
+| `ValidationError` | Uno o varios campos no pasan la validación de formato | 400 |
+
+### 10.3 Manejador Global de Errores
+
+En `src/index.ts` hay un único manejador global que captura cualquier error lanzado en cualquier parte de la aplicación y lo traduce al status HTTP correcto:
 
 ```typescript
 app.onError((err, c) => {
-  if (err instanceof HTTPError) {
-    return c.json({ error: err.message }, err.status);
-  }
-  // Error no esperado → log en consola y responder 500
-  console.error(err);
-  return c.json({ error: "Error interno del servidor" }, 500);
-});
+  if (err instanceof NotFoundError)     return c.json({ error: err.message }, 404)
+  if (err instanceof UnauthorizedError) return c.json({ error: err.message }, 401)
+  if (err instanceof ForbiddenError)    return c.json({ error: err.message }, 403)
+  if (err instanceof ConflictError)     return c.json({ error: err.message }, 409)
+  if (err instanceof ValidationError)   return c.json({ error: err.message }, 400)
+  if (err instanceof AppError)          return c.json({ error: err.message }, 400)
+  // Error inesperado (bug, fallo de DB, etc.) → log + 500
+  console.error(err)
+  return c.json({ error: 'Error interno del servidor.' }, 500)
+})
 ```
 
-### 10.3 Formato de Respuestas de Error
+Este es el **único lugar** en todo el backend que conoce los códigos HTTP de cada error. El orden importa: `AppError` va al final como fallback porque todas las subclases también son instancias de `AppError`.
+
+### 10.4 Flujo de un error desde el origen hasta el cliente
+
+```
+Service lanza → throw new ForbiddenError('Debes inscribirte al curso.')
+                         ↓
+          El error sube por la cadena de llamadas (sin ser capturado)
+                         ↓
+          app.onError() en index.ts lo intercepta
+                         ↓
+          err instanceof ForbiddenError → true
+                         ↓
+          c.json({ error: 'Debes inscribirte al curso.' }, 403)
+                         ↓
+          Cliente recibe: HTTP 403 + { "error": "Debes inscribirte al curso." }
+```
+
+### 10.5 Formato de Respuestas de Error
 
 Todos los errores tienen el mismo formato JSON:
 
@@ -1030,12 +1075,12 @@ Todos los errores tienen el mismo formato JSON:
 
 | Código | Significado | Ejemplo |
 |---|---|---|
-| 400 | Bad Request — datos inválidos | Username muy corto, menos de 5 respuestas |
-| 401 | Unauthorized — token inválido o ausente | Sin token en header, credenciales incorrectas |
-| 403 | Forbidden — no tiene permisos | Usuario normal en ruta admin, sin matrícula |
+| 400 | Bad Request — datos inválidos o regla de negocio puntual | Username muy corto, menos de 5 respuestas enviadas |
+| 401 | Unauthorized — sin autenticación o credenciales incorrectas | Sin token en header, contraseña incorrecta |
+| 403 | Forbidden — autenticado pero sin permisos | Usuario normal en ruta admin, sin matrícula en el curso |
 | 404 | Not Found — recurso no existe | Curso con ese slug no existe |
 | 409 | Conflict — ya existe | Email ya registrado, username ya en uso |
-| 500 | Internal Server Error | Error inesperado en el servidor |
+| 500 | Internal Server Error | Error inesperado en el servidor (bug, caída de DB) |
 
 ---
 
@@ -1195,4 +1240,8 @@ Vercel genera automáticamente una URL de producción (`cyberseclabs.vercel.app`
 
 **UUID** — *Universally Unique Identifier*. Identificador de 128 bits generado aleatoriamente. Se usa como clave primaria en vez de números enteros para mayor seguridad y escalabilidad.
 
-**ValidationError** — Clase de error personalizada (HTTP 400) que acepta un array de mensajes en español. Se lanza cuando los datos de entrada no pasan la validación del modelo.
+**AppError** — Clase base de todos los errores de dominio del backend. Extiende `Error` nativo de JavaScript. Solo el manejador global de Hono sabe qué código HTTP le corresponde a cada subclase; los Services no lo saben.
+
+**ValidationError** — Subclase de `AppError` (HTTP 400) que acepta un array de mensajes de validación en español. Se lanza cuando uno o más campos no pasan las reglas de formato definidas en los modelos. Los mensajes individuales se unen con `' | '` en el mensaje final.
+
+**NotFoundError / ForbiddenError / ConflictError / UnauthorizedError / BadRequestError** — Subclases de `AppError` que representan situaciones específicas de negocio. No contienen códigos HTTP; el manejador global de `index.ts` es el único que los asigna al responder al cliente.

@@ -1,6 +1,6 @@
 import { UserDAO } from '../daos/UserDAO.js'
 import { CourseEnrollmentDAO } from '../daos/CourseEnrollmentDAO.js'
-import { HTTPError, ValidationError } from '../utils/errors.js'
+import { NotFoundError, ConflictError, UnauthorizedError, BadRequestError, ValidationError } from '../utils/errors.js'
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 const ALLOWED_MIMETYPES = ['image/jpeg', 'image/jpg']
@@ -9,7 +9,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 export class UserService {
   static async getPublicProfile(username: string) {
     const user = await UserDAO.findByUsername(username)
-    if (!user) throw new HTTPError(404, 'Usuario no encontrado.')
+    if (!user) throw new NotFoundError('Usuario no encontrado.')
     const [completedLabs, rank, enrolledCourses] = await Promise.all([
       UserDAO.countCompletedLabs(user.id),
       UserDAO.getRank(user.id),
@@ -30,7 +30,7 @@ export class UserService {
 
   static async getMyProfile(userId: string) {
     const user = await UserDAO.findById(userId)
-    if (!user) throw new HTTPError(404, 'Usuario no encontrado.')
+    if (!user) throw new NotFoundError('Usuario no encontrado.')
     const [completedLabs, rank] = await Promise.all([
       UserDAO.countCompletedLabs(userId),
       UserDAO.getRank(userId),
@@ -82,16 +82,16 @@ export class UserService {
     if (patch.username) {
       const taken = await UserDAO.findByUsername(patch.username)
       if (taken && taken.id !== userId)
-        throw new HTTPError(409, 'El username ya está en uso.')
+        throw new ConflictError('El username ya está en uso.')
     }
     if (patch.email) {
       const taken = await UserDAO.findByEmail(patch.email)
       if (taken && taken.id !== userId)
-        throw new HTTPError(409, 'El email ya está registrado.')
+        throw new ConflictError('El email ya está registrado.')
     }
 
     const user = await UserDAO.update(userId, patch)
-    if (!user) throw new HTTPError(404, 'Usuario no encontrado.')
+    if (!user) throw new NotFoundError('Usuario no encontrado.')
     return UserService.getMyProfile(userId)
   }
 
@@ -103,10 +103,10 @@ export class UserService {
       throw new ValidationError(['La nueva contraseña debe tener al menos 8 caracteres.'])
 
     const user = await UserDAO.findById(userId)
-    if (!user) throw new HTTPError(404, 'Usuario no encontrado.')
+    if (!user) throw new NotFoundError('Usuario no encontrado.')
 
     const ok = await Bun.password.verify(data.currentPassword, user.passwordHash)
-    if (!ok) throw new HTTPError(401, 'La contraseña actual es incorrecta.')
+    if (!ok) throw new UnauthorizedError('La contraseña actual es incorrecta.')
 
     const newHash = await Bun.password.hash(data.newPassword)
     await UserDAO.updatePassword(userId, newHash)
@@ -117,9 +117,9 @@ export class UserService {
     file: { buffer: Buffer; mimetype: string; size: number },
   ): Promise<void> {
     if (!ALLOWED_MIMETYPES.includes(file.mimetype))
-      throw new HTTPError(400, 'La foto de perfil solo acepta formato JPG/JPEG.')
+      throw new BadRequestError('La foto de perfil solo acepta formato JPG/JPEG.')
     if (file.size > MAX_IMAGE_BYTES)
-      throw new HTTPError(400, 'La foto de perfil no puede superar los 5 MB.')
+      throw new BadRequestError('La foto de perfil no puede superar los 5 MB.')
     await UserDAO.updateAvatar(userId, file.buffer)
   }
 

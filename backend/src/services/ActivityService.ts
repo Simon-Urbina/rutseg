@@ -1,7 +1,7 @@
 import { QuestionActivityDAO } from '../daos/QuestionActivityDAO.js'
 import { ActivityActionLogDAO } from '../daos/ActivityActionLogDAO.js'
 import { UserActivityProgressDAO } from '../daos/UserActivityProgressDAO.js'
-import { HTTPError } from '../utils/errors.js'
+import { NotFoundError } from '../utils/errors.js'
 import { generateActivityResponse } from '../utils/response.js'
 
 export class ActivityService {
@@ -12,9 +12,9 @@ export class ActivityService {
   ) {
     const activity = await QuestionActivityDAO.findById(activityId)
     if (!activity || !activity.isPublished)
-      throw new HTTPError(404, 'Actividad no encontrada.')
+      throw new NotFoundError('Actividad no encontrada.')
 
-    // If already completed, return the stored response without logging another attempt
+    // Si ya fue completada, retornar la respuesta almacenada sin registrar otro intento
     const existing = await UserActivityProgressDAO.find(userId, activityId)
     if (existing?.status === 'completed') {
       return {
@@ -25,7 +25,7 @@ export class ActivityService {
       }
     }
 
-    // Accept the action under the key 'action' or 'command' (first value as fallback)
+    // Aceptar la acción bajo la clave 'action' o 'command' (primer valor como fallback)
     const submitted = String(
       actionPayload.action ?? actionPayload.command ?? Object.values(actionPayload)[0] ?? '',
     ).trim()
@@ -36,7 +36,7 @@ export class ActivityService {
       ? activity.successFeedback
       : 'Acción incorrecta. Revisa el comando e inténtalo de nuevo.'
 
-    // Insert log → DB trigger upserts user_activity_progress automatically
+    // Insertar log → el trigger de la BD hace upsert en user_activity_progress automáticamente
     await ActivityActionLogDAO.create({
       userId,
       activityId,

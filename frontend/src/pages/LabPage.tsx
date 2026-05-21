@@ -337,7 +337,6 @@ function TerminalPanel({
               </span>
               <input
                 ref={inputRef}
-                autoFocus
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && run()}

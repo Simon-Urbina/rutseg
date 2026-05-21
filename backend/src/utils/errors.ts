@@ -1,13 +1,18 @@
-export class HTTPError extends Error {
-  constructor(public readonly status: number, message: string) {
+export class AppError extends Error {
+  constructor(message: string) {
     super(message)
-    this.name = 'HTTPError'
+    this.name = this.constructor.name
   }
 }
 
-export class ValidationError extends HTTPError {
+export class NotFoundError extends AppError {}
+export class ForbiddenError extends AppError {}
+export class ConflictError extends AppError {}
+export class UnauthorizedError extends AppError {}
+export class BadRequestError extends AppError {}
+
+export class ValidationError extends AppError {
   constructor(public readonly errors: string[]) {
-    super(400, errors.join(' | '))
-    this.name = 'ValidationError'
+    super(errors.join(' | '))
   }
 }

@@ -20,7 +20,7 @@ async function getAccessToken(): Promise<string> {
   return data.access_token
 }
 
-// RFC 2047 Base64 encoding for MIME headers — required for non-ASCII chars (ñ, —, etc.)
+// Codificación Base64 RFC 2047 para cabeceras MIME — necesaria para caracteres no ASCII (ñ, —, etc.)
 function encodeHeader(text: string): string {
   return `=?UTF-8?B?${Buffer.from(text, 'utf-8').toString('base64')}?=`
 }
@@ -62,7 +62,7 @@ async function sendRawEmail(to: string, subject: string, html: string): Promise<
   }
 }
 
-// ─── Shared layout helpers ────────────────────────────────────────────────────
+// ─── Funciones auxiliares de maquetado ────────────────────────────────────────
 
 function emailHeader(title: string, subtitle: string): string {
   return `

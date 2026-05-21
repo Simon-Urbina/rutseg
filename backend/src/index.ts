@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import type { HTTPError } from './utils/errors.js'
+import { AppError, NotFoundError, UnauthorizedError, ForbiddenError, ConflictError, ValidationError } from './utils/errors.js'
 import authRoutes from './routes/auth.js'
 import userRoutes from './routes/users.js'
 import courseRoutes from './routes/courses.js'
@@ -43,10 +43,12 @@ app.route('/api/forum', forumRoutes)
 app.get('/health', (c) => c.json({ status: 'ok' }))
 
 app.onError((err, c) => {
-  const httpErr = err as HTTPError
-  if (typeof httpErr.status === 'number') {
-    return c.json({ error: err.message }, httpErr.status as 400)
-  }
+  if (err instanceof NotFoundError)     return c.json({ error: err.message }, 404)
+  if (err instanceof UnauthorizedError) return c.json({ error: err.message }, 401)
+  if (err instanceof ForbiddenError)    return c.json({ error: err.message }, 403)
+  if (err instanceof ConflictError)     return c.json({ error: err.message }, 409)
+  if (err instanceof ValidationError)   return c.json({ error: err.message }, 400)
+  if (err instanceof AppError)          return c.json({ error: err.message }, 400)
   console.error(err)
   return c.json({ error: 'Error interno del servidor.' }, 500)
 })

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { UserDAO } from '../daos/UserDAO.js'
-import { HTTPError, ValidationError } from '../utils/errors.js'
+import { ConflictError, UnauthorizedError, ValidationError } from '../utils/errors.js'
 import type { TokenPayload, User } from '../types.js'
 
 const TOKEN_TTL = '7d'
@@ -27,9 +27,9 @@ export class AuthService {
     if (errors.length) throw new ValidationError(errors)
 
     if (await UserDAO.findByEmail(email.toLowerCase()))
-      throw new HTTPError(409, 'El email ya está registrado.')
+      throw new ConflictError('El email ya está registrado.')
     if (await UserDAO.findByUsername(username.trim()))
-      throw new HTTPError(409, 'El username ya está en uso.')
+      throw new ConflictError('El username ya está en uso.')
 
     const passwordHash = await Bun.password.hash(password)
     return { username: username.trim(), email: email.toLowerCase(), passwordHash }
@@ -53,10 +53,10 @@ export class AuthService {
 
   static async login(email: string, password: string): Promise<{ user: User; token: string }> {
     const user = await UserDAO.findByEmail(email.toLowerCase())
-    if (!user) throw new HTTPError(401, 'Credenciales inválidas.')
+    if (!user) throw new UnauthorizedError('Credenciales inválidas.')
 
     const match = await Bun.password.verify(password, user.passwordHash)
-    if (!match) throw new HTTPError(401, 'Credenciales inválidas.')
+    if (!match) throw new UnauthorizedError('Credenciales inválidas.')
 
     return { user, token: AuthService.generateToken(user) }
   }

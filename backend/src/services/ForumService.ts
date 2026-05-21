@@ -1,6 +1,6 @@
 import { ForumCommentDAO } from '../daos/ForumCommentDAO.js'
 import { ForumComment } from '../models/ForumComment.js'
-import { HTTPError, ValidationError } from '../utils/errors.js'
+import { NotFoundError, ForbiddenError, BadRequestError, ValidationError } from '../utils/errors.js'
 import sql from '../db/index.js'
 import type { UserRole } from '../types.js'
 
@@ -43,8 +43,8 @@ export class ForumService {
 
   static async listReplies(parentId: string) {
     const parent = await ForumCommentDAO.findById(parentId)
-    if (!parent) throw new HTTPError(404, 'Comentario no encontrado.')
-    if (parent.parentId !== null) throw new HTTPError(400, 'Las respuestas no pueden tener respuestas.')
+    if (!parent) throw new NotFoundError('Comentario no encontrado.')
+    if (parent.parentId !== null) throw new BadRequestError('Las respuestas no pueden tener respuestas.')
     const rows = await ForumCommentDAO.findReplies(parentId)
     return Promise.all(
       rows.map(async (row) => {
@@ -74,8 +74,8 @@ export class ForumService {
     const errors = ForumComment.validate({ content })
     if (errors.length) throw new ValidationError(errors)
     const parent = await ForumCommentDAO.findById(parentId)
-    if (!parent) throw new HTTPError(404, 'Comentario no encontrado.')
-    if (parent.parentId !== null) throw new HTTPError(400, 'No se puede responder a una respuesta.')
+    if (!parent) throw new NotFoundError('Comentario no encontrado.')
+    if (parent.parentId !== null) throw new BadRequestError('No se puede responder a una respuesta.')
     const row = await ForumCommentDAO.create({ userId, content: content.trim(), parentId })
     const model = new ForumComment(
       row.id, row.userId, row.content, row.parentId,
@@ -87,10 +87,10 @@ export class ForumService {
 
   static async deleteComment(commentId: string, requesterId: string, requesterRole: UserRole) {
     const row = await ForumCommentDAO.findById(commentId)
-    if (!row) throw new HTTPError(404, 'Comentario no encontrado.')
-    if (row.deletedAt) throw new HTTPError(404, 'Comentario no encontrado.')
+    if (!row) throw new NotFoundError('Comentario no encontrado.')
+    if (row.deletedAt) throw new NotFoundError('Comentario no encontrado.')
     if (requesterRole !== 'admin' && row.userId !== requesterId)
-      throw new HTTPError(403, 'No tienes permiso para eliminar este comentario.')
+      throw new ForbiddenError('No tienes permiso para eliminar este comentario.')
     await ForumCommentDAO.softDelete(commentId)
   }
 }
