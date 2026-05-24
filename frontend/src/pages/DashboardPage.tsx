@@ -37,6 +37,7 @@ export default function DashboardPage() {
   const [coursesLoading, setCoursesLoading] = useState(true)
   const [coursesError, setCoursesError] = useState<string | null>(null)
   const [pendingEnroll, setPendingEnroll] = useState<Course | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     setLoadingProfile(true)
@@ -54,8 +55,10 @@ export default function DashboardPage() {
       .finally(() => setCoursesLoading(false))
   }, [])
 
-  const enrolledCourses = courses.filter(c => c.isEnrolled)
-  const availableCourses = courses.filter(c => !c.isEnrolled)
+  const query = searchQuery.toLowerCase().trim()
+  const filteredCourses = query ? courses.filter(c => c.title.toLowerCase().includes(query)) : courses
+  const enrolledCourses = filteredCourses.filter(c => c.isEnrolled)
+  const availableCourses = filteredCourses.filter(c => !c.isEnrolled)
 
   const stats = [
     {
@@ -279,6 +282,13 @@ export default function DashboardPage() {
             ))}
           </section>
 
+          {/* Búsqueda de cursos */}
+          {!coursesLoading && courses.length > 0 && (
+            <section className="animate-fade-up-2 -mt-6">
+              <CourseSearchBar value={searchQuery} onChange={setSearchQuery} isDark={isDark} />
+            </section>
+          )}
+
           {/* Mis cursos */}
           {(coursesLoading || enrolledCourses.length > 0) && (
             <section className="animate-fade-up-3">
@@ -339,11 +349,13 @@ export default function DashboardPage() {
             {!coursesError && !coursesLoading && availableCourses.length === 0 && (
               <EmptyState
                 isDark={isDark}
-                title="Estás al día"
+                title={query ? 'Sin resultados' : 'Estás al día'}
                 body={
-                  enrolledCourses.length > 0
-                    ? 'Ya estás inscrito en todos los cursos disponibles.'
-                    : 'Aún no hay cursos publicados. Vuelve pronto.'
+                  query
+                    ? `No hay cursos que coincidan con «${searchQuery.trim()}».`
+                    : enrolledCourses.length > 0
+                      ? 'Ya estás inscrito en todos los cursos disponibles.'
+                      : 'Aún no hay cursos publicados. Vuelve pronto.'
                 }
               />
             )}
@@ -629,6 +641,70 @@ function EmptyState({ isDark, title, body }: { isDark: boolean; title: string; b
       >
         {body}
       </p>
+    </div>
+  )
+}
+
+function CourseSearchBar({ value, onChange, isDark }: { value: string; onChange: (v: string) => void; isDark: boolean }) {
+  return (
+    <div>
+      <p
+        className="font-mono text-[10px] tracking-[0.22em] uppercase mb-2"
+        style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
+      >
+        // buscar
+      </p>
+      <div
+        className="flex items-center gap-3 px-4 rounded-xl transition-all duration-150"
+        style={{
+          background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+          border: `1px solid ${isDark ? 'rgba(26,63,150,0.20)' : 'rgba(26,63,150,0.15)'}`,
+          height: '48px',
+        }}
+        onFocusCapture={e => {
+          (e.currentTarget as HTMLElement).style.borderColor = '#1A3F96'
+          ;(e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 2px rgba(26,63,150,0.15)'
+        }}
+        onBlurCapture={e => {
+          (e.currentTarget as HTMLElement).style.borderColor = isDark ? 'rgba(26,63,150,0.20)' : 'rgba(26,63,150,0.15)'
+          ;(e.currentTarget as HTMLElement).style.boxShadow = 'none'
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: isDark ? '#3A5AB8' : '#1A3F96', flexShrink: 0 }}>
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder="Buscar cursos…"
+          autoComplete="off"
+          className="flex-1 bg-transparent outline-none text-[14px]"
+          style={{
+            color: isDark ? '#C8D5EE' : '#0A1545',
+            caretColor: '#1A3F96',
+          }}
+        />
+        {value && (
+          <button
+            onClick={() => onChange('')}
+            className="flex items-center justify-center w-5 h-5 rounded-full transition-colors shrink-0"
+            style={{
+              color: isDark ? '#3A5AB8' : '#4A70CC',
+              background: isDark ? 'rgba(26,63,150,0.10)' : 'rgba(26,63,150,0.07)',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#1A3F96' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = isDark ? '#3A5AB8' : '#4A70CC' }}
+            aria-label="Limpiar búsqueda"
+          >
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        )}
+      </div>
     </div>
   )
 }

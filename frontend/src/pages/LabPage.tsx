@@ -607,7 +607,7 @@ function QuestionItem({
           <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-0.5" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
             Pregunta {index + 1} — {q.questionType === 'multiple_choice' ? 'opción múltiple' : 'actividad'}
           </p>
-          <p className="text-[14px] truncate" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
+          <p className="text-[14px] leading-snug line-clamp-2" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
             {q.questionText}
           </p>
         </div>

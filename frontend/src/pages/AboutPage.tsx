@@ -69,7 +69,7 @@ const SOCIAL = [
   {
     label: 'GitHub',
     handle: 'Simon-Urbina',
-    href: 'https://github.com/Simon-Urbina/rutseg',
+    href: 'https://github.com/Simon-Urbina',
     color: '#C8D5EE',
     svg: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
