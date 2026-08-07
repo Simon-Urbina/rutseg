@@ -20,28 +20,46 @@ import type { TokenPayload } from '../types.js'
 const router = new Hono<{ Variables: { user: TokenPayload } }>()
 router.use('*', requireAdmin)
 
-/** Verifica que un laboratorio tenga sus 5 preguntas completas antes de permitir publicarlo. */
-async function assertLabReadyToPublish(laboratoryId: string): Promise<void> {
+/** Devuelve los motivos por los que un laboratorio no puede publicarse (vacío = listo). */
+async function getLabPublishBlockers(laboratoryId: string): Promise<string[]> {
   const questions = await LaboratoryQuestionDAO.findByLaboratoryId(laboratoryId)
   if (questions.length !== 5) {
-    throw new BadRequestError(
-      `El laboratorio debe tener exactamente 5 preguntas para publicarse (tiene ${questions.length}).`,
-    )
+    return [`El laboratorio debe tener exactamente 5 preguntas para publicarse (tiene ${questions.length}).`]
   }
+  const blockers: string[] = []
   for (const q of questions) {
     if (q.questionType === 'multiple_choice') {
       const options = await LaboratoryQuestionOptionDAO.findByQuestionId(q.id)
       if (options.length < 2)
-        throw new BadRequestError(`La pregunta ${q.questionOrder} necesita al menos 2 opciones.`)
+        blockers.push(`La pregunta ${q.questionOrder} necesita al menos 2 opciones.`)
       const correctCount = options.filter(o => o.isCorrect).length
       if (correctCount !== 1)
-        throw new BadRequestError(`La pregunta ${q.questionOrder} debe tener exactamente una opción correcta.`)
+        blockers.push(`La pregunta ${q.questionOrder} debe tener exactamente una opción correcta.`)
     } else {
       const activity = await QuestionActivityDAO.findByQuestionId(q.id)
       if (!activity)
-        throw new BadRequestError(`La pregunta ${q.questionOrder} no tiene una actividad configurada.`)
+        blockers.push(`La pregunta ${q.questionOrder} no tiene una actividad configurada.`)
     }
   }
+  return blockers
+}
+
+/** Verifica que un laboratorio tenga sus 5 preguntas completas antes de permitir publicarlo. */
+async function assertLabReadyToPublish(laboratoryId: string): Promise<void> {
+  const blockers = await getLabPublishBlockers(laboratoryId)
+  if (blockers.length) throw new BadRequestError(blockers[0])
+}
+
+/**
+ * Si borrar/editar una pregunta u opción deja un laboratorio YA PUBLICADO incompleto,
+ * lo despublica automáticamente en vez de bloquear la edición — los estudiantes nunca
+ * ven un laboratorio roto, y el admin no tiene que despublicar a mano antes de corregir algo.
+ */
+async function autoUnpublishIfIncomplete(laboratoryId: string): Promise<void> {
+  const lab = await LaboratoryDAO.findById(laboratoryId)
+  if (!lab || !lab.isPublished) return
+  const blockers = await getLabPublishBlockers(laboratoryId)
+  if (blockers.length) await LaboratoryDAO.update(laboratoryId, { isPublished: false })
 }
 
 // ── Courses ──────────────────────────────────────────────────────────────────
@@ -188,8 +206,10 @@ router.put('/questions/:id', async (c) => {
 })
 
 router.delete('/questions/:id', async (c) => {
-  const deleted = await LaboratoryQuestionDAO.delete(c.req.param('id'))
-  if (!deleted) throw new NotFoundError('Pregunta no encontrada.')
+  const existing = await LaboratoryQuestionDAO.findById(c.req.param('id'))
+  if (!existing) throw new NotFoundError('Pregunta no encontrada.')
+  await LaboratoryQuestionDAO.delete(existing.id)
+  await autoUnpublishIfIncomplete(existing.laboratoryId)
   return c.json({ success: true })
 })
 
@@ -216,6 +236,8 @@ router.put('/questions/:questionId/options/:id', async (c) => {
   if (errors.length) throw new ValidationError(errors)
   const option = await LaboratoryQuestionOptionDAO.update(c.req.param('id'), data)
   if (!option) throw new NotFoundError('Opción no encontrada.')
+  const question = await LaboratoryQuestionDAO.findById(existing.questionId)
+  if (question) await autoUnpublishIfIncomplete(question.laboratoryId)
   return c.json(option)
 })
 
@@ -224,6 +246,8 @@ router.delete('/questions/:questionId/options/:id', async (c) => {
   if (!existing || existing.questionId !== c.req.param('questionId'))
     throw new NotFoundError('Opción no encontrada.')
   await LaboratoryQuestionOptionDAO.delete(c.req.param('id'))
+  const question = await LaboratoryQuestionDAO.findById(existing.questionId)
+  if (question) await autoUnpublishIfIncomplete(question.laboratoryId)
   return c.json({ success: true })
 })
 
