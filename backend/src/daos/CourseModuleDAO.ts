@@ -50,4 +50,9 @@ export class CourseModuleDAO {
     `
     return row ?? null
   }
+
+  static async delete(id: string): Promise<boolean> {
+    const rows = await sql`DELETE FROM course_modules WHERE id = ${id} RETURNING id`
+    return rows.length > 0
+  }
 }

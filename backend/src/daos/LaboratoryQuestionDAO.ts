@@ -55,4 +55,9 @@ export class LaboratoryQuestionDAO {
     `
     return row ?? null
   }
+
+  static async delete(id: string): Promise<boolean> {
+    const rows = await sql`DELETE FROM laboratory_questions WHERE id = ${id} RETURNING id`
+    return rows.length > 0
+  }
 }
