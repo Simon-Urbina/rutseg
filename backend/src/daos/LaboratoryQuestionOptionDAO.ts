@@ -32,18 +32,18 @@ export class LaboratoryQuestionOptionDAO {
     isCorrect: boolean
   }): Promise<LaboratoryQuestionOption> {
     return sql.begin(async (tx) => {
+      if (data.isCorrect) {
+        await tx`
+          UPDATE laboratory_question_options
+          SET is_correct = FALSE
+          WHERE question_id = ${data.questionId} AND is_correct = TRUE
+        `
+      }
       const [row] = await tx<LaboratoryQuestionOption[]>`
         INSERT INTO laboratory_question_options (question_id, option_order, option_text, is_correct)
         VALUES (${data.questionId}, ${data.optionOrder}, ${data.optionText}, ${data.isCorrect})
         RETURNING *
       `
-      if (data.isCorrect) {
-        await tx`
-          UPDATE laboratory_question_options
-          SET is_correct = FALSE
-          WHERE question_id = ${data.questionId} AND id != ${row.id}
-        `
-      }
       return row
     })
   }
@@ -53,6 +53,13 @@ export class LaboratoryQuestionOptionDAO {
     data: Partial<Pick<LaboratoryQuestionOption, 'optionOrder' | 'optionText' | 'isCorrect'>>,
   ): Promise<LaboratoryQuestionOption | null> {
     return sql.begin(async (tx) => {
+      if (data.isCorrect) {
+        await tx`
+          UPDATE laboratory_question_options SET is_correct = FALSE
+          WHERE id != ${id}
+            AND question_id = (SELECT question_id FROM laboratory_question_options WHERE id = ${id})
+        `
+      }
       const [row] = await tx<LaboratoryQuestionOption[]>`
         UPDATE laboratory_question_options SET
           option_order = COALESCE(${data.optionOrder ?? null}, option_order),
@@ -61,15 +68,7 @@ export class LaboratoryQuestionOptionDAO {
         WHERE id = ${id}
         RETURNING *
       `
-      if (!row) return null
-      if (data.isCorrect) {
-        await tx`
-          UPDATE laboratory_question_options
-          SET is_correct = FALSE
-          WHERE question_id = ${row.questionId} AND id != ${row.id}
-        `
-      }
-      return row
+      return row ?? null
     })
   }
 
