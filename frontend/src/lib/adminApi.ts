@@ -100,8 +100,10 @@ export const adminApi = {
     api.get<AdminLabSummary[]>(`/api/courses/${courseSlug}/modules/${moduleSlug}/labs`),
 
   // Curso
+  // POST /courses devuelve la fila cruda (sin moduleCount/labCount/totalPoints, que solo
+  // calcula el listado vía findAllWithStats) — el caller debe rellenarlos con 0 al crear.
   createCourse: (data: { slug: string; title: string; description?: string; difficulty: AdminCourse['difficulty'] }) =>
-    api.post<AdminCourse>('/api/admin/courses', data),
+    api.post<Omit<AdminCourse, 'moduleCount' | 'labCount' | 'totalPoints'>>('/api/admin/courses', data),
   updateCourse: (id: string, data: Partial<{ slug: string; title: string; description: string; difficulty: AdminCourse['difficulty']; isPublished: boolean }>) =>
     api.put<AdminCourse>(`/api/admin/courses/${id}`, data),
   deleteCourse: (id: string) => api.delete<{ success: boolean }>(`/api/admin/courses/${id}`),

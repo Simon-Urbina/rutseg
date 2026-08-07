@@ -125,7 +125,7 @@ function NewCourseForm({ isDark, onCreated }: { isDark: boolean; onCreated: (c: 
     setLoading(true)
     try {
       const course = await adminApi.createCourse({ slug, title, description: description || undefined, difficulty: difficulty as AdminCourse['difficulty'] })
-      onCreated(course)
+      onCreated({ ...course, moduleCount: 0, labCount: 0, totalPoints: 0 })
     } catch (err: any) {
       setError(err.message)
     } finally {
