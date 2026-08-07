@@ -83,11 +83,12 @@ export interface AdminLabDetail extends AdminLabMeta {
 export function slugify(text: string): string {
   return text
     .toLowerCase()
-    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
 export const adminApi = {
@@ -99,9 +100,9 @@ export const adminApi = {
     api.get<AdminLabSummary[]>(`/api/courses/${courseSlug}/modules/${moduleSlug}/labs`),
 
   // Curso
-  createCourse: (data: { slug: string; title: string; description?: string; difficulty: string }) =>
+  createCourse: (data: { slug: string; title: string; description?: string; difficulty: AdminCourse['difficulty'] }) =>
     api.post<AdminCourse>('/api/admin/courses', data),
-  updateCourse: (id: string, data: Partial<{ slug: string; title: string; description: string; difficulty: string; isPublished: boolean }>) =>
+  updateCourse: (id: string, data: Partial<{ slug: string; title: string; description: string; difficulty: AdminCourse['difficulty']; isPublished: boolean }>) =>
     api.put<AdminCourse>(`/api/admin/courses/${id}`, data),
   deleteCourse: (id: string) => api.delete<{ success: boolean }>(`/api/admin/courses/${id}`),
 
@@ -121,7 +122,7 @@ export const adminApi = {
   deleteLab: (id: string) => api.delete<{ success: boolean }>(`/api/admin/labs/${id}`),
 
   // Pregunta
-  createQuestion: (labId: string, data: { questionOrder: number; questionType: string; questionText: string; explanation?: string }) =>
+  createQuestion: (labId: string, data: { questionOrder: number; questionType: AdminQuestion['questionType']; questionText: string; explanation?: string }) =>
     api.post<Omit<AdminQuestion, 'options' | 'activity'>>(`/api/admin/labs/${labId}/questions`, data),
   updateQuestion: (id: string, data: Partial<{ questionText: string; explanation: string }>) =>
     api.put<Omit<AdminQuestion, 'options' | 'activity'>>(`/api/admin/questions/${id}`, data),
