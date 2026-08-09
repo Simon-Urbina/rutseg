@@ -91,4 +91,18 @@ export class User {
       points: this.points,
     }
   }
+
+  /** Vista completa para el panel admin: todos los campos salvo el hash y la imagen. */
+  toAdmin() {
+    return {
+      id: this.id,
+      username: this.username,
+      email: this.email,
+      bio: this.bio,
+      role: this.role,
+      points: this.points,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    }
+  }
 }

@@ -46,12 +46,13 @@ export class UserDAO {
 
   static async update(
     id: string,
-    data: { username?: string; email?: string; bio?: string | null },
+    data: { username?: string; email?: string; bio?: string | null; role?: 'user' | 'admin' },
   ): Promise<User | null> {
     const updates: Record<string, string | null> = {}
     if (data.username !== undefined) updates.username = data.username
     if (data.email !== undefined) updates.email = data.email
     if (data.bio !== undefined) updates.bio = data.bio
+    if (data.role !== undefined) updates.role = data.role
 
     if (Object.keys(updates).length === 0) return UserDAO.findById(id)
 
@@ -95,6 +96,27 @@ export class UserDAO {
   static async countRanking(): Promise<number> {
     const [{ count }] = await sql<[{ count: string }]>`
       SELECT COUNT(*) AS count FROM users WHERE deleted_at IS NULL
+    `
+    return Number(count)
+  }
+
+  static async findAllAdmin({ limit = 20, offset = 0, search }: { limit?: number; offset?: number; search?: string } = {}): Promise<User[]> {
+    const pattern = search ? `%${search}%` : null
+    return sql<User[]>`
+      SELECT * FROM users
+      WHERE deleted_at IS NULL
+      ${pattern ? sql`AND (username ILIKE ${pattern} OR email ILIKE ${pattern})` : sql``}
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    `
+  }
+
+  static async countAllAdmin({ search }: { search?: string } = {}): Promise<number> {
+    const pattern = search ? `%${search}%` : null
+    const [{ count }] = await sql<[{ count: string }]>`
+      SELECT COUNT(*) AS count FROM users
+      WHERE deleted_at IS NULL
+      ${pattern ? sql`AND (username ILIKE ${pattern} OR email ILIKE ${pattern})` : sql``}
     `
     return Number(count)
   }
