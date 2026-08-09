@@ -6,6 +6,7 @@ import { LaboratoryDAO } from '../daos/LaboratoryDAO.js'
 import { LaboratoryQuestionDAO } from '../daos/LaboratoryQuestionDAO.js'
 import { LaboratoryQuestionOptionDAO } from '../daos/LaboratoryQuestionOptionDAO.js'
 import { QuestionActivityDAO } from '../daos/QuestionActivityDAO.js'
+import { UserDAO } from '../daos/UserDAO.js'
 import {
   Course,
   CourseModule,
@@ -14,8 +15,8 @@ import {
   LaboratoryQuestionOption,
   QuestionActivity,
 } from '../models/index.js'
-import { NotFoundError, BadRequestError, ValidationError } from '../utils/errors.js'
-import type { TokenPayload } from '../types.js'
+import { NotFoundError, BadRequestError, ValidationError, ConflictError } from '../utils/errors.js'
+import type { TokenPayload, User as DbUser } from '../types.js'
 
 const router = new Hono<{ Variables: { user: TokenPayload } }>()
 router.use('*', requireAdmin)
@@ -275,6 +276,122 @@ router.put('/activities/:id', async (c) => {
   const activity = await QuestionActivityDAO.update(c.req.param('id'), data)
   if (!activity) throw new NotFoundError('Actividad no encontrada.')
   return c.json(activity)
+})
+
+// ── Usuarios ──────────────────────────────────────────────────────────────────
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function toAdminUser(u: DbUser) {
+  return {
+    id: u.id,
+    username: u.username,
+    email: u.email,
+    bio: u.bio,
+    role: u.role,
+    points: u.points,
+    createdAt: u.createdAt,
+    updatedAt: u.updatedAt,
+  }
+}
+
+router.get('/users', async (c) => {
+  const page = Math.max(1, Number(c.req.query('page') ?? 1))
+  const limit = Math.min(100, Math.max(1, Number(c.req.query('limit') ?? 20)))
+  const search = c.req.query('search')?.trim() || undefined
+  const offset = (page - 1) * limit
+
+  const [users, total] = await Promise.all([
+    UserDAO.findAllAdmin({ limit, offset, search }),
+    UserDAO.countAllAdmin({ search }),
+  ])
+
+  return c.json({
+    data: users.map(toAdminUser),
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  })
+})
+
+router.get('/users/:id', async (c) => {
+  const user = await UserDAO.findById(c.req.param('id'))
+  if (!user) throw new NotFoundError('Usuario no encontrado.')
+  return c.json(toAdminUser(user))
+})
+
+router.put('/users/:id', async (c) => {
+  const id = c.req.param('id')
+  const existing = await UserDAO.findById(id)
+  if (!existing) throw new NotFoundError('Usuario no encontrado.')
+
+  const data = await c.req.json()
+  const errors: string[] = []
+  const patch: { username?: string; email?: string; bio?: string | null; role?: 'user' | 'admin' } = {}
+
+  if (data.username !== undefined) {
+    const u = String(data.username).trim()
+    if (u.length < 3 || u.length > 50) errors.push('El username debe tener entre 3 y 50 caracteres.')
+    else patch.username = u
+  }
+  if (data.email !== undefined) {
+    const e = String(data.email).trim().toLowerCase()
+    if (!EMAIL_REGEX.test(e)) errors.push('El email no tiene un formato válido.')
+    else patch.email = e
+  }
+  if (data.bio !== undefined) {
+    const b = data.bio === null ? null : String(data.bio).trim()
+    if (b !== null && b.length > 500) errors.push('La biografía no puede superar los 500 caracteres.')
+    else patch.bio = b === '' ? null : b
+  }
+  if (data.role !== undefined) {
+    if (data.role !== 'user' && data.role !== 'admin') errors.push('El rol debe ser "user" o "admin".')
+    else patch.role = data.role
+  }
+  if (errors.length) throw new ValidationError(errors)
+
+  const requester = c.get('user') as TokenPayload
+  if (id === requester.id && patch.role !== undefined && patch.role !== 'admin')
+    throw new BadRequestError('No puedes quitarte el rol de administrador a ti mismo.')
+
+  if (patch.username) {
+    const taken = await UserDAO.findByUsername(patch.username)
+    if (taken && taken.id !== id) throw new ConflictError('El username ya está en uso.')
+  }
+  if (patch.email) {
+    const taken = await UserDAO.findByEmail(patch.email)
+    if (taken && taken.id !== id) throw new ConflictError('El email ya está registrado.')
+  }
+
+  const updated = await UserDAO.update(id, patch)
+  if (!updated) throw new NotFoundError('Usuario no encontrado.')
+  return c.json(toAdminUser(updated))
+})
+
+router.post('/users/:id/password', async (c) => {
+  const id = c.req.param('id')
+  const existing = await UserDAO.findById(id)
+  if (!existing) throw new NotFoundError('Usuario no encontrado.')
+
+  const { newPassword } = await c.req.json()
+  if (!newPassword || String(newPassword).length < 8)
+    throw new ValidationError(['La nueva contraseña debe tener al menos 8 caracteres.'])
+
+  const hash = await Bun.password.hash(newPassword)
+  await UserDAO.updatePassword(id, hash)
+  return c.json({ message: 'Contraseña actualizada.' })
+})
+
+router.delete('/users/:id', async (c) => {
+  const id = c.req.param('id')
+  const requester = c.get('user') as TokenPayload
+  if (id === requester.id) throw new BadRequestError('No puedes eliminar tu propia cuenta.')
+
+  const existing = await UserDAO.findById(id)
+  if (!existing) throw new NotFoundError('Usuario no encontrado.')
+
+  await UserDAO.softDelete(id)
+  return c.json({ success: true })
 })
 
 export default router
