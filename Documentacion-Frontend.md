@@ -105,7 +105,19 @@ frontend/
 │       ├── ForumPage.tsx        ← Foro comunitario con comentarios y respuestas paginados
 │       ├── PrivacyPolicyPage.tsx ← Política de privacidad de la plataforma
 │       ├── TermsOfUsePage.tsx   ← Términos de uso de la plataforma
-│       └── NotFoundPage.tsx     ← Página 404
+│       ├── NotFoundPage.tsx     ← Página 404
+│       └── admin/                ← Panel de administración (solo rol admin)
+│           ├── AdminDashboardPage.tsx    ← Entrada del panel: cartas Cursos / Usuarios
+│           ├── AdminCoursesPage.tsx      ← Lista de cursos + creación
+│           ├── AdminCourseDetailPage.tsx ← Edición de curso, lista de módulos (exporta PageShell/Breadcrumb compartidos)
+│           ├── AdminModuleDetailPage.tsx ← Edición de módulo, lista de labs
+│           ├── AdminLabEditorPage.tsx    ← Edición de lab + sus 5 preguntas
+│           ├── AdminUsersPage.tsx        ← Lista de usuarios con búsqueda y paginación (exporta RoleBadge)
+│           ├── AdminUserDetailPage.tsx   ← Edición de datos, cambio de contraseña y borrado de un usuario
+│           ├── QuestionEditor.tsx        ← Sub-formulario de una pregunta (mult. choice o actividad)
+│           ├── AdminFormControls.tsx     ← AdminInput/AdminTextarea/AdminSelect/ErrorBanner compartidos
+│           ├── AdminIcons.tsx            ← Set de íconos SVG del panel admin
+│           └── ConfirmDeleteModal.tsx    ← Modal de borrado reutilizable (confirmación por slug/username)
 ├── index.html                   ← HTML raíz con el div#root donde React se monta
 ├── vite.config.ts               ← Configuración de Vite (plugin React, plugin Tailwind)
 ├── tsconfig.json                ← Configuración del compilador TypeScript
@@ -149,6 +161,28 @@ Solo accesibles si el usuario **sí** está autenticado. Si no tiene sesión, re
 | `/dashboard` | `DashboardPage` | Panel principal: cursos inscritos y disponibles |
 | `/courses/:slug` | `CoursePage` | Módulos y laboratorios de un curso |
 | `/courses/:slug/:moduleSlug/:labSlug` | `LabPage` | Laboratorio completo con quiz |
+
+### Rutas de administrador (`AdminRoute`)
+
+Solo accesibles si el usuario está autenticado **y** su `role` es `'admin'`. Si no, redirige a `/login` (sin sesión) o `/dashboard` (sesión sin rol admin) — es un guard de UI únicamente: la seguridad real la impone `requireAdmin` en el backend en cada request a `/api/admin/*`.
+
+| Ruta | Componente | Descripción |
+|---|---|---|
+| `/admin` | `AdminDashboardPage` | Entrada del panel: dos cartas, Cursos y Usuarios |
+| `/admin/courses` | `AdminCoursesPage` | Lista de cursos, crear curso |
+| `/admin/courses/:courseSlug` | `AdminCourseDetailPage` | Editar curso, lista de módulos, crear módulo |
+| `/admin/courses/:courseSlug/:moduleSlug` | `AdminModuleDetailPage` | Editar módulo, lista de labs |
+| `/admin/courses/:courseSlug/:moduleSlug/:labSlug` | `AdminLabEditorPage` | Crear (`labSlug = 'new'`) o editar un laboratorio y sus 5 preguntas |
+| `/admin/users` | `AdminUsersPage` | Lista de usuarios, búsqueda por username/email, paginación |
+| `/admin/users/:id` | `AdminUserDetailPage` | Editar datos del usuario, cambiar contraseña, borrar |
+
+```tsx
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { token, user } = useAuth()
+  if (!token) return <Navigate to="/login" replace />
+  return user?.role === 'admin' ? <>{children}</> : <Navigate to="/dashboard" replace />
+}
+```
 
 ### `PrivateRoute` y `PublicRoute`
 
@@ -319,6 +353,22 @@ El widget detecta en qué página está el usuario (`pathname`) y construye un o
 { page: 'dashboard', username: 'simon' }
 { page: 'other',     username: 'simon' }
 ```
+
+### Panel de administración (`pages/admin/`)
+
+Ocho páginas + componentes compartidos, accesibles solo a usuarios con `role: 'admin'` vía el guard `AdminRoute`. Todo el acceso al backend pasa por `src/lib/adminApi.ts`, un wrapper tipado sobre `api.ts` específico para `/api/admin/*` (y para los `GET` públicos de cursos/módulos/labs, que ya devuelven contenido no publicado cuando el JWT es de un admin).
+
+| Página | Responsabilidad |
+|---|---|
+| `AdminDashboardPage` | Punto de entrada (`/admin`): dos cartas de navegación, Cursos y Usuarios |
+| `AdminCoursesPage` → `AdminCourseDetailPage` → `AdminModuleDetailPage` → `AdminLabEditorPage` | Jerarquía de gestión de contenido: curso → módulo → laboratorio → sus 5 preguntas (`QuestionEditor`) |
+| `AdminUsersPage` → `AdminUserDetailPage` | Gestión de usuarios: lista con búsqueda/paginación → editar username/email/bio/rol, restablecer contraseña sin la actual, y borrar (soft-delete) |
+
+`AdminCourseDetailPage.tsx` exporta dos componentes compartidos por las demás páginas del panel: `PageShell` (fondo + `Header` + contenedor centrado) y `Breadcrumb` (navegación "Panel / Cursos / ..." con links). `AdminCoursesPage.tsx` exporta `StatusBadge` (borrador/publicado) y `AdminUsersPage.tsx` exporta `RoleBadge` (usuario/admin) — ambas páginas de detalle los reutilizan.
+
+**Salvaguardas de auto-gestión:** un admin no puede borrar su propia cuenta ni quitarse el rol de administrador desde `AdminUserDetailPage` — el botón de borrar no se renderiza y el backend rechaza el cambio de rol con `BadRequestError` si el `id` de la ruta coincide con el del token.
+
+**Borrado:** `ConfirmDeleteModal` es el mismo componente en las seis entidades borrables del panel (curso, módulo, lab, pregunta, opción, usuario) — para curso/módulo/lab/usuario exige escribir el slug o username exacto antes de habilitar el botón, fricción intencional dado que son operaciones irreversibles con cascada real sobre progreso de estudiantes o acceso de la cuenta.
 
 ---
 

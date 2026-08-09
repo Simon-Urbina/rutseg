@@ -387,6 +387,7 @@ Cada modelo expone distintas "vistas" de sus datos para evitar exponer informaci
 | `lab.toPublic()` | Con `contentMarkdown` | Vista completa del lab |
 | `question.toQuiz()` | Sin `explanation` | Durante el quiz activo |
 | `question.toResult()` | Con `explanation` | Retroalimentación post-submission |
+| `user.toAdmin()` | `id, username, email, bio, role, points, createdAt, updatedAt` (sin `passwordHash` ni `profileImage`) | Panel admin — gestión de usuarios |
 
 ---
 
@@ -876,15 +877,27 @@ Todos estos endpoints requieren token de administrador.
 |---|---|---|
 | POST | `/courses` | Crear curso |
 | PUT | `/courses/:id` | Editar curso |
+| DELETE | `/courses/:id` | Borrar curso (cascada: módulos, labs, matrículas, progreso) |
 | POST | `/courses/:courseId/modules` | Crear módulo |
 | PUT | `/modules/:id` | Editar módulo |
+| DELETE | `/modules/:id` | Borrar módulo (cascada: labs, preguntas, progreso) |
+| GET | `/labs/:id` | Detalle de un laboratorio con sus preguntas, opciones y actividades |
 | POST | `/modules/:moduleId/labs` | Crear laboratorio |
-| PUT | `/labs/:id` | Editar laboratorio |
+| PUT | `/labs/:id` | Editar laboratorio (despublica automáticamente si queda incompleto) |
+| DELETE | `/labs/:id` | Borrar laboratorio (cascada: preguntas, progreso) |
 | POST | `/labs/:labId/questions` | Crear pregunta (máx 5 por lab) |
 | PUT | `/questions/:id` | Editar pregunta |
+| DELETE | `/questions/:id` | Borrar pregunta (despublica el lab si queda incompleto) |
 | POST | `/questions/:questionId/options` | Crear opción de respuesta múltiple |
+| PUT | `/questions/:questionId/options/:id` | Editar opción (marcar como correcta desmarca las demás) |
+| DELETE | `/questions/:questionId/options/:id` | Borrar opción |
 | POST | `/questions/:questionId/activity` | Crear actividad práctica |
 | PUT | `/activities/:id` | Editar actividad |
+| GET | `/users?page=&limit=&search=` | Listado paginado de usuarios (búsqueda por username/email) |
+| GET | `/users/:id` | Detalle de un usuario |
+| PUT | `/users/:id` | Editar username/email/bio/rol (bloquea que un admin se quite el rol a sí mismo) |
+| POST | `/users/:id/password` | Establece una nueva contraseña sin pedir la actual |
+| DELETE | `/users/:id` | Borra un usuario (soft-delete; bloquea el auto-borrado) |
 
 ---
 
