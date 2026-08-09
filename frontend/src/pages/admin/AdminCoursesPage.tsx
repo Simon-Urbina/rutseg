@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../context/ThemeContext'
-import Header from '../../components/Header'
 import { adminApi, slugify, type AdminCourse } from '../../lib/adminApi'
 import { AdminInput, AdminTextarea, AdminSelect, ErrorBanner } from './AdminFormControls'
 import { IconPlus, IconChevronRight } from './AdminIcons'
+import { PageShell, Breadcrumb } from './AdminCourseDetailPage'
 
 const DIFFICULTIES = [
   { value: 'principiante', label: 'Principiante' },
@@ -31,62 +31,58 @@ export default function AdminCoursesPage() {
   }, [])
 
   return (
-    <div style={{ background: isDark ? '#060D1F' : '#EEF3FC', minHeight: '100vh' }}>
-      <Header />
-      <div className="max-w-5xl mx-auto px-6 lg:px-10 py-14">
-        <p className="font-mono text-[10px] tracking-[0.22em] uppercase mb-2" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
-          // panel de administración
-        </p>
-        <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-          <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', color: isDark ? '#C8D5EE' : '#0A1545' }}>
-            Cursos
-          </h1>
-          <button onClick={() => setShowForm(s => !s)} className="btn-neon flex items-center gap-2 px-5 py-2.5 rounded-xl text-[14px]">
-            <IconPlus />
-            Nuevo curso
-          </button>
-        </div>
+    <PageShell isDark={isDark}>
+      <Breadcrumb isDark={isDark} items={[{ label: 'Panel', to: '/admin' }, { label: 'Cursos' }]} />
 
-        {showForm && (
-          <NewCourseForm
-            isDark={isDark}
-            onCreated={course => { setCourses(prev => [course, ...prev]); setShowForm(false) }}
-          />
-        )}
-
-        {error && <div className="mt-6"><ErrorBanner message={error} isDark={isDark} /></div>}
-
-        {!loading && !error && courses.length === 0 && (
-          <p className="text-[14px] mt-8" style={{ color: isDark ? '#4A70CC' : '#2451C8' }}>
-            Aún no hay cursos. Crea el primero arriba.
-          </p>
-        )}
-
-        <div className="mt-8 flex flex-col gap-3">
-          {courses.map(course => (
-            <button
-              key={course.id}
-              onClick={() => navigate(`/admin/courses/${course.slug}`)}
-              className="flex items-center justify-between gap-4 px-6 py-5 rounded-xl text-left transition-all"
-              style={{ background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)' }}
-            >
-              <div>
-                <div className="flex items-center gap-3 mb-1">
-                  <h3 className="font-display" style={{ fontSize: '1.1rem', color: isDark ? '#C8D5EE' : '#0A1545' }}>
-                    {course.title}
-                  </h3>
-                  <StatusBadge published={course.isPublished} />
-                </div>
-                <p className="font-mono text-[12px]" style={{ color: '#4A70CC' }}>
-                  /{course.slug} · {course.moduleCount} módulos · {course.labCount} labs
-                </p>
-              </div>
-              <IconChevronRight />
-            </button>
-          ))}
-        </div>
+      <div className="flex items-center justify-between mb-8 mt-6 flex-wrap gap-4">
+        <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', color: isDark ? '#C8D5EE' : '#0A1545' }}>
+          Cursos
+        </h1>
+        <button onClick={() => setShowForm(s => !s)} className="btn-neon flex items-center gap-2 px-5 py-2.5 rounded-xl text-[14px]">
+          <IconPlus />
+          Nuevo curso
+        </button>
       </div>
-    </div>
+
+      {showForm && (
+        <NewCourseForm
+          isDark={isDark}
+          onCreated={course => { setCourses(prev => [course, ...prev]); setShowForm(false) }}
+        />
+      )}
+
+      {error && <div className="mt-6"><ErrorBanner message={error} isDark={isDark} /></div>}
+
+      {!loading && !error && courses.length === 0 && (
+        <p className="text-[14px] mt-8" style={{ color: isDark ? '#4A70CC' : '#2451C8' }}>
+          Aún no hay cursos. Crea el primero arriba.
+        </p>
+      )}
+
+      <div className="mt-8 flex flex-col gap-3">
+        {courses.map(course => (
+          <button
+            key={course.id}
+            onClick={() => navigate(`/admin/courses/${course.slug}`)}
+            className="flex items-center justify-between gap-4 px-6 py-5 rounded-xl text-left transition-all"
+            style={{ background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)' }}
+          >
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <h3 className="font-display" style={{ fontSize: '1.1rem', color: isDark ? '#C8D5EE' : '#0A1545' }}>
+                  {course.title}
+                </h3>
+                <StatusBadge published={course.isPublished} />
+              </div>
+              <p className="font-mono text-[12px]" style={{ color: '#4A70CC' }}>
+                /{course.slug} · {course.moduleCount} módulos · {course.labCount} labs
+              </p>
+            </div>
+            <IconChevronRight />
+          </button>
+        ))}
+      </div>
+    </PageShell>
   )
 }
 

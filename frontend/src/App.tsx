@@ -20,6 +20,13 @@ import ForumPage from './pages/ForumPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ChatWidget from './components/ChatWidget'
 import CookieBanner from './components/CookieBanner'
+import AdminDashboardPage from './pages/admin/AdminDashboardPage'
+import AdminCoursesPage from './pages/admin/AdminCoursesPage'
+import AdminCourseDetailPage from './pages/admin/AdminCourseDetailPage'
+import AdminModuleDetailPage from './pages/admin/AdminModuleDetailPage'
+import AdminLabEditorPage from './pages/admin/AdminLabEditorPage'
+import AdminUsersPage from './pages/admin/AdminUsersPage'
+import AdminUserDetailPage from './pages/admin/AdminUserDetailPage'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -35,6 +42,12 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth()
   return !token ? <>{children}</> : <Navigate to="/dashboard" replace />
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { token, user } = useAuth()
+  if (!token) return <Navigate to="/login" replace />
+  return user?.role === 'admin' ? <>{children}</> : <Navigate to="/dashboard" replace />
 }
 
 function AppShell() {
@@ -77,6 +90,15 @@ function AppShell() {
             <LabPage />
           </PrivateRoute>
         } />
+
+        {/* Admin panel */}
+        <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
+        <Route path="/admin/courses" element={<AdminRoute><AdminCoursesPage /></AdminRoute>} />
+        <Route path="/admin/courses/:courseSlug" element={<AdminRoute><AdminCourseDetailPage /></AdminRoute>} />
+        <Route path="/admin/courses/:courseSlug/:moduleSlug" element={<AdminRoute><AdminModuleDetailPage /></AdminRoute>} />
+        <Route path="/admin/courses/:courseSlug/:moduleSlug/:labSlug" element={<AdminRoute><AdminLabEditorPage /></AdminRoute>} />
+        <Route path="/admin/users" element={<AdminRoute><AdminUsersPage /></AdminRoute>} />
+        <Route path="/admin/users/:id" element={<AdminRoute><AdminUserDetailPage /></AdminRoute>} />
 
         {/* Public user profiles */}
         <Route path="/u/:username" element={<PublicProfilePage />} />

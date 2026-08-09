@@ -70,7 +70,7 @@ export default function AdminCourseDetailPage() {
 
   return (
     <PageShell isDark={isDark}>
-      <Breadcrumb isDark={isDark} items={[{ label: 'Cursos', to: '/admin' }, { label: course.title }]} />
+      <Breadcrumb isDark={isDark} items={[{ label: 'Panel', to: '/admin' }, { label: 'Cursos', to: '/admin/courses' }, { label: course.title }]} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
         <EditCourseForm isDark={isDark} course={course} onUpdated={setCourse} onDeleteClick={() => setDeleteOpen(true)} />
@@ -128,7 +128,7 @@ export default function AdminCourseDetailPage() {
         warningDetail={`Esto borrará ${course.moduleCount} módulo(s) y ${course.labCount} laboratorio(s), junto con las inscripciones y el progreso de los estudiantes en este curso.`}
         requireTypedSlug={course.slug}
         onCancel={() => setDeleteOpen(false)}
-        onConfirm={async () => { await adminApi.deleteCourse(course.id); navigate('/admin') }}
+        onConfirm={async () => { await adminApi.deleteCourse(course.id); navigate('/admin/courses') }}
       />
     </PageShell>
   )

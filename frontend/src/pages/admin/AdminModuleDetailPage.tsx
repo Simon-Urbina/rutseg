@@ -42,7 +42,8 @@ export default function AdminModuleDetailPage() {
   return (
     <PageShell isDark={isDark}>
       <Breadcrumb isDark={isDark} items={[
-        { label: 'Cursos', to: '/admin' },
+        { label: 'Panel', to: '/admin' },
+        { label: 'Cursos', to: '/admin/courses' },
         { label: course.title, to: `/admin/courses/${courseSlug}` },
         { label: module.title },
       ]} />
