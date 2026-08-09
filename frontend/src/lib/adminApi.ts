@@ -80,6 +80,25 @@ export interface AdminLabDetail extends AdminLabMeta {
   questions: AdminQuestion[]
 }
 
+export interface AdminUser {
+  id: string
+  username: string
+  email: string
+  bio: string | null
+  role: 'user' | 'admin'
+  points: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface AdminUserListResponse {
+  data: AdminUser[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -143,4 +162,20 @@ export const adminApi = {
     api.post<AdminActivity>(`/api/admin/questions/${questionId}/activity`, data),
   updateActivity: (id: string, data: Partial<{ title: string; instructionsMarkdown: string; expectedActionKey: string; successFeedback: string; isPublished: boolean }>) =>
     api.put<AdminActivity>(`/api/admin/activities/${id}`, data),
+
+  // Usuario
+  listUsers: (params: { page?: number; limit?: number; search?: string } = {}) => {
+    const query = new URLSearchParams()
+    if (params.page) query.set('page', String(params.page))
+    if (params.limit) query.set('limit', String(params.limit))
+    if (params.search) query.set('search', params.search)
+    const qs = query.toString()
+    return api.get<AdminUserListResponse>(`/api/admin/users${qs ? `?${qs}` : ''}`)
+  },
+  getUser: (id: string) => api.get<AdminUser>(`/api/admin/users/${id}`),
+  updateUser: (id: string, data: Partial<{ username: string; email: string; bio: string | null; role: AdminUser['role'] }>) =>
+    api.put<AdminUser>(`/api/admin/users/${id}`, data),
+  setUserPassword: (id: string, newPassword: string) =>
+    api.post<{ message: string }>(`/api/admin/users/${id}/password`, { newPassword }),
+  deleteUser: (id: string) => api.delete<{ success: boolean }>(`/api/admin/users/${id}`),
 }
