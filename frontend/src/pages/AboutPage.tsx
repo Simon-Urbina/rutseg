@@ -141,16 +141,6 @@ export default function AboutPage() {
           />
         )}
 
-        {/* Blue orb */}
-        <div className="absolute pointer-events-none" style={{
-          top: '10%', right: '-8%',
-          width: '500px', height: '500px', borderRadius: '50%',
-          background: isDark
-            ? 'radial-gradient(circle, rgba(26,63,150,0.20) 0%, transparent 65%)'
-            : 'radial-gradient(circle, rgba(26,63,150,0.08) 0%, transparent 65%)',
-          animation: 'glowPulse 7s ease-in-out infinite',
-        }} />
-
         <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-20 pb-24 lg:pt-28 lg:pb-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
@@ -250,12 +240,13 @@ export default function AboutPage() {
             {/* Terminal card */}
             <div className="animate-fade-up-3">
               <div
-                className="rounded-2xl overflow-hidden"
+                className="hud-panel hud-static"
                 style={{
                   background: 'rgba(6,13,31,0.95)',
-                  border: '1px solid rgba(26,63,150,0.22)',
                   boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(26,63,150,0.08)',
-                }}
+                  '--hud-border': 'rgba(26,63,150,0.35)',
+                  '--hud-border-hover': 'rgba(26,63,150,0.35)',
+                } as React.CSSProperties}
               >
                 {/* Title bar */}
                 <div className="flex items-center gap-2 px-5 py-3" style={{ borderBottom: '1px solid rgba(26,63,150,0.14)' }}>
@@ -311,23 +302,12 @@ export default function AboutPage() {
             {INTERESTS.map(({ title, body, icon, accent }) => (
               <div
                 key={title}
-                className="rounded-2xl p-8 transition-all duration-200 cursor-default"
+                className="hud-panel p-8 cursor-default"
                 style={{
                   background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                  border: `1px solid ${isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'}`,
-                }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLElement
-                  el.style.transform = 'translateY(-3px)'
-                  el.style.boxShadow = isDark
-                    ? `0 8px 40px rgba(0,0,0,0.3), 0 0 0 1px ${accent}30`
-                    : `0 8px 32px rgba(10,21,69,0.08), 0 0 0 1px ${accent}30`
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLElement
-                  el.style.transform = 'translateY(0)'
-                  el.style.boxShadow = 'none'
-                }}
+                  '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+                  '--hud-border-hover': `${accent}99`,
+                } as React.CSSProperties}
               >
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center mb-6"
@@ -357,14 +337,6 @@ export default function AboutPage() {
             : 'linear-gradient(180deg, #EEF3FC 0%, #E8EEFA 100%)',
         }}
       >
-        <div className="absolute pointer-events-none" style={{
-          bottom: '-10%', left: '-10%',
-          width: '500px', height: '500px', borderRadius: '50%',
-          background: isDark
-            ? 'radial-gradient(circle, rgba(37,150,190,0.10) 0%, transparent 65%)'
-            : 'radial-gradient(circle, rgba(37,150,190,0.06) 0%, transparent 65%)',
-        }} />
-
         <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-20 lg:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -389,11 +361,12 @@ export default function AboutPage() {
 
               {/* Docente */}
               <div
-                className="mt-8 rounded-2xl p-6 flex items-start gap-4"
+                className="hud-panel hud-static mt-8 p-6 flex items-start gap-4"
                 style={{
                   background: isDark ? 'rgba(37,150,190,0.07)' : 'rgba(37,150,190,0.06)',
-                  border: `1px solid ${isDark ? 'rgba(37,150,190,0.22)' : 'rgba(37,150,190,0.20)'}`,
-                }}
+                  '--hud-border': isDark ? 'rgba(37,150,190,0.35)' : 'rgba(37,150,190,0.30)',
+                  '--hud-border-hover': isDark ? 'rgba(37,150,190,0.35)' : 'rgba(37,150,190,0.30)',
+                } as React.CSSProperties}
               >
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
@@ -446,11 +419,12 @@ export default function AboutPage() {
 
               {/* University card */}
               <div
-                className="mt-8 rounded-2xl p-6"
+                className="hud-panel hud-static mt-8 p-6"
                 style={{
                   background: isDark ? 'rgba(13,27,70,0.55)' : '#f0f4ff',
-                  border: `1px solid ${isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.16)'}`,
-                }}
+                  '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.24)',
+                  '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.24)',
+                } as React.CSSProperties}
               >
                 <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-3" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
                   // institución
@@ -493,26 +467,14 @@ export default function AboutPage() {
             {/* Email */}
             <a
               href="mailto:jacobitourbinalol@gmail.com"
-              className="rounded-2xl p-7 transition-all duration-200 flex flex-col gap-4"
+              className="hud-panel p-7 flex flex-col gap-4"
               style={{
                 background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                border: `1px solid ${isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'}`,
                 textDecoration: 'none',
-              }}
-              onMouseEnter={e => {
-                const el = e.currentTarget as HTMLElement
-                el.style.transform = 'translateY(-3px)'
-                el.style.boxShadow = isDark
-                  ? '0 8px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(37,150,190,0.30)'
-                  : '0 8px 32px rgba(10,21,69,0.08), 0 0 0 1px rgba(37,150,190,0.30)'
-                el.style.borderColor = 'rgba(37,150,190,0.40)'
-              }}
-              onMouseLeave={e => {
-                const el = e.currentTarget as HTMLElement
-                el.style.transform = 'translateY(0)'
-                el.style.boxShadow = 'none'
-                el.style.borderColor = isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'
-              }}
+                '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+                '--hud-border-hover': 'rgba(37,150,190,0.75)',
+                '--hud-focus': '#2596be',
+              } as React.CSSProperties}
             >
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center"
@@ -538,26 +500,14 @@ export default function AboutPage() {
               href="https://github.com/Simon-Urbina"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-2xl p-7 transition-all duration-200 flex flex-col gap-4"
+              className="hud-panel p-7 flex flex-col gap-4"
               style={{
                 background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                border: `1px solid ${isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'}`,
                 textDecoration: 'none',
-              }}
-              onMouseEnter={e => {
-                const el = e.currentTarget as HTMLElement
-                el.style.transform = 'translateY(-3px)'
-                el.style.boxShadow = isDark
-                  ? '0 8px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(200,213,238,0.20)'
-                  : '0 8px 32px rgba(10,21,69,0.08), 0 0 0 1px rgba(10,21,69,0.20)'
-                el.style.borderColor = isDark ? 'rgba(200,213,238,0.25)' : 'rgba(10,21,69,0.20)'
-              }}
-              onMouseLeave={e => {
-                const el = e.currentTarget as HTMLElement
-                el.style.transform = 'translateY(0)'
-                el.style.boxShadow = 'none'
-                el.style.borderColor = isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'
-              }}
+                '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+                '--hud-border-hover': isDark ? 'rgba(200,213,238,0.55)' : 'rgba(10,21,69,0.55)',
+                '--hud-focus': isDark ? '#C8D5EE' : '#0A1545',
+              } as React.CSSProperties}
             >
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center"
@@ -582,26 +532,14 @@ export default function AboutPage() {
               href="https://www.linkedin.com/in/simon-urbina-martinez/"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-2xl p-7 transition-all duration-200 flex flex-col gap-4"
+              className="hud-panel p-7 flex flex-col gap-4"
               style={{
                 background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                border: `1px solid ${isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'}`,
                 textDecoration: 'none',
-              }}
-              onMouseEnter={e => {
-                const el = e.currentTarget as HTMLElement
-                el.style.transform = 'translateY(-3px)'
-                el.style.boxShadow = isDark
-                  ? '0 8px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(96,165,250,0.25)'
-                  : '0 8px 32px rgba(10,21,69,0.08), 0 0 0 1px rgba(96,165,250,0.25)'
-                el.style.borderColor = 'rgba(96,165,250,0.35)'
-              }}
-              onMouseLeave={e => {
-                const el = e.currentTarget as HTMLElement
-                el.style.transform = 'translateY(0)'
-                el.style.boxShadow = 'none'
-                el.style.borderColor = isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'
-              }}
+                '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+                '--hud-border-hover': 'rgba(96,165,250,0.65)',
+                '--hud-focus': '#60a5fa',
+              } as React.CSSProperties}
             >
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center"
