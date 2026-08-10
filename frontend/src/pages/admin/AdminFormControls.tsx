@@ -19,10 +19,9 @@ export function AdminInput({
         value={value}
         onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-4 py-2.5 rounded-lg text-[14px] outline-none transition-colors"
+        className="tech-input w-full px-4 py-2.5 text-[14px]"
         style={{
           background: isDark ? 'rgba(6,13,31,0.5)' : '#ffffff',
-          border: '1px solid rgba(26,63,150,0.25)',
           color: isDark ? '#C8D5EE' : '#0A1545',
         }}
       />
@@ -45,10 +44,9 @@ export function AdminTextarea({
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className={`w-full px-4 py-3 rounded-lg text-[14px] outline-none transition-colors resize-y ${mono ? 'font-mono' : ''}`}
+        className={`tech-input w-full px-4 py-3 text-[14px] resize-y ${mono ? 'font-mono' : ''}`}
         style={{
           background: isDark ? 'rgba(6,13,31,0.5)' : '#ffffff',
-          border: '1px solid rgba(26,63,150,0.25)',
           color: isDark ? '#C8D5EE' : '#0A1545',
         }}
       />
@@ -67,10 +65,9 @@ export function AdminSelect({
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="w-full px-4 py-2.5 rounded-lg text-[14px] outline-none"
+        className="tech-input w-full px-4 py-2.5 text-[14px]"
         style={{
           background: isDark ? 'rgba(6,13,31,0.5)' : '#ffffff',
-          border: '1px solid rgba(26,63,150,0.25)',
           color: isDark ? '#C8D5EE' : '#0A1545',
         }}
       >

@@ -106,8 +106,13 @@ export default function AdminCourseDetailPage() {
               <button
                 key={m.id}
                 onClick={() => navigate(`/admin/courses/${courseSlug}/${m.slug}`)}
-                className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl text-left transition-all"
-                style={{ background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)' }}
+                className="hud-panel flex items-center justify-between gap-4 px-5 py-4 text-left w-full"
+                style={{
+                  background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+                  '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+                  '--hud-border-hover': '#1A3F96',
+                  '--hud-focus': '#2596be',
+                } as React.CSSProperties}
               >
                 <div>
                   <p className="font-display" style={{ fontSize: '1rem', color: isDark ? '#C8D5EE' : '#0A1545' }}>
@@ -169,9 +174,11 @@ function EditCourseForm({
   }
 
   return (
-    <form onSubmit={handleSave} className="p-7 rounded-2xl space-y-5 h-fit" style={{
-      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)',
-    }}>
+    <form onSubmit={handleSave} className="hud-panel hud-static p-7 space-y-5 h-fit" style={{
+      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+      '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+      '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+    } as React.CSSProperties}>
       <div className="flex items-center justify-between">
         <h2 className="font-display" style={{ fontSize: '1.3rem', color: isDark ? '#C8D5EE' : '#0A1545' }}>
           Editar curso
@@ -238,9 +245,11 @@ function NewModuleForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 rounded-2xl space-y-4 mb-4" style={{
-      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)',
-    }}>
+    <form onSubmit={handleSubmit} className="hud-panel hud-static p-6 space-y-4 mb-4" style={{
+      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+      '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+      '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+    } as React.CSSProperties}>
       <AdminInput label="Título" value={title} onChange={handleTitleChange} isDark={isDark} placeholder="Reconocimiento y Escaneo" />
       <AdminInput label="Slug" value={slug} onChange={v => { setSlug(v); setSlugTouched(true) }} isDark={isDark} />
       <AdminTextarea label="Descripción" value={description} onChange={setDescription} isDark={isDark} rows={2} />

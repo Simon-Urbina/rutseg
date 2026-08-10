@@ -25,6 +25,11 @@ export default function QuestionEditor({ order, labId, question, isDark, onSaved
     background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
     border: '1px solid rgba(26,63,150,0.14)',
   }
+  const hudStyle = {
+    background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+    '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+    '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+  } as React.CSSProperties
 
   if (!question && !pickingType) {
     return (
@@ -41,7 +46,7 @@ export default function QuestionEditor({ order, labId, question, isDark, onSaved
 
   if (!question && pickingType && !draftType) {
     return (
-      <div className="p-6 rounded-xl space-y-4" style={boxStyle}>
+      <div className="hud-panel hud-static p-6 space-y-4" style={hudStyle}>
         <p className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: isDark ? '#7B9FE8' : '#1A3F96' }}>
           Pregunta {order} — elige el tipo
         </p>
@@ -75,7 +80,7 @@ export default function QuestionEditor({ order, labId, question, isDark, onSaved
 
   if (question && collapsed) {
     return (
-      <div className="flex items-center justify-between gap-4 p-5 rounded-xl" style={boxStyle}>
+      <div className="hud-panel hud-static flex items-center justify-between gap-4 p-5" style={hudStyle}>
         <div>
           <p className="font-mono text-[10px] tracking-[0.18em] uppercase mb-1" style={{ color: isDark ? '#7B9FE8' : '#1A3F96' }}>
             Pregunta {order} · {question.questionType === 'multiple_choice' ? 'Opción múltiple' : 'Actividad práctica'}
@@ -137,9 +142,11 @@ function NewQuestionForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 rounded-xl space-y-4" style={{
-      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)',
-    }}>
+    <form onSubmit={handleSubmit} className="hud-panel hud-static p-6 space-y-4" style={{
+      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+      '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+      '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+    } as React.CSSProperties}>
       <p className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: isDark ? '#7B9FE8' : '#1A3F96' }}>
         Pregunta {order} — {questionType === 'multiple_choice' ? 'Opción múltiple' : 'Actividad práctica'}
       </p>
@@ -180,9 +187,11 @@ function ExistingQuestionEditor({
   }
 
   return (
-    <div className="p-6 rounded-xl space-y-5" style={{
-      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)',
-    }}>
+    <div className="hud-panel hud-static p-6 space-y-5" style={{
+      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+      '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+      '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+    } as React.CSSProperties}>
       <div className="flex items-center justify-between">
         <p className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: isDark ? '#7B9FE8' : '#1A3F96' }}>
           Pregunta {order} · {question.questionType === 'multiple_choice' ? 'Opción múltiple' : 'Actividad práctica'}
@@ -281,8 +290,8 @@ function OptionsEditor({
             value={option.optionText}
             onChange={e => handleTextChange(option.id, e.target.value)}
             onBlur={() => handleTextBlur(option)}
-            className="flex-1 px-4 py-2 rounded-lg text-[14px] outline-none"
-            style={{ background: isDark ? 'rgba(6,13,31,0.5)' : '#ffffff', border: '1px solid rgba(26,63,150,0.25)', color: isDark ? '#C8D5EE' : '#0A1545' }}
+            className="tech-input flex-1 px-4 py-2 text-[14px]"
+            style={{ background: isDark ? 'rgba(6,13,31,0.5)' : '#ffffff', color: isDark ? '#C8D5EE' : '#0A1545' }}
           />
           <button
             onClick={() => handleDelete(option.id)}

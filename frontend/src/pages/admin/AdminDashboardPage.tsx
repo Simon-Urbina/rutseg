@@ -56,8 +56,13 @@ export default function AdminDashboardPage() {
           <button
             key={card.to}
             onClick={() => navigate(card.to)}
-            className="flex flex-col items-start gap-4 p-8 rounded-2xl text-left transition-all"
-            style={{ background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)' }}
+            className="hud-panel flex flex-col items-start gap-4 p-8 text-left"
+            style={{
+              background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+              '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+              '--hud-border-hover': '#1A3F96',
+              '--hud-focus': '#2596be',
+            } as React.CSSProperties}
           >
             <div
               className="flex items-center justify-center w-12 h-12 rounded-xl"

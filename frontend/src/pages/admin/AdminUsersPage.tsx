@@ -51,10 +51,9 @@ export default function AdminUsersPage() {
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
             placeholder="Buscar por username o email…"
-            className="px-4 py-2.5 rounded-lg text-[14px] outline-none w-64"
+            className="tech-input px-4 py-2.5 text-[14px] w-64"
             style={{
               background: isDark ? 'rgba(6,13,31,0.5)' : '#ffffff',
-              border: '1px solid rgba(26,63,150,0.25)',
               color: isDark ? '#C8D5EE' : '#0A1545',
             }}
           />
@@ -75,8 +74,13 @@ export default function AdminUsersPage() {
           <button
             key={u.id}
             onClick={() => navigate(`/admin/users/${u.id}`)}
-            className="flex items-center justify-between gap-4 px-6 py-5 rounded-xl text-left transition-all"
-            style={{ background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)' }}
+            className="hud-panel flex items-center justify-between gap-4 px-6 py-5 text-left w-full"
+            style={{
+              background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+              '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+              '--hud-border-hover': '#1A3F96',
+              '--hud-focus': '#2596be',
+            } as React.CSSProperties}
           >
             <div>
               <div className="flex items-center gap-3 mb-1">

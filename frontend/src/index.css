@@ -321,6 +321,27 @@ a.hud-panel:focus-visible,
 }
 
 /* ────────────────────────────────────────────────
+   TECHNICAL INPUT — replaces rounded-lg + outline-none form controls
+   with a near-square field, a left accent bar, and a real focus state.
+──────────────────────────────────────────────── */
+.tech-input {
+  border-radius: 2px;
+  border: 1px solid var(--tech-input-border, rgba(26, 63, 150, 0.25));
+  border-left: 2px solid var(--tech-input-border, rgba(26, 63, 150, 0.25));
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.tech-input:hover {
+  border-color: var(--tech-input-border-hover, rgba(26, 63, 150, 0.45));
+}
+.tech-input:focus,
+.tech-input:focus-visible {
+  outline: none;
+  border-color: var(--tech-input-focus, #1A3F96);
+  border-left-color: var(--tech-input-accent, #2596be);
+  box-shadow: 0 0 0 2px var(--tech-input-glow, rgba(26, 63, 150, 0.15));
+}
+
+/* ────────────────────────────────────────────────
    CARD
 ──────────────────────────────────────────────── */
 .glass-card {

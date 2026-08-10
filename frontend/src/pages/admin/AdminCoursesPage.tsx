@@ -64,8 +64,13 @@ export default function AdminCoursesPage() {
           <button
             key={course.id}
             onClick={() => navigate(`/admin/courses/${course.slug}`)}
-            className="flex items-center justify-between gap-4 px-6 py-5 rounded-xl text-left transition-all"
-            style={{ background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)' }}
+            className="hud-panel flex items-center justify-between gap-4 px-6 py-5 text-left w-full"
+            style={{
+              background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+              '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+              '--hud-border-hover': '#1A3F96',
+              '--hud-focus': '#2596be',
+            } as React.CSSProperties}
           >
             <div>
               <div className="flex items-center gap-3 mb-1">
@@ -130,9 +135,11 @@ function NewCourseForm({ isDark, onCreated }: { isDark: boolean; onCreated: (c: 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-7 rounded-2xl space-y-5 mb-8" style={{
-      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)',
-    }}>
+    <form onSubmit={handleSubmit} className="hud-panel hud-static p-7 space-y-5 mb-8" style={{
+      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+      '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+      '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+    } as React.CSSProperties}>
       <AdminInput label="Título" value={title} onChange={handleTitleChange} isDark={isDark} placeholder="Fundamentos de Ciberseguridad" />
       <AdminInput label="Slug" value={slug} onChange={v => { setSlug(v); setSlugTouched(true) }} isDark={isDark} placeholder="fundamentos-ciberseguridad" />
       <AdminTextarea label="Descripción" value={description} onChange={setDescription} isDark={isDark} rows={3} placeholder="Aprende los conceptos base de..." />

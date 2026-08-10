@@ -41,8 +41,12 @@ export default function ConfirmDeleteModal({ open, title, warningDetail, require
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-md rounded-2xl p-7"
-        style={{ background: isDark ? '#0D1630' : '#ffffff', border: '1px solid rgba(26,63,150,0.20)' }}
+        className="hud-panel hud-static w-full max-w-md p-7"
+        style={{
+          background: isDark ? '#0D1630' : '#ffffff',
+          '--hud-border': 'rgba(198,91,91,0.35)',
+          '--hud-border-hover': 'rgba(198,91,91,0.35)',
+        } as React.CSSProperties}
         onClick={e => e.stopPropagation()}
       >
         <p className="font-mono text-[10px] tracking-[0.22em] uppercase mb-3" style={{ color: '#1A3F96' }}>
@@ -65,8 +69,15 @@ export default function ConfirmDeleteModal({ open, title, warningDetail, require
               type="text"
               value={typed}
               onChange={e => setTyped(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg text-[14px] outline-none"
-              style={{ background: 'transparent', border: '1px solid rgba(26,63,150,0.30)', color: isDark ? '#C8D5EE' : '#0A1545' }}
+              className="tech-input w-full px-4 py-2.5 text-[14px]"
+              style={{
+                background: 'transparent',
+                color: isDark ? '#C8D5EE' : '#0A1545',
+                '--tech-input-border': 'rgba(198,91,91,0.35)',
+                '--tech-input-focus': '#c65b5b',
+                '--tech-input-accent': '#c65b5b',
+                '--tech-input-glow': 'rgba(198,91,91,0.15)',
+              } as React.CSSProperties}
             />
           </div>
         )}

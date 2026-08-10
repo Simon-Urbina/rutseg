@@ -76,8 +76,13 @@ export default function AdminModuleDetailPage() {
               <button
                 key={lab.id}
                 onClick={() => navigate(`/admin/courses/${courseSlug}/${moduleSlug}/${lab.slug}`)}
-                className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl text-left transition-all"
-                style={{ background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)' }}
+                className="hud-panel flex items-center justify-between gap-4 px-5 py-4 text-left w-full"
+                style={{
+                  background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+                  '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+                  '--hud-border-hover': '#1A3F96',
+                  '--hud-focus': '#2596be',
+                } as React.CSSProperties}
               >
                 <div>
                   <div className="flex items-center gap-3 mb-1">
@@ -134,9 +139,11 @@ function EditModuleForm({
   }
 
   return (
-    <form onSubmit={handleSave} className="p-7 rounded-2xl space-y-5 h-fit" style={{
-      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)',
-    }}>
+    <form onSubmit={handleSave} className="hud-panel hud-static p-7 space-y-5 h-fit" style={{
+      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+      '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+      '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+    } as React.CSSProperties}>
       <h2 className="font-display" style={{ fontSize: '1.3rem', color: isDark ? '#C8D5EE' : '#0A1545' }}>
         Editar módulo
       </h2>

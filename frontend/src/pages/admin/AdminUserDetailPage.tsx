@@ -96,9 +96,11 @@ function EditUserForm({
   }
 
   return (
-    <form onSubmit={handleSave} className="p-7 rounded-2xl space-y-5 h-fit" style={{
-      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)',
-    }}>
+    <form onSubmit={handleSave} className="hud-panel hud-static p-7 space-y-5 h-fit" style={{
+      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+      '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+      '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+    } as React.CSSProperties}>
       <div className="flex items-center justify-between">
         <h2 className="font-display" style={{ fontSize: '1.3rem', color: isDark ? '#C8D5EE' : '#0A1545' }}>
           Editar usuario
@@ -175,9 +177,11 @@ function PasswordForm({ isDark, userId }: { isDark: boolean; userId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-7 rounded-2xl space-y-5 h-fit" style={{
-      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff', border: '1px solid rgba(26,63,150,0.14)',
-    }}>
+    <form onSubmit={handleSubmit} className="hud-panel hud-static p-7 space-y-5 h-fit" style={{
+      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+      '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+      '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+    } as React.CSSProperties}>
       <h2 className="font-display" style={{ fontSize: '1.3rem', color: isDark ? '#C8D5EE' : '#0A1545' }}>
         Cambiar contraseña
       </h2>
