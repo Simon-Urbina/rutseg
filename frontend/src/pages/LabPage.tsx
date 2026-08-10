@@ -453,12 +453,13 @@ function ResultModal({
       style={{ background: 'rgba(4,8,16,0.75)', backdropFilter: 'blur(8px)' }}
     >
       <div
-        className="w-full max-w-sm rounded-2xl p-10 text-center space-y-7 animate-fade-up-1"
+        className="hud-panel hud-static w-full max-w-sm p-10 text-center space-y-7 animate-fade-up-1"
         style={{
           background: isDark ? 'rgba(13,22,50,0.97)' : '#ffffff',
-          border: `1px solid ${passed ? 'rgba(74,222,128,0.22)' : 'rgba(248,113,113,0.22)'}`,
           boxShadow: `0 0 60px ${passed ? 'rgba(74,222,128,0.08)' : 'rgba(248,113,113,0.08)'}, 0 24px 60px rgba(0,0,0,0.4)`,
-        }}
+          '--hud-border': passed ? 'rgba(74,222,128,0.40)' : 'rgba(248,113,113,0.40)',
+          '--hud-border-hover': passed ? 'rgba(74,222,128,0.40)' : 'rgba(248,113,113,0.40)',
+        } as React.CSSProperties}
       >
         {/* Score */}
         <div>
@@ -572,15 +573,17 @@ function QuestionItem({
 
   return (
     <div
-      className="rounded-xl overflow-hidden transition-all duration-300"
+      className="hud-panel hud-static relative"
       style={{
-        border: `1px solid ${isOpen
-          ? 'rgba(26,63,150,0.35)'
-          : isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.12)'}`,
         background: isDark ? 'rgba(13,27,70,0.55)' : '#f8faff',
         boxShadow: isOpen ? '0 4px 24px rgba(26,63,150,0.09)' : 'none',
-      }}
+        '--hud-border': isOpen ? 'rgba(26,63,150,0.55)' : isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.24)',
+        '--hud-border-hover': isOpen ? 'rgba(26,63,150,0.55)' : isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.24)',
+      } as React.CSSProperties}
     >
+      <span className="hud-corner-tag" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
+        {q.questionType === 'multiple_choice' ? 'MULT' : 'ACT'}
+      </span>
       {/* Header */}
       <button
         onClick={onToggle}
@@ -672,12 +675,13 @@ function QuestionItem({
               {/* Explanation after checking */}
               {state?.checked && state.explanation && (
                 <div
-                  className="mt-3 px-4 py-3 rounded-xl"
+                  className="hud-panel hud-static mt-3 px-4 py-3"
                   style={{
                     background: isDark ? 'rgba(26,63,150,0.08)' : 'rgba(26,63,150,0.05)',
-                    border: '1px solid rgba(26,63,150,0.18)',
                     borderLeft: `3px solid ${state.isCorrect ? '#4ade80' : '#f87171'}`,
-                  }}
+                    '--hud-border': 'rgba(26,63,150,0.30)',
+                    '--hud-border-hover': 'rgba(26,63,150,0.30)',
+                  } as React.CSSProperties}
                 >
                   <p className="font-mono text-[10px] tracking-[0.18em] uppercase mb-1" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
                     // explicación
@@ -695,8 +699,12 @@ function QuestionItem({
             <div className="space-y-4">
               {/* Activity card */}
               <div
-                className="rounded-xl p-4"
-                style={{ background: 'rgba(37,150,190,0.06)', border: '1px solid rgba(37,150,190,0.18)' }}
+                className="hud-panel hud-static p-4"
+                style={{
+                  background: 'rgba(37,150,190,0.06)',
+                  '--hud-border': 'rgba(37,150,190,0.35)',
+                  '--hud-border-hover': 'rgba(37,150,190,0.35)',
+                } as React.CSSProperties}
               >
                 <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: '#2596be' }}>
                   // actividad práctica
@@ -738,10 +746,9 @@ function QuestionItem({
                       onChange={e => setActInput(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter') { onConfirmActivity(q.id, actInput); setActInput('') } }}
                       placeholder="Pega aquí la respuesta obtenida…"
-                      className="flex-1 px-4 py-2.5 rounded-xl font-mono text-[13px] outline-none transition-all"
+                      className="tech-input flex-1 px-4 py-2.5 font-mono text-[13px]"
                       style={{
                         background: isDark ? 'rgba(26,63,150,0.08)' : 'rgba(26,63,150,0.05)',
-                        border: `1px solid ${isDark ? 'rgba(26,63,150,0.28)' : 'rgba(26,63,150,0.22)'}`,
                         color: isDark ? '#C8D5EE' : '#0A1545',
                       }}
                       autoFocus
@@ -1086,11 +1093,13 @@ export default function LabPage() {
           <div className="animate-fade-up-3">
             <button
               onClick={() => setHistoryOpen(h => !h)}
-              className="w-full flex items-center justify-between px-5 py-3.5 rounded-xl transition-all"
+              className="hud-panel w-full flex items-center justify-between px-5 py-3.5"
               style={{
                 background: isDark ? 'rgba(13,27,70,0.55)' : '#f8faff',
-                border: `1px solid ${isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.12)'}`,
-              }}
+                '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.24)',
+                '--hud-border-hover': '#1A3F96',
+                '--hud-focus': '#2596be',
+              } as React.CSSProperties}
             >
               <div className="flex items-center gap-3">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={isDark ? '#3A5AB8' : '#1A3F96'} strokeWidth="2" strokeLinecap="round">
@@ -1122,11 +1131,12 @@ export default function LabPage() {
                   return (
                     <div
                       key={h.attemptNumber}
-                      className="flex items-center gap-4 px-5 py-3 rounded-xl"
+                      className="hud-panel hud-static flex items-center gap-4 px-5 py-3"
                       style={{
                         background: isDark ? 'rgba(13,27,70,0.35)' : 'rgba(248,250,255,0.8)',
-                        border: `1px solid ${isDark ? 'rgba(26,63,150,0.10)' : 'rgba(26,63,150,0.09)'}`,
-                      }}
+                        '--hud-border': isDark ? 'rgba(26,63,150,0.24)' : 'rgba(26,63,150,0.20)',
+                        '--hud-border-hover': isDark ? 'rgba(26,63,150,0.24)' : 'rgba(26,63,150,0.20)',
+                      } as React.CSSProperties}
                     >
                       <span className="font-mono text-[11px] shrink-0" style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}>
                         #{h.attemptNumber}
