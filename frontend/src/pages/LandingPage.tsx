@@ -86,34 +86,6 @@ export default function LandingPage() {
           />
         )}
 
-        {/* Pink orb */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: '20%', left: '-10%',
-            width: '600px', height: '600px',
-            borderRadius: '50%',
-            background: isDark
-              ? 'radial-gradient(circle, rgba(26,63,150,0.22) 0%, transparent 60%)'
-              : 'radial-gradient(circle, rgba(26,63,150,0.09) 0%, transparent 60%)',
-            animation: 'glowPulse 6s ease-in-out infinite',
-          }}
-        />
-
-        {/* Teal orb */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: '-10%', right: '-5%',
-            width: '420px', height: '420px',
-            borderRadius: '50%',
-            background: isDark
-              ? 'radial-gradient(circle, rgba(37,150,190,0.16) 0%, transparent 65%)'
-              : 'radial-gradient(circle, rgba(37,150,190,0.07) 0%, transparent 65%)',
-            animation: 'glowPulse 8s ease-in-out infinite reverse',
-          }}
-        />
-
         <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-20 pb-28 lg:pt-28 lg:pb-36">
           <div className="max-w-4xl">
             <h1
@@ -230,23 +202,12 @@ export default function LandingPage() {
             {FEATURES.map(({ title, body, icon, accent }) => (
               <div
                 key={title}
-                className="rounded-2xl p-8 transition-all duration-200 cursor-default"
+                className="hud-panel p-8 cursor-default"
                 style={{
                   background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                  border: `1px solid ${isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'}`,
-                }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLElement
-                  el.style.transform = 'translateY(-3px)'
-                  el.style.boxShadow = isDark
-                    ? `0 8px 40px rgba(0,0,0,0.3), 0 0 0 1px ${accent}30`
-                    : `0 8px 32px rgba(10,21,69,0.08), 0 0 0 1px ${accent}30`
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLElement
-                  el.style.transform = 'translateY(0)'
-                  el.style.boxShadow = 'none'
-                }}
+                  '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+                  '--hud-border-hover': `${accent}99`,
+                } as React.CSSProperties}
               >
                 <div
                   className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6"
@@ -336,23 +297,12 @@ export default function LandingPage() {
             ].map(({ step, title, body, accent }) => (
               <div
                 key={step}
-                className="rounded-2xl p-8 relative overflow-hidden transition-all duration-200 cursor-default"
+                className="hud-panel p-8 relative cursor-default"
                 style={{
                   background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                  border: `1px solid ${isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'}`,
-                }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLElement
-                  el.style.transform = 'translateY(-3px)'
-                  el.style.boxShadow = isDark
-                    ? `0 8px 40px rgba(0,0,0,0.3), 0 0 0 1px ${accent}30`
-                    : `0 8px 32px rgba(10,21,69,0.08), 0 0 0 1px ${accent}30`
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLElement
-                  el.style.transform = 'translateY(0)'
-                  el.style.boxShadow = 'none'
-                }}
+                  '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+                  '--hud-border-hover': `${accent}99`,
+                } as React.CSSProperties}
               >
                 <p
                   className="num-display absolute top-4 right-6 pointer-events-none select-none"
@@ -394,19 +344,6 @@ export default function LandingPage() {
             : 'linear-gradient(180deg, #EEF3FC 0%, #E8EEFA 100%)',
         }}
       >
-        {/* Gold orb */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: '20%', right: '-15%',
-            width: '500px', height: '500px',
-            borderRadius: '50%',
-            background: isDark
-              ? 'radial-gradient(circle, rgba(245,197,0,0.08) 0%, transparent 65%)'
-              : 'radial-gradient(circle, rgba(245,197,0,0.05) 0%, transparent 65%)',
-          }}
-        />
-
         <div className="relative max-w-3xl mx-auto px-6 lg:px-10 py-20 lg:py-28">
           <div className="mb-12">
             <p
