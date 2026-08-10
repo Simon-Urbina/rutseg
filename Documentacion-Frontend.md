@@ -1,7 +1,7 @@
 # Documentación Técnica del Frontend — RutSeg
 
 > **Audience:** Desarrolladores o estudiantes que quieran entender cómo está construido el frontend de esta plataforma.  
-> **Fecha:** 2026-05-16
+> **Fecha:** 2026-08-09
 
 ---
 
@@ -515,6 +515,8 @@ El frontend soporta dos temas. El sistema funciona así:
 | Acento amarillo | `#F5C500` | `#F5C500` |
 | Borde tarjetas | `rgba(26,63,150,0.14)` | `rgba(26,63,150,0.10)` |
 
+> **Nota:** desde el rediseño "consola técnica" (ver §9.1), la mayoría de tarjetas/paneles ya no usan un borde fijo vía Tailwind — usan la primitiva `.hud-panel`, cuyo color de borde se pasa por instancia con la custom property `--hud-border` (típicamente `rgba(26,63,150,0.22–0.40)` según el contexto). La tabla de arriba sigue vigente para fondos y texto.
+
 ### Patrón de código
 
 ```tsx
@@ -552,10 +554,31 @@ Para texto con gradiente (como "rompiendo cosas" en LandingPage), se usan tres p
 
 ## 9. Convenciones de Estilos
 
+### 9.1 Sistema de paneles HUD (esquina cortada)
+
+Desde agosto de 2026 el lenguaje visual del sitio se rediseñó para alejarse del look genérico "tarjeta SaaS" (`rounded-xl`/`rounded-2xl` uniforme, blobs difusos con `radial-gradient`) hacia una estética de consola técnica. Las primitivas viven en `src/index.css` y se aplican en casi todas las páginas y componentes (excepto donde se documenta lo contrario más abajo).
+
+| Clase | Qué hace | Cuándo usarla |
+|---|---|---|
+| `.hud-panel` | Corta la esquina superior derecha (`clip-path`, 16px) y dibuja un borde de 1px que sigue el corte, vía la técnica `mask-composite: exclude` sobre un `::before` — no un doble `<div>`. El color de borde se controla con las custom properties `--hud-border` / `--hud-border-hover` (por instancia, inline). Reemplaza `rounded-xl`/`rounded-2xl` en tarjetas, filas de lista, paneles de formulario y modales. | Cualquier tarjeta/panel/fila que antes tuviera `rounded-xl`/`2xl` + `border`. |
+| `.hud-panel.hud-static` | Igual que arriba pero sin el `translateY(-3px)` al hover — evita que un contenedor grande (formulario, modal) "brinque" mientras el usuario mueve el mouse para hacer click en un campo interno. | Formularios, modales, banners de estado (error/éxito), paneles no-clicables. |
+| `.hud-corner-tag` | Posiciona un `<span>` mono pequeño dentro de la esquina cortada — se usa como slot de etiqueta (dificultad, índice `01`/`02`, tipo de pregunta) en vez de dejar el corte vacío. | Opcional, dentro de un `.hud-panel`. |
+| `.tech-input` | Reemplaza `rounded-lg` + `outline-none` en inputs/textareas/selects. Radio casi recto (2px), barra de acento izquierda de 2px, y un estado `:focus`/`:focus-visible` real (antes varios inputs del panel admin tenían `outline-none` sin ningún reemplazo). Colores vía `--tech-input-border` / `--tech-input-focus` / `--tech-input-accent` / `--tech-input-glow`. | Cualquier `<input>`/`<textarea>`/`<select>` fuera del `.input-terminal` de las páginas de auth (que ya tenía su propio tratamiento). |
+| `.tech-grid` | Fondo de grilla técnica de 32px (líneas de 1px) — reemplaza los blobs `radial-gradient` decorativos en hero sections. Si el elemento ya tiene un `background` inline (gradiente), la grilla se compone manualmente como capas extra en `backgroundImage` en vez de usar esta clase (ver `DashboardPage.tsx`, hero). | Fondos de hero/secciones grandes, en vez de `.orb`. |
+| `.scanline-overlay` | Textura de scanlines estática (`repeating-linear-gradient` muy sutil) vía `::after`. Solo se aplica condicionalmente en dark mode. | Complementa `.tech-grid` en hero sections dark. |
+
+**Fuera de este sistema, a propósito:**
+- `TerminalPanel` en `LabPage.tsx` — es un terminal simulado real (traffic-light dots, taskbar); cortarle una esquina rompería la metáfora.
+- El skill-tree de laboratorios en `CoursePage.tsx` (nodos circulares, spine punteado) y sus `LabCard` — ya son el elemento más distintivo del sitio, no se tocaron.
+- Botones (`.btn-neon`, `.btn-gold`, `.btn-ghost-light`, etc.) — ya tenían buen micro-interaction desde antes del rediseño.
+- Chips/pills pequeños (badges de dificultad, tags de stack tecnológico, el pill `~/username` del Header) — no son el patrón "tarjeta genérica" que motivó el cambio.
+
+Los decoradores `.orb` / `@keyframes glowPulse` siguen definidos en `index.css` pero **ya no se usan en ningún componente** — se removieron de todas las páginas como parte de este rediseño.
+
 ### Clases de Tailwind vs. estilos inline
 
-- **Tailwind** se usa para: layout (`flex`, `grid`, `items-center`), espaciado (`px-6`, `py-4`, `gap-3`), tipografía (`text-sm`, `font-mono`), tamaños (`w-12`, `h-12`), bordes (`rounded-2xl`), transiciones (`transition-all`, `duration-200`).
-- **Estilos inline** se usan para: colores que dependen del tema (`isDark ? ... : ...`), colores de acento personalizados, sombras complejas, gradientes.
+- **Tailwind** se usa para: layout (`flex`, `grid`, `items-center`), espaciado (`px-6`, `py-4`, `gap-3`), tipografía (`text-sm`, `font-mono`), tamaños (`w-12`, `h-12`), transiciones (`transition-all`, `duration-200`). Los bordes/esquinas de paneles usan `.hud-panel` (ver §9.1) en vez de `rounded-xl`/`2xl`.
+- **Estilos inline** se usan para: colores que dependen del tema (`isDark ? ... : ...`), colores de acento personalizados (incluyendo las custom properties `--hud-*`/`--tech-input-*`), sombras complejas, gradientes.
 
 ### Fuentes tipográficas
 
@@ -570,7 +593,6 @@ Para texto con gradiente (como "rompiendo cosas" en LandingPage), se usan tres p
 Las páginas usan animaciones de entrada escalonadas definidas con clases personalizadas en `src/index.css`:
 - `animate-fade-up-1`, `animate-fade-up-2`, etc. — elementos que entran deslizándose hacia arriba con retraso creciente.
 - `cursor-blink` — efecto de cursor parpadeante. Usado en la AboutPage y en el indicador de streaming del chatbot (`▋`).
-- `glowPulse` — efecto de brillo pulsante en los orbs decorativos.
 - `slideInRight` — entrada desde la derecha, usada por los toasts de `ToastContext`.
 - `sparkle-spin` — animación de 700ms para cada destello: aparece escalado desde 0, rota 90°, llega a opacidad máxima en el 50%, luego desaparece. Usada por `Sparkles`.
 
@@ -596,7 +618,7 @@ El área de mensajes de `ChatWidget` usa la clase `.chat-scroll` definida en `sr
 
 ### Hover interactivo
 
-Los cards y botones usan `onMouseEnter` / `onMouseLeave` para aplicar estilos dinámicos (elevación, cambio de borde/color) porque los valores dependen del tema y de variables del componente, lo que no es posible solo con Tailwind.
+La mayoría de tarjetas/paneles ya resuelven hover/focus/active en CSS puro vía `.hud-panel` (§9.1): elevación (`translateY`), brillo de borde y outline de foco por teclado (`:focus-visible`) sin JavaScript. El patrón `onMouseEnter`/`onMouseLeave` mutando `style` inline sigue existiendo para casos que quedaron fuera del sistema `.hud-panel` (pills pequeños, links de texto, botones con lógica de color dependiente de props) donde el valor a aplicar depende de una variable del componente que no puede expresarse como custom property CSS fija.
 
 ---
 

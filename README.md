@@ -1,6 +1,6 @@
-# Laboratorios de Ciberseguridad
+# RutSeg — Laboratorios de Ciberseguridad
 
-Plataforma de aprendizaje en ciberseguridad donde los usuarios se inscriben en cursos, trabajan laboratorios prácticos, completan actividades interactivas y responden quizzes. Los usuarios acumulan puntos al completar laboratorios.
+Plataforma de aprendizaje en ciberseguridad donde los usuarios se inscriben en cursos, trabajan laboratorios prácticos, completan actividades interactivas y responden quizzes. Los usuarios acumulan puntos al completar laboratorios. Incluye un panel de administración para gestionar cursos/módulos/labs/preguntas y usuarios.
 
 ## Stack tecnológico
 
@@ -47,11 +47,13 @@ cybersec-labs/
 └── frontend/
     └── src/
         ├── context/             # AuthContext, ThemeContext
-        ├── lib/                 # api.ts — cliente HTTP centralizado
+        ├── lib/                 # api.ts — cliente HTTP centralizado; adminApi.ts — cliente de /api/admin/*
         ├── components/          # Header, Footer, CourseCard, Ranking, ChatWidget, modals…
         └── pages/               # Landing, Login, Register, ForgotPassword, ResetPassword,
                                  # Dashboard, CoursePage, LabPage, PublicProfilePage,
                                  # AboutPage, ForumPage, PrivacyPolicyPage, TermsOfUsePage, NotFoundPage
+            └── admin/           # Panel de administración (solo rol admin): cursos/módulos/labs/
+                                 # preguntas y gestión de usuarios — ver Documentacion-Frontend.md §5
 ```
 
 ---
@@ -248,15 +250,27 @@ Base URL: `http://localhost:3000`
 |--------|------|-------------|
 | POST | `/api/admin/courses` | Crear curso |
 | PUT | `/api/admin/courses/:id` | Actualizar curso |
+| DELETE | `/api/admin/courses/:id` | Borrar curso (cascada: módulos, labs, matrículas, progreso) |
 | POST | `/api/admin/courses/:courseId/modules` | Crear módulo |
 | PUT | `/api/admin/modules/:id` | Actualizar módulo |
+| DELETE | `/api/admin/modules/:id` | Borrar módulo (cascada: labs, preguntas, progreso) |
+| GET | `/api/admin/labs/:id` | Detalle de un laboratorio con preguntas, opciones y actividades |
 | POST | `/api/admin/modules/:moduleId/labs` | Crear laboratorio |
-| PUT | `/api/admin/labs/:id` | Actualizar laboratorio |
+| PUT | `/api/admin/labs/:id` | Actualizar laboratorio (despublica solo si queda incompleto) |
+| DELETE | `/api/admin/labs/:id` | Borrar laboratorio (cascada: preguntas, progreso) |
 | POST | `/api/admin/labs/:labId/questions` | Agregar pregunta (máx. 5) |
 | PUT | `/api/admin/questions/:id` | Actualizar pregunta |
+| DELETE | `/api/admin/questions/:id` | Borrar pregunta |
 | POST | `/api/admin/questions/:questionId/options` | Agregar opción de respuesta |
+| PUT | `/api/admin/questions/:questionId/options/:id` | Actualizar opción |
+| DELETE | `/api/admin/questions/:questionId/options/:id` | Borrar opción |
 | POST | `/api/admin/questions/:questionId/activity` | Crear actividad práctica |
 | PUT | `/api/admin/activities/:id` | Actualizar actividad |
+| GET | `/api/admin/users?page=&limit=&search=` | Listado paginado de usuarios (búsqueda por username/email) |
+| GET | `/api/admin/users/:id` | Detalle de un usuario |
+| PUT | `/api/admin/users/:id` | Editar username/email/bio/rol (un admin no puede quitarse el rol a sí mismo) |
+| POST | `/api/admin/users/:id/password` | Establece una nueva contraseña sin pedir la actual |
+| DELETE | `/api/admin/users/:id` | Borra un usuario (soft-delete; un admin no puede auto-eliminarse) |
 
 ### Health check
 

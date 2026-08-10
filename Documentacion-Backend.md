@@ -1,7 +1,7 @@
-# Documentación Técnica del Backend — Cybersec Labs
+# Documentación Técnica del Backend — RutSeg
 
 > **Audience:** Desarrolladores o estudiantes que quieran entender cómo está construido el backend de esta plataforma.  
-> **Fecha:** 2026-05-16
+> **Fecha:** 2026-08-09
 
 ---
 
@@ -27,7 +27,7 @@
 
 ## 1. Visión General
 
-El backend de Cybersec Labs es una **API REST** (Interfaz de Programación basada en HTTP) que sirve como núcleo de la plataforma de aprendizaje. Su responsabilidad es:
+El backend de RutSeg es una **API REST** (Interfaz de Programación basada en HTTP) que sirve como núcleo de la plataforma de aprendizaje. Su responsabilidad es:
 
 - Gestionar usuarios (registro, login, perfiles, ranking).
 - Proveer el catálogo de cursos, módulos y laboratorios.
@@ -36,7 +36,7 @@ El backend de Cybersec Labs es una **API REST** (Interfaz de Programación basad
 - Exponer rutas exclusivas para administradores que permiten crear y editar contenido.
 - Gestionar el foro comunitario: comentarios raíz y respuestas de un solo nivel.
 
-> **Iniciativa académica:** CyberSec Labs nació como proyecto del **Semillero de Investigación en Ciberseguridad y Desarrollo de Software** de la Universidad Santo Tomás — Tunja, bajo la iniciativa y dirección del docente **Harrizon Alexander Soler Galindo**.
+> **Iniciativa académica:** RutSeg nació como proyecto del **Semillero de Investigación en Ciberseguridad y Desarrollo de Software** de la Universidad Santo Tomás — Tunja, bajo la iniciativa y dirección del docente **Harrizon Alexander Soler Galindo**.
 
 El servidor escucha peticiones HTTP del frontend (React) y responde siempre en formato **JSON**.
 
@@ -616,7 +616,7 @@ const resetTokens = new Map<string, { userId: string; expiresAt: number }>()
 - El token es un UUID aleatorio (`crypto.randomUUID()`).
 - Expira en **1 hora** (`Date.now() + 3_600_000`).
 - Al reiniciar el servidor, todos los tokens pendientes se pierden.
-- El enlace de reset se construye como `${FRONTEND_URL}/reset-password?token=...`. **`FRONTEND_URL` debe configurarse como variable de entorno en Railway** (`https://cyberseclabs.vercel.app`); si no está definida, el fallback es `http://localhost:5173`.
+- El enlace de reset se construye como `${FRONTEND_URL}/reset-password?token=...`. **`FRONTEND_URL` debe configurarse como variable de entorno en Railway** (`https://rutseg.vercel.app`); si no está definida, el fallback es `http://localhost:5173`.
 - El correo se envía con `sendPasswordResetEmail()` del módulo `src/utils/email.ts` usando la Gmail REST API con OAuth2. No usa SMTP — usa HTTPS directamente, compatible con Railway que bloquea puertos SMTP salientes.
 - Se usa la misma respuesta para correos registrados y no registrados, evitando *email enumeration*.
 
@@ -644,7 +644,7 @@ sendPasswordResetEmail(to, resetLink)        // Contraseña olvidada — botón 
 Ambas comparten la misma estructura visual:
 - Fondo exterior `#EEF3FC` (igual al tema claro del sitio)
 - Tarjeta con borde redondeado y sombra
-- Header unificado con branding de CyberSec Labs
+- Header unificado con branding de RutSeg
 - Cuerpo blanco con contenido específico de cada correo
 - Footer oscuro con URL de la plataforma
 
@@ -1165,7 +1165,7 @@ El frontend es estático (React compilado). Se despliega conectando el repositor
 2. **Framework Preset**: Vite
 3. Variables de entorno: `VITE_API_URL` y `VITE_CHATBOT_URL` con las URLs de Railway.
 
-Vercel genera automáticamente una URL de producción (`cyberseclabs.vercel.app`) y URLs de preview por cada deploy.
+Vercel genera automáticamente una URL de producción estable (`rutseg.vercel.app`) y URLs de preview únicas por cada deploy (`cyberseclabs-xxxx.vercel.app`, el proyecto de Vercel conserva el nombre original).
 
 ### 12.4 Diagrama de Infraestructura
 
