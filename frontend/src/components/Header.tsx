@@ -52,6 +52,17 @@ export default function Header() {
             </Link>
             <ThemeToggle />
 
+            {user?.role === 'admin' && (
+              <Link
+                to="/admin"
+                className={`nav-link text-[14px] tracking-wide font-medium transition-colors ${
+                  isDark ? 'text-violet-300 hover:text-rosewood-400' : 'text-rosewood-700 hover:text-rosewood-500'
+                }`}
+              >
+                Admin
+              </Link>
+            )}
+
             {user ? (
               <div className="flex items-center gap-6 animate-fade-up-1">
                 {/* User Pill */}
@@ -155,6 +166,19 @@ export default function Header() {
               >
                 Foro
               </Link>
+              {user.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className={`block w-full text-center px-4 py-3 rounded-xl text-[15px] font-medium tracking-wide transition-all duration-300 border ${
+                    isDark
+                      ? 'text-violet-300 border-violet-300/20 hover:bg-white/5'
+                      : 'text-rosewood-700 border-rosewood-700/20 hover:bg-black/5'
+                  }`}
+                >
+                  Admin
+                </Link>
+              )}
               <button
                 onClick={handleLogout}
                 className={`w-full px-4 py-3 text-[15px] font-medium tracking-wide transition-colors rounded-xl ${
