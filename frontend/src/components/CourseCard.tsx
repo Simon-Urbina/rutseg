@@ -32,23 +32,13 @@ export default function CourseCard({ course, onEnroll, onContinue }: Props) {
 
   return (
     <div
-      className="group rounded-2xl flex flex-col transition-all duration-200 overflow-hidden relative"
+      className="hud-panel group flex flex-col"
       style={{
         background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-        border: `1px solid ${isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'}`,
-      }}
-      onMouseEnter={e => {
-        const el = e.currentTarget as HTMLElement
-        el.style.transform = 'translateY(-3px)'
-        el.style.boxShadow = isDark
-          ? `0 8px 40px rgba(0,0,0,0.3), 0 0 0 1px ${diff.color}33`
-          : `0 8px 32px rgba(10,21,69,0.06), 0 0 0 1px ${diff.color}33`
-      }}
-      onMouseLeave={e => {
-        const el = e.currentTarget as HTMLElement
-        el.style.transform = 'translateY(0)'
-        el.style.boxShadow = 'none'
-      }}
+        '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+        '--hud-border-hover': `${diff.color}99`,
+        '--hud-focus': diff.color,
+      } as React.CSSProperties}
     >
       {/* Top accent bar (color-coded by difficulty) */}
       <div
@@ -59,43 +49,22 @@ export default function CourseCard({ course, onEnroll, onContinue }: Props) {
         }}
       />
 
-      {/* Decorative corner glow */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          top: '-30%', right: '-15%',
-          width: '220px', height: '220px',
-          borderRadius: '50%',
-          background: `radial-gradient(circle, ${diff.color}13 0%, transparent 65%)`,
-        }}
-      />
+      <span className="hud-corner-tag" style={{ color: diff.color }}>{diff.label}</span>
 
       <div className="relative p-7 flex flex-col flex-1">
         {/* Top row: difficulty + enrolled badge */}
         <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
-            <div className="flex items-end gap-0.5 mr-1">
-              {[0, 1, 2].map(i => (
-                <span
-                  key={i}
-                  className="w-1 rounded-sm transition-colors"
-                  style={{
-                    height: `${6 + i * 3}px`,
-                    background: i < diff.bars ? diff.color : (isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.12)'),
-                  }}
-                />
-              ))}
-            </div>
-            <span
-              className="font-mono text-[10px] tracking-[0.18em] px-2 py-1 rounded"
-              style={{
-                color: diff.color,
-                background: `${diff.color}10`,
-                border: `1px solid ${diff.color}30`,
-              }}
-            >
-              {diff.label}
-            </span>
+          <div className="flex items-end gap-0.5">
+            {[0, 1, 2].map(i => (
+              <span
+                key={i}
+                className="w-1 rounded-sm transition-colors"
+                style={{
+                  height: `${6 + i * 3}px`,
+                  background: i < diff.bars ? diff.color : (isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.12)'),
+                }}
+              />
+            ))}
           </div>
 
           {course.isEnrolled && (
