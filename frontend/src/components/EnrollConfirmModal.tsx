@@ -59,14 +59,15 @@ export default function EnrollConfirmModal({ course, onClose, onEnrolled }: Prop
     >
       <div
         onClick={e => e.stopPropagation()}
-        className="relative w-full max-w-[460px] rounded-3xl overflow-hidden"
+        className="hud-panel hud-static relative w-full max-w-[460px]"
         style={{
           background: isDark ? 'rgba(9,21,32,0.84)' : 'rgba(248,250,255,0.92)',
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
-          border: `1px solid ${isDark ? 'rgba(26,63,150,0.28)' : 'rgba(26,63,150,0.22)'}`,
           boxShadow: '0 32px 80px rgba(0,0,0,0.5), 0 0 60px rgba(26,63,150,0.10)',
-        }}
+          '--hud-border': isDark ? 'rgba(26,63,150,0.40)' : 'rgba(26,63,150,0.30)',
+          '--hud-border-hover': isDark ? 'rgba(26,63,150,0.40)' : 'rgba(26,63,150,0.30)',
+        } as React.CSSProperties}
       >
         {/* Top accent line */}
         <div
@@ -74,17 +75,6 @@ export default function EnrollConfirmModal({ course, onClose, onEnrolled }: Prop
           style={{
             background: 'linear-gradient(90deg, transparent 0%, #1A3F96 35%, #2596be 65%, transparent 100%)',
             opacity: 0.6,
-          }}
-        />
-
-        {/* Decorative orb */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: '-30%', right: '-15%',
-            width: '260px', height: '260px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(26,63,150,0.15) 0%, transparent 60%)',
           }}
         />
 

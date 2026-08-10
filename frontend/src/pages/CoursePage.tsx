@@ -142,17 +142,6 @@ export default function CoursePage() {
             : 'linear-gradient(155deg, #E8EEFA 0%, #EEF3FC 100%)',
         }}
       >
-        {/* Ambient orb */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: '-40%', right: '-8%',
-            width: '560px', height: '560px',
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${diff.color}1A 0%, transparent 62%)`,
-          }}
-        />
-
         <div className="relative max-w-4xl mx-auto px-6 lg:px-10 py-12">
           {/* Back */}
           <button

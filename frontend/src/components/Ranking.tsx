@@ -73,12 +73,13 @@ export default function Ranking({ limit = 5, selfProfile }: { limit?: number; se
 
       {error && !loading && (
         <div
-          className="rounded-2xl px-6 py-5"
+          className="hud-panel hud-static px-6 py-5"
           style={{
             background: isDark ? 'rgba(13,27,70,0.85)' : '#eef0f8',
-            border: '1px solid rgba(26,63,150,0.25)',
             borderLeft: '3px solid #1A3F96',
-          }}
+            '--hud-border': 'rgba(26,63,150,0.35)',
+            '--hud-border-hover': 'rgba(26,63,150,0.35)',
+          } as React.CSSProperties}
         >
           <span className="font-mono text-xs" style={{ color: '#1A3F96' }}>ERR</span>
           <p className="text-sm mt-1" style={{ color: isDark ? '#93B0F0' : '#0A1545' }}>{error}</p>
@@ -87,11 +88,12 @@ export default function Ranking({ limit = 5, selfProfile }: { limit?: number; se
 
       {!loading && !error && rows.length === 0 && (
         <div
-          className="rounded-2xl px-6 py-10 text-center"
+          className="hud-panel hud-static px-6 py-10 text-center"
           style={{
             background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-            border: `1px solid ${isDark ? 'rgba(26,63,150,0.12)' : 'rgba(26,63,150,0.10)'}`,
-          }}
+            '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+            '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+          } as React.CSSProperties}
         >
           <p className="font-mono text-sm" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
             // sin operadores aún
@@ -118,38 +120,21 @@ export default function Ranking({ limit = 5, selfProfile }: { limit?: number; se
           <Link
             key={row.id}
             to={`/u/${row.username}`}
-            className="block rounded-2xl px-6 py-5 transition-all duration-200 relative overflow-hidden"
+            className="hud-panel block px-6 py-5 relative"
             style={{
               background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-              border: `1px solid ${isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'}`,
               textDecoration: 'none',
+              '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+              '--hud-border-hover': `${accent}99`,
+              '--hud-focus': accent,
               ...(isTop && {
                 boxShadow: isDark
                   ? '0 0 0 1px rgba(245,197,0,0.18), 0 8px 32px rgba(245,197,0,0.05)'
                   : '0 0 0 1px rgba(245,197,0,0.25), 0 8px 32px rgba(245,197,0,0.08)',
               }),
-            }}
-            onMouseEnter={e => {
-              const el = e.currentTarget as HTMLElement
-              el.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={e => {
-              const el = e.currentTarget as HTMLElement
-              el.style.transform = 'translateY(0)'
-            }}
+            } as React.CSSProperties}
           >
-            {/* Background glow for top rank */}
-            {isTop && (
-              <div
-                className="absolute pointer-events-none"
-                style={{
-                  top: '-50%', right: '-10%',
-                  width: '240px', height: '240px',
-                  borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(245,197,0,0.08) 0%, transparent 65%)',
-                }}
-              />
-            )}
+            {label && <span className="hud-corner-tag" style={{ color: accent }}>{label}</span>}
 
             <div className="relative flex items-center gap-5">
               {/* Rank number */}
@@ -247,14 +232,14 @@ export default function Ranking({ limit = 5, selfProfile }: { limit?: number; se
           </div>
           <Link
             to={`/u/${selfProfile.username}`}
-            className="block rounded-2xl px-6 py-5 transition-all duration-200 relative overflow-hidden"
+            className="hud-panel block px-6 py-5 relative"
             style={{
               background: isDark ? 'rgba(37,150,190,0.07)' : 'rgba(37,150,190,0.04)',
-              border: '1px solid rgba(37,150,190,0.22)',
               textDecoration: 'none',
-            }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'}
-            onMouseLeave={e => (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'}
+              '--hud-border': 'rgba(37,150,190,0.40)',
+              '--hud-border-hover': '#2596be',
+              '--hud-focus': '#2596be',
+            } as React.CSSProperties}
           >
             <div className="flex items-center gap-5">
               <div className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center num-display"

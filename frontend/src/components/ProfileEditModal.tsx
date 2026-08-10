@@ -93,16 +93,14 @@ function TextareaField({
         placeholder={placeholder}
         rows={3}
         maxLength={500}
-        className="w-full text-[15px] rounded-lg p-3 outline-none transition-colors"
+        className="tech-input w-full text-[15px] p-3"
         style={{
           background: isDark ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.02)',
           color: isDark ? '#C8D5EE' : '#0A1545',
-          border: `1px solid ${isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.20)'}`,
           fontFamily: "'DM Sans', sans-serif",
           resize: 'vertical',
-        }}
-        onFocus={e => { e.currentTarget.style.borderColor = '#2596be' }}
-        onBlur={e => { e.currentTarget.style.borderColor = isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.20)' }}
+          '--tech-input-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.30)',
+        } as React.CSSProperties}
       />
       {hint && (
         <p className="font-mono text-[10px]" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
@@ -279,17 +277,18 @@ export default function ProfileEditModal({ open, onClose, initialProfile, onUpda
     >
       <div
         onClick={e => e.stopPropagation()}
-        className="relative w-full max-w-[520px] rounded-3xl overflow-hidden"
+        className="hud-panel hud-static relative w-full max-w-[520px]"
         style={{
           background: isDark ? 'rgba(9,21,32,0.84)' : 'rgba(248,250,255,0.92)',
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
-          border: `1px solid ${isDark ? 'rgba(26,63,150,0.28)' : 'rgba(26,63,150,0.22)'}`,
           boxShadow: '0 32px 80px rgba(0,0,0,0.5), 0 0 60px rgba(26,63,150,0.10)',
           maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',
-        }}
+          '--hud-border': isDark ? 'rgba(26,63,150,0.40)' : 'rgba(26,63,150,0.30)',
+          '--hud-border-hover': isDark ? 'rgba(26,63,150,0.40)' : 'rgba(26,63,150,0.30)',
+        } as React.CSSProperties}
       >
         {/* Header */}
         <div

@@ -129,24 +129,18 @@ export default function PublicProfilePage() {
           <>
             {/* Header card */}
             <div
-              className="rounded-2xl p-8 relative overflow-hidden"
+              className="hud-panel hud-static p-8 relative"
               style={{
                 background: cardBg,
-                border: `1px solid ${rankStyle ? rankStyle.color + '40' : cardBorder}`,
                 boxShadow: rankStyle
                   ? `0 0 0 1px ${rankStyle.glow}, 0 12px 40px ${rankStyle.glow}`
                   : '0 4px 24px rgba(26,63,150,0.07)',
-              }}
+                '--hud-border': rankStyle ? rankStyle.color + '80' : cardBorder,
+                '--hud-border-hover': rankStyle ? rankStyle.color + '80' : cardBorder,
+              } as React.CSSProperties}
             >
-              {/* Glow blob for top ranks */}
               {rankStyle && (
-                <div className="absolute pointer-events-none"
-                  style={{
-                    top: '-40%', right: '-8%',
-                    width: 260, height: 260, borderRadius: '50%',
-                    background: `radial-gradient(circle, ${rankStyle.glow} 0%, transparent 65%)`,
-                  }}
-                />
+                <span className="hud-corner-tag" style={{ color: rankStyle.color, opacity: 1 }}>{rankStyle.label}</span>
               )}
 
               <div className="relative flex items-start gap-6">
@@ -198,35 +192,20 @@ export default function PublicProfilePage() {
                 { label: 'Posición', value: profile.rank ? `#${profile.rank}` : '—', accent: rankStyle?.color ?? textSub },
                 { label: 'Puntos', value: profile.points.toLocaleString('es-CO'), accent: '#F5C500' },
                 { label: 'Labs completados', value: profile.completedLabs, accent: '#4ade80' },
-              ].map(({ label, value, accent }) => (
+              ].map(({ label, value, accent }, i) => (
                 <div
                   key={label}
-                  className="rounded-2xl overflow-hidden transition-all duration-200 cursor-default relative"
-                  style={{ background: cardBg, border: `1px solid ${cardBorder}` }}
-                  onMouseEnter={e => {
-                    const el = e.currentTarget as HTMLElement
-                    el.style.transform = 'translateY(-3px)'
-                    el.style.boxShadow = `0 8px 40px rgba(0,0,0,0.25), 0 0 0 1px ${accent}40`
-                  }}
-                  onMouseLeave={e => {
-                    const el = e.currentTarget as HTMLElement
-                    el.style.transform = 'translateY(0)'
-                    el.style.boxShadow = 'none'
-                  }}
+                  className="hud-panel cursor-default relative"
+                  style={{
+                    background: cardBg,
+                    '--hud-border': cardBorder,
+                    '--hud-border-hover': `${accent}99`,
+                  } as React.CSSProperties}
                 >
                   {/* Top accent strip */}
                   <div style={{ height: '2px', background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }} />
 
-                  {/* Corner glow */}
-                  <div
-                    className="absolute pointer-events-none"
-                    style={{
-                      bottom: '-20%', right: '-10%',
-                      width: '140px', height: '140px',
-                      borderRadius: '50%',
-                      background: `radial-gradient(circle, ${accent}18 0%, transparent 70%)`,
-                    }}
-                  />
+                  <span className="hud-corner-tag" style={{ color: accent as string }}>{String(i + 1).padStart(2, '0')}</span>
 
                   <div className="relative px-5 py-5 text-center">
                     <p className="num-display leading-none" style={{ fontSize: '2rem', color: accent as string }}>
@@ -242,8 +221,12 @@ export default function PublicProfilePage() {
 
             {/* Enrolled courses */}
             <div
-              className="rounded-2xl p-6 space-y-4"
-              style={{ background: cardBg, border: `1px solid ${cardBorder}` }}
+              className="hud-panel hud-static p-6 space-y-4"
+              style={{
+                background: cardBg,
+                '--hud-border': cardBorder,
+                '--hud-border-hover': cardBorder,
+              } as React.CSSProperties}
             >
               <p className="font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color: textMuted }}>
                 // cursos inscritos
