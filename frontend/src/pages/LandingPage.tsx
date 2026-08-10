@@ -6,51 +6,7 @@ import { api } from '../lib/api'
 import Header from '../components/Header'
 import Ranking from '../components/Ranking'
 import Footer from '../components/Footer'
-
-const FEATURES = [
-  {
-    title: 'Aprende Practicando',
-    badge: 'HANDS-ON',
-    body: 'Laboratorios interactivos con escenarios de ciberseguridad reales. Sin teoría plana ni diapositivas: solo terminales, código y problemas para resolver.',
-    accent: '#2596be',
-    gridSpan: 'col-span-12 md:col-span-7',
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="4 17 10 11 4 5"/>
-        <line x1="12" y1="19" x2="20" y2="19"/>
-      </svg>
-    ),
-  },
-  {
-    title: 'Compite en el Ranking',
-    badge: 'GAMIFICACIÓN',
-    body: 'Cada laboratorio completado suma puntos instantáneos. Escala posiciones en el Leaderboard global y demuestra tu nivel técnico.',
-    accent: '#F5C500',
-    gridSpan: 'col-span-12 md:col-span-5',
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
-        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
-        <path d="M4 22h16"/>
-        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
-        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
-        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
-      </svg>
-    ),
-  },
-  {
-    title: 'Cero Relleno Teórico',
-    badge: '100% EFECTIVO',
-    body: 'Aprendizaje enfocado en habilidades reales del mercado laboral de ciberseguridad. Cada reto existe para enseñarte herramientas tácticas aplicables.',
-    accent: '#10B981',
-    gridSpan: 'col-span-12 md:col-span-12',
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-      </svg>
-    ),
-  },
-]
+import CourseCard, { type Course } from '../components/CourseCard'
 
 export default function LandingPage() {
   const { theme } = useTheme()
@@ -58,173 +14,386 @@ export default function LandingPage() {
   const isDark = theme === 'dark'
 
   const [stats, setStats] = useState<{ courseCount: number; labCount: number; totalPoints: number; userCount: number } | null>(null)
-  
+  const [courses, setCourses] = useState<Course[]>([])
+  const [coursesLoading, setCoursesLoading] = useState(true)
+
+  const [activeTab, setActiveTab] = useState<'terminal' | 'exploit' | 'flag'>('terminal')
+
   useEffect(() => {
     api.get<{ courseCount: number; labCount: number; totalPoints: number; userCount: number }>('/api/stats')
       .then(setStats).catch(() => {})
+
+    api.get<Course[]>('/api/courses')
+      .then(setCourses)
+      .catch(() => {})
+      .finally(() => setCoursesLoading(false))
   }, [])
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-[#060D1F] text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
+    <div className={`min-h-screen selection:bg-cyan-500/30 selection:text-white transition-colors duration-300 ${isDark ? 'bg-[#070913] text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
       <Header />
 
-      {/* ─── HERO SECTION WITH WATERMELON UI MESH GLOW ─── */}
-      <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 overflow-hidden">
-        {/* Ambient Glowing Watermelon Mesh Orbs */}
-        <div className="wm-orb w-96 h-96 top-[-50px] left-[-50px] bg-teal-500/20 dark:bg-teal-500/15 blur-3xl" />
-        <div className="wm-orb w-[500px] h-[500px] top-[100px] right-[-100px] bg-indigo-500/20 dark:bg-indigo-600/15 blur-3xl" />
-        <div className="wm-orb w-80 h-80 bottom-0 left-[30%] bg-emerald-500/15 dark:bg-emerald-500/10 blur-3xl" />
+      {/* ─── HERO SECTION WITH INTERACTIVE TERMINAL PREVIEW ─── */}
+      <section className="relative pt-8 pb-20 lg:pt-16 lg:pb-32 overflow-hidden">
+        {/* Bioluminescent Watermelon Glow Orbs */}
+        <div className="wm-orb w-[550px] h-[550px] top-[-100px] left-[-150px] bg-cyan-500/20 blur-[120px]" />
+        <div className="wm-orb w-[600px] h-[600px] top-[150px] right-[-200px] bg-purple-600/20 blur-[130px]" />
+        <div className="wm-orb w-[400px] h-[400px] bottom-[-50px] left-[35%] bg-emerald-400/15 blur-[100px]" />
 
         <div className="relative max-w-7xl mx-auto px-6 lg:px-10">
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Pill tag */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-teal-500/20 bg-teal-500/10 backdrop-blur-md text-teal-400 font-mono text-xs tracking-wider uppercase mb-8 animate-fade-up-1">
-              <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
-              Plataforma de Laboratorios Prácticos en Ciberseguridad
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+            {/* Left Hero Content */}
+            <div className="lg:col-span-7 space-y-8 text-left">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 backdrop-blur-xl text-cyan-300 font-mono text-xs font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(5,217,232,0.2)]">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-400"></span>
+                </span>
+                PLATAFORMA DE HACKING & CIBERSEGURIDAD 2.0
+              </div>
+
+              {/* Title */}
+              <h1 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight">
+                Tu ruta segura hacia el{' '}
+                <span className="bg-gradient-to-r from-cyan-400 via-emerald-300 to-pink-500 bg-clip-text text-transparent drop-shadow-sm">
+                  hacking real
+                </span>
+                .
+              </h1>
+
+              {/* Paragraph */}
+              <p className="text-base sm:text-lg font-normal text-slate-300 dark:text-slate-300 max-w-2xl leading-relaxed">
+                Entrena con laboratorios interactivos en vivo, escenarios de pentesting y exploits reales. Sin diapositivas y sin teoría aburrida: conecta tu terminal y resuelve problemas.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                {token ? (
+                  <Link to="/dashboard" className="btn-wm-primary text-base py-4 px-8">
+                    Ir al Dashboard →
+                  </Link>
+                ) : (
+                  <>
+                    <Link to="/register" className="btn-wm-primary text-base py-4 px-8">
+                      Empezar Gratis Ahora →
+                    </Link>
+                    <Link to="/login" className="btn-wm-secondary text-base py-4 px-8">
+                      Ya tengo cuenta
+                    </Link>
+                  </>
+                )}
+              </div>
+
+              {/* Live Metric Pills */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-white/10">
+                {[
+                  { label: 'CURSOS', val: stats ? String(stats.courseCount) : '—', color: 'text-cyan-400' },
+                  { label: 'LABORATORIOS', val: stats ? String(stats.labCount) : '—', color: 'text-emerald-400' },
+                  { label: 'PUNTOS DISP.', val: stats ? `${stats.totalPoints.toLocaleString('es-CO')}` : '—', color: 'text-amber-400' },
+                  { label: 'OPERADORES', val: stats ? String(stats.userCount) : '—', color: 'text-pink-400' },
+                ].map(({ label, val, color }) => (
+                  <div key={label} className="p-3 rounded-2xl bg-white/5 border border-white/10">
+                    <p className={`num-display text-2xl sm:text-3xl font-extrabold ${color} leading-none mb-1`}>
+                      {val}
+                    </p>
+                    <p className="font-mono text-[9px] tracking-widest text-slate-400 uppercase">
+                      {label}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="font-display font-extrabold tracking-tight text-4xl sm:text-6xl lg:text-7xl leading-[1.08] mb-8 animate-fade-up-2">
-              Tu ruta segura hacia el{' '}
-              <span className="bg-gradient-to-r from-teal-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent">
-                hacking real
-              </span>
-              .
-            </h1>
-
-            <p className="text-lg sm:text-xl font-normal max-w-2xl mx-auto mb-10 text-slate-600 dark:text-slate-300 leading-relaxed animate-fade-up-3">
-              RutSeg combina laboratorios interactivos en vivo, retos gamificados y métricas reales.
-              Aprende a defender y atacar sistemas reales desde el navegador, a tu propio ritmo.
-            </p>
-
-            {/* Call to action buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-4 animate-fade-up-4 mb-20">
-              {token ? (
-                <Link to="/dashboard" className="btn-wm-primary text-base py-3.5 px-8">
-                  Ir al Dashboard →
-                </Link>
-              ) : (
-                <>
-                  <Link to="/register" className="btn-wm-primary text-base py-3.5 px-8">
-                    Empezar Gratis →
-                  </Link>
-                  <Link to="/login" className="btn-wm-secondary text-base py-3.5 px-8">
-                    Ya tengo cuenta
-                  </Link>
-                </>
-              )}
-            </div>
-
-            {/* BENTO STATS BAR */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-3xl glass-card-wm animate-fade-up-5">
-              {[
-                { value: stats ? String(stats.courseCount) : '—', label: 'Cursos', color: 'text-teal-400' },
-                { value: stats ? String(stats.labCount) : '—', label: 'Laboratorios', color: 'text-sky-400' },
-                { value: stats ? `${stats.totalPoints.toLocaleString('es-CO')}` : '—', label: 'Puntos Disponibles', color: 'text-amber-400' },
-                { value: stats ? String(stats.userCount) : '—', label: 'Operadores', color: 'text-emerald-400' },
-              ].map(({ value, label, color }) => (
-                <div key={label} className="p-4 rounded-2xl bg-white/5 dark:bg-white/5 border border-white/5 text-center">
-                  <p className={`num-display text-3xl sm:text-4xl font-extrabold ${color} leading-none mb-2`}>
-                    {value}
-                  </p>
-                  <p className="font-mono text-[11px] tracking-widest text-slate-500 dark:text-slate-400 uppercase">
-                    {label}
-                  </p>
+            {/* Right Hero: Interactive Terminal Mockup */}
+            <div className="lg:col-span-5">
+              <div className="terminal-card relative shadow-[0_25px_60px_-15px_rgba(5,217,232,0.3)]">
+                {/* Header */}
+                <div className="terminal-header">
+                  <div className="terminal-dots">
+                    <span className="terminal-dot terminal-dot-red" />
+                    <span className="terminal-dot terminal-dot-yellow" />
+                    <span className="terminal-dot terminal-dot-green" />
+                  </div>
+                  <span className="font-mono text-xs text-slate-400 font-semibold tracking-wider">
+                    root@rutseg-lab:~#
+                  </span>
+                  <div className="flex gap-2 font-mono text-[10px]">
+                    <button
+                      onClick={() => setActiveTab('terminal')}
+                      className={`px-2 py-1 rounded transition-colors ${activeTab === 'terminal' ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                      terminal.sh
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('exploit')}
+                      className={`px-2 py-1 rounded transition-colors ${activeTab === 'exploit' ? 'bg-purple-500/20 text-purple-300' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                      exploit.py
+                    </button>
+                  </div>
                 </div>
-              ))}
+
+                {/* Body Content */}
+                <div className="p-5 font-mono text-xs sm:text-sm text-slate-200 space-y-3 min-h-[320px]">
+                  {activeTab === 'terminal' ? (
+                    <>
+                      <div className="text-slate-400"># RutSeg Cybersec Sandbox v2.4.0</div>
+                      <div className="flex items-center gap-2 text-cyan-400">
+                        <span>$</span>
+                        <span>rutseg connect --target lab-sqli-v1</span>
+                      </div>
+                      <div className="text-emerald-400 text-[12px] pl-3 border-l border-emerald-500/40 space-y-1">
+                        <div>[+] Connecting to isolated docker container... OK</div>
+                        <div>[+] Target IP: 10.10.14.88 (Port 80)</div>
+                        <div>[+] Vulnerability detected: Blind SQL Injection</div>
+                      </div>
+                      <div className="flex items-center gap-2 text-pink-400">
+                        <span>$</span>
+                        <span>python3 exploit.py --url http://10.10.14.88/api</span>
+                      </div>
+                      <div className="text-amber-300 bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/20 space-y-1">
+                        <div>[!] Extracting database admin hash...</div>
+                        <div>[!] Cracking hash via hashcat dictionary attack...</div>
+                        <div className="text-emerald-400 font-bold">🎉 FLAG CAPTURED: RUTSEG{`{sql_injection_master_2026}`}</div>
+                      </div>
+                      <div className="flex items-center gap-2 text-cyan-300 pt-2 cursor-blink">
+                        <span>$</span>
+                        <span className="text-slate-400">submit-flag --points 500</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-purple-400"># Python Exploit Script - Proof of Concept</div>
+                      <pre className="text-slate-300 text-xs leading-relaxed overflow-x-auto p-2 bg-black/40 rounded border border-white/5">
+{`import requests
+
+url = "http://10.10.14.88/api/v1/auth"
+payload = {"username": "admin' OR 1=1 --", "pass": "x"}
+
+res = requests.post(url, json=payload)
+if "flag" in res.text:
+    print("[+] SUCCESS! Access granted.")`}
+                      </pre>
+                      <div className="p-2.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs">
+                        Status: EXPLOIT READY TO EXECUTE
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Footer bar */}
+                <div className="bg-black/60 px-4 py-2 border-t border-white/10 flex items-center justify-between font-mono text-[11px] text-slate-400">
+                  <span className="flex items-center gap-1.5 text-emerald-400">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    CONTAINER ONLINE
+                  </span>
+                  <span>100% HANDS-ON</span>
+                </div>
+              </div>
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* ─── FEATURES BENTO GRID ─── */}
-      <section className="relative py-20 border-t border-slate-200 dark:border-white/10">
+      {/* ─── BENTO BOX FEATURES GRID ─── */}
+      <section className="relative py-24 border-t border-white/10 bg-slate-950/60">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
-          <div className="max-w-2xl mb-14">
-            <span className="font-mono text-xs tracking-widest text-teal-500 uppercase font-semibold block mb-3">
-              // Ventajas Tácticas
+          <div className="max-w-3xl mb-16 text-left">
+            <span className="font-mono text-xs tracking-widest text-cyan-400 uppercase font-bold block mb-3">
+              // VENTAJAS EXCLUSIVAS DE RUTSEG
             </span>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight">
-              Diseñado para aprender <span className="text-teal-500">haciendo</span>.
+            <h2 className="font-display text-3xl sm:text-5xl font-black tracking-tight">
+              Una plataforma diseñada para aprender <span className="text-cyan-400">haciendo</span>.
             </h2>
           </div>
 
-          <div className="grid grid-cols-12 gap-6">
-            {FEATURES.map(({ title, badge, body, icon, accent, gridSpan }) => (
-              <div
-                key={title}
-                className={`${gridSpan} glass-card-wm p-8 flex flex-col justify-between group hover:border-teal-500/40`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <div
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110"
-                      style={{
-                        background: `${accent}15`,
-                        color: accent,
-                        border: `1px solid ${accent}30`,
-                      }}
-                    >
-                      {icon}
-                    </div>
-                    <span className="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded-full border border-white/10 bg-white/5 text-slate-400">
-                      {badge}
-                    </span>
+          {/* ASYMMETRIC BENTO GRID */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+            {/* Bento Card 1 (Span 8): Interactive Labs */}
+            <div className="md:col-span-8 glass-card-wm p-8 flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center font-mono font-bold text-lg">
+                    &gt;_
                   </div>
-                  <h3 className="font-display text-2xl font-bold mb-3">{title}</h3>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{body}</p>
+                  <span className="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 font-bold">
+                    LABORATORIOS EN VIVO
+                  </span>
+                </div>
+                <h3 className="font-display text-2xl sm:text-3xl font-extrabold mb-3">
+                  Laboratorios Interactivos con Escenarios Reales
+                </h3>
+                <p className="text-slate-300 text-base leading-relaxed max-w-xl">
+                  Sin teoría plana, sin PDF de 100 páginas: accede directamente a entornos vulnerables preparados para practicar inyección SQL, XSS, escalación de privilegios y pentesting web.
+                </p>
+              </div>
+
+              <div className="mt-8 p-4 rounded-2xl bg-black/40 border border-white/10 font-mono text-xs text-emerald-400 flex items-center justify-between">
+                <span>[+] Target machine: Linux Ubuntu 22.04 LTS</span>
+                <span className="text-cyan-400">LIVE CONTAINER</span>
+              </div>
+            </div>
+
+            {/* Bento Card 2 (Span 4): Gamification & Leaderboard */}
+            <div className="md:col-span-4 glass-card-wm p-8 flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center text-xl">
+                    🏆
+                  </div>
+                  <span className="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 font-bold">
+                    LEADERBOARD
+                  </span>
+                </div>
+                <h3 className="font-display text-2xl font-extrabold mb-3">
+                  Compite en el Ranking Global
+                </h3>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  Cada laboratorio superado otorga puntos de experiencia. Sube puestos en la tabla general y demuestra tu nivel técnico ante la comunidad.
+                </p>
+              </div>
+
+              <div className="mt-6 space-y-2">
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
+                  <span className="text-amber-400 font-bold">#1 @cyber_ninja</span>
+                  <span className="text-slate-300">12,450 PTS</span>
+                </div>
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
+                  <span className="text-slate-300 font-bold">#2 @root_seeker</span>
+                  <span className="text-slate-300">10,800 PTS</span>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* Bento Card 3 (Span 4): Zero Filler */}
+            <div className="md:col-span-4 glass-card-wm p-8 flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-pink-500/20 border border-pink-500/40 text-pink-400 flex items-center justify-center text-xl">
+                    ⚡
+                  </div>
+                  <span className="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded-full border border-pink-500/30 bg-pink-500/10 text-pink-300 font-bold">
+                    CERO RELLENO
+                  </span>
+                </div>
+                <h3 className="font-display text-2xl font-extrabold mb-3">
+                  100% Efectividad Táctica
+                </h3>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  Aprende lo que realmente se exige en auditorías de seguridad y puestos de Ciberseguridad. Directo al grano desde el minuto 1.
+                </p>
+              </div>
+
+              <div className="mt-6 flex items-center gap-2 font-mono text-xs text-pink-400">
+                <span>✓ SIN DIAPOSITIVAS</span>
+                <span>✓ SOLO PRÁCTICA</span>
+              </div>
+            </div>
+
+            {/* Bento Card 4 (Span 8): Progress Tracking */}
+            <div className="md:col-span-8 glass-card-wm p-8 flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center text-xl">
+                    📊
+                  </div>
+                  <span className="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 font-bold">
+                    MÉTRICAS REALES
+                  </span>
+                </div>
+                <h3 className="font-display text-2xl sm:text-3xl font-extrabold mb-3">
+                  Seguimiento de Progreso y Flags Capturadas
+                </h3>
+                <p className="text-slate-300 text-base leading-relaxed max-w-xl">
+                  Visualiza estadísticas detalladas de laboratorios completados, módulos aprobados y habilidades adquiridas en tu perfil público de operador.
+                </p>
+              </div>
+
+              <div className="mt-6 grid grid-cols-3 gap-4">
+                <div className="p-3 rounded-xl bg-white/5 text-center">
+                  <p className="num-display text-xl font-bold text-emerald-400">100%</p>
+                  <p className="font-mono text-[10px] text-slate-400 uppercase">Validación Automática</p>
+                </div>
+                <div className="p-3 rounded-xl bg-white/5 text-center">
+                  <p className="num-display text-xl font-bold text-cyan-400">24/7</p>
+                  <p className="font-mono text-[10px] text-slate-400 uppercase">Acceso a Labs</p>
+                </div>
+                <div className="p-3 rounded-xl bg-white/5 text-center">
+                  <p className="num-display text-xl font-bold text-amber-400">LIVE</p>
+                  <p className="font-mono text-[10px] text-slate-400 uppercase">Ranking Instantáneo</p>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* ─── CÓMO FUNCIONA — BENTO STEPS ─── */}
-      <section className="relative py-24 border-t border-slate-200 dark:border-white/10 bg-slate-100/50 dark:bg-white/[0.02]">
+      {/* ─── LIVE COURSES SHOWCASE ─── */}
+      {!coursesLoading && courses.length > 0 && (
+        <section className="relative py-24 border-t border-white/10">
+          <div className="max-w-7xl mx-auto px-6 lg:px-10">
+            <div className="flex items-end justify-between flex-wrap gap-4 mb-14">
+              <div>
+                <span className="font-mono text-xs tracking-widest text-cyan-400 uppercase font-bold block mb-3">
+                  // CATÁLOGO DESTACADO DE CURSOS
+                </span>
+                <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">
+                  Explora las Rutas de Aprendizaje
+                </h2>
+              </div>
+              <Link to="/register" className="btn-wm-secondary text-sm py-2.5 px-5">
+                Ver Todos los Cursos →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {courses.slice(0, 3).map(course => (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  onEnroll={() => {}}
+                  onContinue={() => {}}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ─── CÓMO FUNCIONA STEPS ─── */}
+      <section className="relative py-24 border-t border-white/10 bg-slate-950/40">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
-          <div className="max-w-2xl mb-14">
-            <span className="font-mono text-xs tracking-widest text-teal-500 uppercase font-semibold block mb-3">
-              // Flujo de Aprendizaje
+          <div className="max-w-2xl mb-16">
+            <span className="font-mono text-xs tracking-widest text-emerald-400 uppercase font-bold block mb-3">
+              // PASO A PASO
             </span>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight">
-              De cero a operador en <span className="text-sky-400">4 pasos sencillos</span>.
+            <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">
+              De cero a operador en 4 sencillos pasos.
             </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              {
-                step: '01',
-                title: 'Crea tu Cuenta',
-                body: 'Registro instantáneo en menos de 2 minutos. Solo necesitas un correo y usuario.',
-              },
-              {
-                step: '02',
-                title: 'Elige un Path',
-                body: 'Explora cursos desde nivel principiante hasta escenarios avanzados.',
-              },
-              {
-                step: '03',
-                title: 'Resuelve Labs',
-                body: 'Ejecuta exploits, analiza vulnerabilidades y responde quizzes interactivos.',
-              },
-              {
-                step: '04',
-                title: 'Escala el Ranking',
-                body: 'Obtén puntos por cada lab superado y sube en la clasificación global.',
-              },
-            ].map(({ step, title, body }) => (
-              <div key={step} className="glass-card-wm p-7 flex flex-col justify-between relative overflow-hidden group">
-                <span className="num-display text-6xl font-black text-slate-300/20 dark:text-white/5 absolute top-3 right-4 pointer-events-none select-none group-hover:scale-110 transition-transform">
+              { step: '01', title: 'Crea tu Cuenta', desc: 'Registro instantáneo en menos de 2 minutos sin tarjeta de crédito.' },
+              { step: '02', title: 'Elige un Path', desc: 'Selecciona cursos desde nivel principiante hasta escenarios avanzados.' },
+              { step: '03', title: 'Resuelve Labs', desc: 'Ejecuta exploits, descubre vulnerabilidades y responde los retos.' },
+              { step: '04', title: 'Escala el Ranking', desc: 'Acumula puntos por cada laboratorio y posiciónate en el TOP 10.' },
+            ].map(({ step, title, desc }) => (
+              <div key={step} className="glass-card-wm p-8 relative overflow-hidden group">
+                <span className="num-display text-7xl font-black text-white/5 absolute top-2 right-4 pointer-events-none select-none group-hover:scale-110 transition-transform">
                   {step}
                 </span>
                 <div>
-                  <span className="font-mono text-xs text-teal-400 font-bold tracking-widest block mb-4">
+                  <span className="font-mono text-xs text-cyan-400 font-bold tracking-widest block mb-4">
                     // PASO {step}
                   </span>
                   <h3 className="font-display text-xl font-bold mb-2">{title}</h3>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{body}</p>
+                  <p className="text-slate-300 text-sm leading-relaxed">{desc}</p>
                 </div>
               </div>
             ))}
@@ -232,37 +401,38 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── LEADERBOARD SECTION ─── */}
-      <section className="relative py-24 border-t border-slate-200 dark:border-white/10">
+      {/* ─── RANKING PODIUM ─── */}
+      <section className="relative py-24 border-t border-white/10">
         <div className="max-w-4xl mx-auto px-6 lg:px-10">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="font-mono text-xs tracking-widest text-amber-400 uppercase font-semibold block mb-3">
-              // Top Operadores
+            <span className="font-mono text-xs tracking-widest text-amber-400 uppercase font-bold block mb-3">
+              // CLASIFICACIÓN EN TIEMPO REAL
             </span>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight">
-              Los 5 mejores hackers de la plataforma
+            <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">
+              Top Operadores de RutSeg
             </h2>
           </div>
 
-          <div className="glass-card-wm p-6 sm:p-8">
+          <div className="glass-card-wm p-6 sm:p-10">
             <Ranking limit={5} />
           </div>
         </div>
       </section>
 
-      {/* ─── CTA BANNER ─── */}
+      {/* ─── HIGH CONVERSION CTA ─── */}
       {!token && (
-        <section className="relative py-24 border-t border-slate-200 dark:border-white/10 overflow-hidden">
-          <div className="wm-orb w-96 h-96 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-teal-500/20 blur-3xl" />
+        <section className="relative py-28 border-t border-white/10 overflow-hidden">
+          <div className="wm-orb w-[600px] h-[600px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-cyan-500/20 blur-[130px]" />
+          
           <div className="relative max-w-4xl mx-auto px-6 text-center">
-            <h2 className="font-display text-4xl sm:text-5xl font-extrabold mb-6">
-              ¿Listo para empezar a <span className="text-teal-400">hackear</span>?
+            <h2 className="font-display text-4xl sm:text-6xl font-black tracking-tight mb-6">
+              ¿Listo para empezar a <span className="text-cyan-400">hackear</span>?
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-lg mb-10 max-w-xl mx-auto">
+            <p className="text-slate-300 text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
               Crea tu cuenta totalmente gratis hoy mismo y accede a la librería completa de laboratorios.
             </p>
-            <Link to="/register" className="btn-wm-primary text-lg py-4 px-10">
-              Crear Cuenta Gratis →
+            <Link to="/register" className="btn-wm-primary text-lg py-5 px-12 shadow-[0_0_40px_rgba(5,217,232,0.4)]">
+              Crear Cuenta Gratis Ahora →
             </Link>
           </div>
         </section>
