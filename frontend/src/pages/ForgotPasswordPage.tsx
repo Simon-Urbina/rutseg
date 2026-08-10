@@ -59,8 +59,12 @@ export default function ForgotPasswordPage() {
 
       {sent ? (
         <div
-          className="rounded-2xl px-6 py-8 text-center space-y-4"
-          style={{ background: isDark ? 'rgba(37,150,190,0.08)' : 'rgba(37,150,190,0.05)', border: '1px solid rgba(37,150,190,0.25)' }}
+          className="hud-panel hud-static px-6 py-8 text-center space-y-4"
+          style={{
+            background: isDark ? 'rgba(37,150,190,0.08)' : 'rgba(37,150,190,0.05)',
+            '--hud-border': 'rgba(37,150,190,0.35)',
+            '--hud-border-hover': 'rgba(37,150,190,0.35)',
+          } as React.CSSProperties}
         >
           <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto" style={{ background: 'rgba(37,150,190,0.12)', border: '1px solid rgba(37,150,190,0.3)' }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2596be" strokeWidth="2" strokeLinecap="round">

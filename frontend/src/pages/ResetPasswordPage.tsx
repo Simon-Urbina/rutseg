@@ -77,8 +77,12 @@ export default function ResetPasswordPage() {
       </div>
 
       {!token ? (
-        <div className="rounded-2xl px-6 py-8 text-center space-y-3"
-          style={{ background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.22)' }}>
+        <div className="hud-panel hud-static px-6 py-8 text-center space-y-3"
+          style={{
+            background: 'rgba(248,113,113,0.06)',
+            '--hud-border': 'rgba(248,113,113,0.35)',
+            '--hud-border-hover': 'rgba(248,113,113,0.35)',
+          } as React.CSSProperties}>
           <p className="font-display text-xl" style={{ color: '#f87171' }}>Enlace inválido</p>
           <p className="text-[14px]" style={{ color: textMuted }}>Este enlace no es válido. Solicita uno nuevo.</p>
           <Link to="/forgot-password" className="inline-block mt-2 font-mono text-[12px] tracking-wide hover:underline" style={{ color: textMuted }}>
@@ -86,8 +90,12 @@ export default function ResetPasswordPage() {
           </Link>
         </div>
       ) : done ? (
-        <div className="rounded-2xl px-6 py-8 text-center space-y-4"
-          style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.22)' }}>
+        <div className="hud-panel hud-static px-6 py-8 text-center space-y-4"
+          style={{
+            background: 'rgba(74,222,128,0.06)',
+            '--hud-border': 'rgba(74,222,128,0.35)',
+            '--hud-border-hover': 'rgba(74,222,128,0.35)',
+          } as React.CSSProperties}>
           <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto" style={{ background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.3)' }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round">
               <polyline points="20 6 9 17 4 12"/>

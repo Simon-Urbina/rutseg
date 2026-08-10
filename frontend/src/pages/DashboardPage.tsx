@@ -597,11 +597,12 @@ function SkeletonGrid({ isDark, count }: { isDark: boolean; count: number }) {
 function EmptyState({ isDark, title, body }: { isDark: boolean; title: string; body: string }) {
   return (
     <div
-      className="rounded-2xl px-6 py-12 text-center"
+      className="hud-panel hud-static px-6 py-12 text-center"
       style={{
         background: isDark ? 'rgba(6,13,31,0.6)' : '#f8faff',
-        border: `1px solid ${isDark ? 'rgba(26,63,150,0.10)' : 'rgba(26,63,150,0.08)'}`,
-      }}
+        '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+        '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+      } as React.CSSProperties}
     >
       <p
         className="font-display mb-2"
