@@ -105,26 +105,15 @@ export default function DashboardPage() {
 
         {/* ─── Hero ─── */}
         <div
-          className="relative overflow-hidden border-b"
+          className={`relative overflow-hidden border-b ${isDark ? 'scanline-overlay' : ''}`}
           style={{
             borderColor: isDark ? 'rgba(26,63,150,0.12)' : 'rgba(26,63,150,0.10)',
-            background: isDark
-              ? 'linear-gradient(160deg, #0D1630 0%, #060D1F 100%)'
-              : 'linear-gradient(160deg, #E8EEFA 0%, #EEF3FC 100%)',
+            backgroundImage: isDark
+              ? 'linear-gradient(160deg, #0D1630 0%, #060D1F 100%), linear-gradient(rgba(26,63,150,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(26,63,150,0.07) 1px, transparent 1px)'
+              : 'linear-gradient(160deg, #E8EEFA 0%, #EEF3FC 100%), linear-gradient(rgba(26,63,150,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(26,63,150,0.06) 1px, transparent 1px)',
+            backgroundSize: 'cover, 32px 32px, 32px 32px',
           }}
         >
-          <div
-            className="absolute pointer-events-none"
-            style={{
-              top: '-50%', right: '-5%',
-              width: '480px', height: '480px',
-              borderRadius: '50%',
-              background: isDark
-                ? 'radial-gradient(circle, rgba(26,63,150,0.18) 0%, transparent 60%)'
-                : 'radial-gradient(circle, rgba(26,63,150,0.07) 0%, transparent 60%)',
-            }}
-          />
-
           <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-14 animate-fade-up-1">
             <div className="flex items-center justify-between flex-wrap gap-6">
 
@@ -202,38 +191,21 @@ export default function DashboardPage() {
 
           {/* Stats */}
           <section className="grid grid-cols-1 sm:grid-cols-3 gap-5 animate-fade-up-2">
-            {stats.map(({ label, value, unit, icon, accent }) => (
+            {stats.map(({ label, value, unit, icon, accent }, i) => (
               <div
                 key={label}
-                className="rounded-2xl overflow-hidden transition-all duration-200 cursor-default relative"
+                className="hud-panel cursor-default"
                 style={{
                   background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                  border: `1px solid ${isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'}`,
-                }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLElement
-                  el.style.transform = 'translateY(-3px)'
-                  el.style.boxShadow = `0 8px 40px rgba(0,0,0,0.25), 0 0 0 1px ${accent}40`
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLElement
-                  el.style.transform = 'translateY(0)'
-                  el.style.boxShadow = 'none'
-                }}
+                  '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+                  '--hud-border-hover': `${accent}99`,
+                  '--hud-focus': accent,
+                } as React.CSSProperties}
               >
                 {/* Top accent strip */}
                 <div style={{ height: '2px', background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }} />
 
-                {/* Corner glow */}
-                <div
-                  className="absolute pointer-events-none"
-                  style={{
-                    bottom: '-20%', right: '-10%',
-                    width: '180px', height: '180px',
-                    borderRadius: '50%',
-                    background: `radial-gradient(circle, ${accent}18 0%, transparent 70%)`,
-                  }}
-                />
+                <span className="hud-corner-tag" style={{ color: accent }}>{String(i + 1).padStart(2, '0')}</span>
 
                 <div className="relative p-7">
                   {/* Top row: label kicker + icon */}
@@ -372,11 +344,13 @@ export default function DashboardPage() {
           {/* Profile card + ranking */}
           <section className="grid grid-cols-1 lg:grid-cols-5 gap-5 animate-fade-up-3">
             <div
-              className="lg:col-span-2 rounded-2xl p-8 relative overflow-hidden"
+              className="hud-panel lg:col-span-2 p-8"
               style={{
                 background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                border: `1px solid ${isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'}`,
-              }}
+                '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+                '--hud-border-hover': 'rgba(26,63,150,0.65)',
+                '--hud-focus': '#1A3F96',
+              } as React.CSSProperties}
             >
               <p
                 className="font-mono text-[10px] tracking-[0.22em] uppercase mb-6"
