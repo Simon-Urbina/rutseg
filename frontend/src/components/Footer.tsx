@@ -74,58 +74,38 @@ export default function Footer() {
 
   return (
     <footer
-      className="relative border-t"
-      style={{
-        background: isDark ? '#060D1F' : '#E8EEFA',
-        borderColor: isDark ? 'rgba(26,63,150,0.12)' : 'rgba(26,63,150,0.10)',
-      }}
+      className={`relative border-t transition-colors duration-300 ${
+        isDark ? 'bg-[#040814] border-white/10 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
+      }`}
     >
-      {/* Neon accent line at top */}
-      <div
-        className="absolute top-0 left-0 right-0 h-px pointer-events-none"
-        style={{
-          background: 'linear-gradient(90deg, transparent 0%, #1A3F96 35%, #2596be 65%, transparent 100%)',
-          opacity: 0.4,
-        }}
-      />
+      {/* Top accent glow line */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal-500 to-indigo-500 opacity-40 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-10">
-
-        {/* Top: brand + columns */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-14">
 
-          {/* Brand block */}
+          {/* Brand Column */}
           <div className="md:col-span-5">
-            <Link to="/" className="flex items-center gap-3 mb-5 w-fit">
+            <Link to="/" className="flex items-center gap-3 mb-5 w-fit group">
               <Boop rotation={12} scale={1.12}>
                 <LogoIcon className="w-9 h-9" />
               </Boop>
               <div>
-                <p
-                  className="font-display text-[18px] leading-none"
-                  style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}
-                >
+                <p className="font-display font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">
                   RutSeg
                 </p>
-                <p
-                  className="font-mono text-[9px] tracking-[0.22em] uppercase mt-1"
-                  style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-                >
-                  ruta · segura
+                <p className="font-mono text-[9px] tracking-widest uppercase text-teal-500 font-bold">
+                  RUTA · SEGURA
                 </p>
               </div>
             </Link>
 
-            <p
-              className="text-[14px] font-light max-w-sm leading-relaxed mb-6"
-              style={{ color: isDark ? '#4A70CC' : '#2451C8' }}
-            >
-              La plataforma de laboratorios prácticos para futuros hackers.
-              Aprende ciberseguridad.
+            <p className="text-sm font-normal max-w-sm leading-relaxed mb-6 text-slate-600 dark:text-slate-400">
+              La plataforma de laboratorios prácticos en ciberseguridad para la nueva generación de hackers y analistas defensivos.
             </p>
 
-            {/* Social */}
-            <div className="flex items-center gap-2">
+            {/* Social Icons */}
+            <div className="flex items-center gap-3">
               {SOCIAL.map(({ label, href, svg }) => (
                 <a
                   key={label}
@@ -133,23 +113,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200"
-                  style={{
-                    color: isDark ? '#7B9FE8' : '#1A3F96',
-                    border: `1px solid ${isDark ? 'rgba(26,63,150,0.20)' : 'rgba(26,63,150,0.22)'}`,
-                  }}
-                  onMouseEnter={e => {
-                    const el = e.currentTarget as HTMLElement
-                    el.style.background = 'rgba(26,63,150,0.10)'
-                    el.style.color = '#2596be'
-                    el.style.borderColor = 'rgba(26,63,150,0.45)'
-                  }}
-                  onMouseLeave={e => {
-                    const el = e.currentTarget as HTMLElement
-                    el.style.background = 'transparent'
-                    el.style.color = isDark ? '#7B9FE8' : '#1A3F96'
-                    el.style.borderColor = isDark ? 'rgba(26,63,150,0.20)' : 'rgba(26,63,150,0.22)'
-                  }}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center border border-white/10 bg-white/5 text-slate-400 hover:text-teal-400 hover:border-teal-500/40 hover:scale-105 transition-all duration-200"
                 >
                   {svg}
                 </a>
@@ -157,15 +121,12 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Link columns */}
+          {/* Link Columns */}
           <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
             {FOOTER_COLUMNS.map(({ label, links }) => (
               <div key={label}>
-                <p
-                  className="font-mono text-[10px] tracking-[0.22em] uppercase mb-5"
-                  style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-                >
-                  // {label.toLowerCase()}
+                <p className="font-mono text-xs text-teal-400 font-bold tracking-widest uppercase mb-4">
+                  // {label}
                 </p>
                 <ul className="space-y-3">
                   {links.map(link => (
@@ -175,20 +136,14 @@ export default function Footer() {
                           href={link.to}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="nav-link text-[14px] inline-block transition-colors"
-                          style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#2596be' }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = isDark ? '#7B9FE8' : '#2451C8' }}
+                          className="nav-link text-sm text-slate-600 dark:text-slate-400 hover:text-teal-400 transition-colors inline-block"
                         >
                           {link.label}
                         </a>
                       ) : (
                         <Link
                           to={link.to}
-                          className="nav-link text-[14px] inline-block transition-colors"
-                          style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#2596be' }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = isDark ? '#7B9FE8' : '#2451C8' }}
+                          className="nav-link text-sm text-slate-600 dark:text-slate-400 hover:text-teal-400 transition-colors inline-block"
                         >
                           {link.label}
                         </Link>
@@ -201,29 +156,13 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Divider */}
-        <div
-          className="h-px w-full"
-          style={{ background: isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.12)' }}
-        />
-
-        {/* Bottom row */}
-        <div className="pt-8 flex flex-wrap items-center justify-between gap-4">
-          <p
-            className="font-mono text-[10px] tracking-[0.22em] uppercase"
-            style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-          >
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-slate-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+          <p className="text-slate-500 dark:text-slate-400">
             RutSeg © 2026 — Simón Jacobo Urbina Martínez
           </p>
-          <span
-            className="font-mono text-[10px] tracking-[0.22em] uppercase px-2.5 py-1 rounded"
-            style={{
-              color: '#2596be',
-              background: 'rgba(37,150,190,0.08)',
-              border: '1px solid rgba(37,150,190,0.25)',
-            }}
-          >
-            V.UCHIE-1.0
+          <span className="px-3 py-1 rounded-full border border-teal-500/20 bg-teal-500/10 text-teal-400 font-bold tracking-widest">
+            V.UCHIE-1.0 WATERMELON UI
           </span>
         </div>
       </div>

@@ -9,21 +9,26 @@ import Footer from '../components/Footer'
 
 const FEATURES = [
   {
-    title: 'Aprende practicando',
-    body: 'Laboratorios interactivos con escenarios reales. Sin teoría plana, sin diapositivas: solo terminales y problemas para resolver.',
+    title: 'Aprende Practicando',
+    badge: 'HANDS-ON',
+    body: 'Laboratorios interactivos con escenarios de ciberseguridad reales. Sin teoría plana ni diapositivas: solo terminales, código y problemas para resolver.',
+    accent: '#2596be',
+    gridSpan: 'col-span-12 md:col-span-7',
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="4 17 10 11 4 5"/>
         <line x1="12" y1="19" x2="20" y2="19"/>
       </svg>
     ),
-    accent: '#1A3F96',
   },
   {
-    title: 'Compite en el ranking',
-    body: 'Cada lab completado suma puntos. Escala posiciones, demuestra tu nivel y mide tu progreso contra otros operadores.',
+    title: 'Compite en el Ranking',
+    badge: 'GAMIFICACIÓN',
+    body: 'Cada laboratorio completado suma puntos instantáneos. Escala posiciones en el Leaderboard global y demuestra tu nivel técnico.',
+    accent: '#F5C500',
+    gridSpan: 'col-span-12 md:col-span-5',
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
         <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
         <path d="M4 22h16"/>
@@ -32,17 +37,18 @@ const FEATURES = [
         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
       </svg>
     ),
-    accent: '#F5C500',
   },
   {
-    title: 'Cero relleno',
-    body: 'Aprendizaje hands-on desde el primer minuto. Cada actividad existe para enseñarte algo concreto que puedas usar el día siguiente.',
+    title: 'Cero Relleno Teórico',
+    badge: '100% EFECTIVO',
+    body: 'Aprendizaje enfocado en habilidades reales del mercado laboral de ciberseguridad. Cada reto existe para enseñarte herramientas tácticas aplicables.',
+    accent: '#10B981',
+    gridSpan: 'col-span-12 md:col-span-12',
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
       </svg>
     ),
-    accent: '#2596be',
   },
 ]
 
@@ -52,116 +58,76 @@ export default function LandingPage() {
   const isDark = theme === 'dark'
 
   const [stats, setStats] = useState<{ courseCount: number; labCount: number; totalPoints: number; userCount: number } | null>(null)
+  
   useEffect(() => {
     api.get<{ courseCount: number; labCount: number; totalPoints: number; userCount: number }>('/api/stats')
       .then(setStats).catch(() => {})
   }, [])
 
   return (
-    <div style={{ background: isDark ? '#060D1F' : '#EEF3FC' }}>
+    <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-[#060D1F] text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
       <Header />
 
-      {/* ─── HERO ─── */}
-      <section
-        className="relative overflow-hidden"
-        style={{
-          background: isDark
-            ? 'linear-gradient(180deg, #0D1630 0%, #060D1F 80%)'
-            : 'linear-gradient(180deg, #E8EEFA 0%, #EEF3FC 80%)',
-        }}
-      >
-        {/* Neon grid */}
-        {isDark && (
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(26, 63, 150, 0.07) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(26, 63, 150, 0.07) 1px, transparent 1px)
-              `,
-              backgroundSize: '50px 50px',
-              maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 80%)',
-              WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 80%)',
-            }}
-          />
-        )}
+      {/* ─── HERO SECTION WITH WATERMELON UI MESH GLOW ─── */}
+      <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 overflow-hidden">
+        {/* Ambient Glowing Watermelon Mesh Orbs */}
+        <div className="wm-orb w-96 h-96 top-[-50px] left-[-50px] bg-teal-500/20 dark:bg-teal-500/15 blur-3xl" />
+        <div className="wm-orb w-[500px] h-[500px] top-[100px] right-[-100px] bg-indigo-500/20 dark:bg-indigo-600/15 blur-3xl" />
+        <div className="wm-orb w-80 h-80 bottom-0 left-[30%] bg-emerald-500/15 dark:bg-emerald-500/10 blur-3xl" />
 
-        <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-20 pb-28 lg:pt-28 lg:pb-36">
-          <div className="max-w-4xl">
-            <h1
-              className="font-display mb-8 animate-fade-up-2"
-              style={{
-                fontSize: 'clamp(2.6rem, 6.5vw, 5rem)',
-                lineHeight: 1.05,
-                letterSpacing: '-0.015em',
-                color: isDark ? '#C8D5EE' : '#0A1545',
-              }}
-            >
-              Tu ruta segura{' '}
-              <span
-                key={isDark ? 'dark' : 'light'}
-                style={{
-                  display: 'inline-block',
-                  backgroundImage: isDark
-                    ? 'linear-gradient(135deg, #4A9FCC 0%, #1A3F96 55%, #7B9FE8 100%)'
-                    : 'linear-gradient(135deg, #1A3F96 0%, #2596be 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                hacia el hacking real
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-10">
+          <div className="max-w-4xl mx-auto text-center">
+            {/* Pill tag */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-teal-500/20 bg-teal-500/10 backdrop-blur-md text-teal-400 font-mono text-xs tracking-wider uppercase mb-8 animate-fade-up-1">
+              <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+              Plataforma de Laboratorios Prácticos en Ciberseguridad
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="font-display font-extrabold tracking-tight text-4xl sm:text-6xl lg:text-7xl leading-[1.08] mb-8 animate-fade-up-2">
+              Tu ruta segura hacia el{' '}
+              <span className="bg-gradient-to-r from-teal-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent">
+                hacking real
               </span>
               .
             </h1>
-            <p
-              className="text-lg lg:text-xl font-light max-w-2xl mb-12 animate-fade-up-3"
-              style={{ color: isDark ? '#7B9FE8' : '#2451C8', lineHeight: 1.6 }}
-            >
-              RutSeg es tu plataforma de laboratorios prácticos en ciberseguridad.
-              Aprende con ejercicios reales, a tu ritmo, sin diapositivas y sin atajos.
+
+            <p className="text-lg sm:text-xl font-normal max-w-2xl mx-auto mb-10 text-slate-600 dark:text-slate-300 leading-relaxed animate-fade-up-3">
+              RutSeg combina laboratorios interactivos en vivo, retos gamificados y métricas reales.
+              Aprende a defender y atacar sistemas reales desde el navegador, a tu propio ritmo.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 animate-fade-up-4">
+            {/* Call to action buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-4 animate-fade-up-4 mb-20">
               {token ? (
-                <Link
-                  to="/dashboard"
-                  className="btn-neon px-7 py-4 rounded-xl text-[15px] font-semibold"
-                >
-                  Ir al dashboard →
+                <Link to="/dashboard" className="btn-wm-primary text-base py-3.5 px-8">
+                  Ir al Dashboard →
                 </Link>
               ) : (
                 <>
-                  <Link
-                    to="/register"
-                    className="btn-neon px-7 py-4 rounded-xl text-[15px] font-semibold"
-                  >
-                    Empezar gratis →
+                  <Link to="/register" className="btn-wm-primary text-base py-3.5 px-8">
+                    Empezar Gratis →
                   </Link>
-                  <Link
-                    to="/login"
-                    className="nav-link text-[15px] font-medium px-2 py-1"
-                    style={{ color: isDark ? '#7B9FE8' : '#1A3F96' }}
-                  >
+                  <Link to="/login" className="btn-wm-secondary text-base py-3.5 px-8">
                     Ya tengo cuenta
                   </Link>
                 </>
               )}
             </div>
 
-            {/* Stats */}
-            <div className="flex flex-wrap gap-12 mt-20 animate-fade-up-5">
+            {/* BENTO STATS BAR */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-3xl glass-card-wm animate-fade-up-5">
               {[
-                { value: stats ? String(stats.courseCount) : '—', label: 'Cursos' },
-                { value: stats ? String(stats.labCount) : '—', label: 'Laboratorios' },
-                { value: stats ? `${stats.totalPoints.toLocaleString('es-CO')}` : '—', label: 'Puntos disponibles' },
-                { value: stats ? String(stats.userCount) : '—', label: 'Usuarios' },
-              ].map(({ value, label }) => (
-                <div key={label}>
-                  <p className="num-display leading-none" style={{ fontSize: '2.75rem', color: '#F5C500' }}>
+                { value: stats ? String(stats.courseCount) : '—', label: 'Cursos', color: 'text-teal-400' },
+                { value: stats ? String(stats.labCount) : '—', label: 'Laboratorios', color: 'text-sky-400' },
+                { value: stats ? `${stats.totalPoints.toLocaleString('es-CO')}` : '—', label: 'Puntos Disponibles', color: 'text-amber-400' },
+                { value: stats ? String(stats.userCount) : '—', label: 'Operadores', color: 'text-emerald-400' },
+              ].map(({ value, label, color }) => (
+                <div key={label} className="p-4 rounded-2xl bg-white/5 dark:bg-white/5 border border-white/5 text-center">
+                  <p className={`num-display text-3xl sm:text-4xl font-extrabold ${color} leading-none mb-2`}>
                     {value}
                   </p>
-                  <p className="font-mono text-[10px] tracking-[0.22em] uppercase mt-2" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
+                  <p className="font-mono text-[11px] tracking-widest text-slate-500 dark:text-slate-400 uppercase">
                     {label}
                   </p>
                 </div>
@@ -171,243 +137,132 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── FEATURES ─── */}
-      <section
-        className="border-t"
-        style={{ borderColor: isDark ? 'rgba(26,63,150,0.12)' : 'rgba(26,63,150,0.10)' }}
-      >
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-20 lg:py-28">
-          <div className="max-w-3xl mb-16">
-            <p
-              className="font-mono text-xs tracking-[0.22em] uppercase mb-4"
-              style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-            >
-              // ¿qué hace RutSeg diferente?
-            </p>
-            <h2
-              className="font-display"
-              style={{
-                fontSize: 'clamp(1.9rem, 3.5vw, 2.75rem)',
-                lineHeight: 1.15,
-                color: isDark ? '#C8D5EE' : '#0A1545',
-              }}
-            >
-              Una plataforma pensada para aprender{' '}
-              <span style={{ color: '#1A3F96' }}>haciendo</span>
-              , no solo leyendo.
+      {/* ─── FEATURES BENTO GRID ─── */}
+      <section className="relative py-20 border-t border-slate-200 dark:border-white/10">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10">
+          <div className="max-w-2xl mb-14">
+            <span className="font-mono text-xs tracking-widest text-teal-500 uppercase font-semibold block mb-3">
+              // Ventajas Tácticas
+            </span>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight">
+              Diseñado para aprender <span className="text-teal-500">haciendo</span>.
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {FEATURES.map(({ title, body, icon, accent }) => (
+          <div className="grid grid-cols-12 gap-6">
+            {FEATURES.map(({ title, badge, body, icon, accent, gridSpan }) => (
               <div
                 key={title}
-                className="hud-panel p-8 cursor-default"
-                style={{
-                  background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                  '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
-                  '--hud-border-hover': `${accent}99`,
-                } as React.CSSProperties}
+                className={`${gridSpan} glass-card-wm p-8 flex flex-col justify-between group hover:border-teal-500/40`}
               >
-                <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6"
-                  style={{
-                    background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.03)',
-                    border: `1px solid ${accent}30`,
-                    color: accent,
-                  }}
-                >
-                  {icon}
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110"
+                      style={{
+                        background: `${accent}15`,
+                        color: accent,
+                        border: `1px solid ${accent}30`,
+                      }}
+                    >
+                      {icon}
+                    </div>
+                    <span className="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded-full border border-white/10 bg-white/5 text-slate-400">
+                      {badge}
+                    </span>
+                  </div>
+                  <h3 className="font-display text-2xl font-bold mb-3">{title}</h3>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{body}</p>
                 </div>
-                <h3
-                  className="font-display mb-3"
-                  style={{ fontSize: '1.5rem', color: isDark ? '#EEF3FC' : '#0A1545' }}
-                >
-                  {title}
-                </h3>
-                <p
-                  className="text-[15px] font-light"
-                  style={{ color: isDark ? '#4A70CC' : '#2451C8', lineHeight: 1.65 }}
-                >
-                  {body}
-                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── CÓMO FUNCIONA ─── */}
-      <section
-        className="border-t relative overflow-hidden"
-        style={{
-          borderColor: isDark ? 'rgba(26,63,150,0.12)' : 'rgba(26,63,150,0.10)',
-          background: isDark
-            ? 'linear-gradient(180deg, #060D1F 0%, #091520 100%)'
-            : 'linear-gradient(180deg, #EEF3FC 0%, #E8EEFA 100%)',
-        }}
-      >
-        <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-20 lg:py-28">
-          <div className="max-w-2xl mb-16">
-            <p
-              className="font-mono text-xs tracking-[0.22em] uppercase mb-4"
-              style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-            >
-              // cómo funciona
-            </p>
-            <h2
-              className="font-display"
-              style={{
-                fontSize: 'clamp(1.9rem, 3.5vw, 2.75rem)',
-                lineHeight: 1.15,
-                color: isDark ? '#C8D5EE' : '#0A1545',
-              }}
-            >
-              De cero a hacker en{' '}
-              <span style={{ color: '#2596be' }}>cuatro pasos</span>.
+      {/* ─── CÓMO FUNCIONA — BENTO STEPS ─── */}
+      <section className="relative py-24 border-t border-slate-200 dark:border-white/10 bg-slate-100/50 dark:bg-white/[0.02]">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10">
+          <div className="max-w-2xl mb-14">
+            <span className="font-mono text-xs tracking-widest text-teal-500 uppercase font-semibold block mb-3">
+              // Flujo de Aprendizaje
+            </span>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight">
+              De cero a operador en <span className="text-sky-400">4 pasos sencillos</span>.
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
                 step: '01',
-                title: 'Crea tu cuenta',
-                body: 'Regístrate gratis en menos de 2 minutos. Solo necesitas un correo y un nombre de usuario.',
-                accent: '#1A3F96',
+                title: 'Crea tu Cuenta',
+                body: 'Registro instantáneo en menos de 2 minutos. Solo necesitas un correo y usuario.',
               },
               {
                 step: '02',
-                title: 'Elige un curso',
-                body: 'Explora los cursos disponibles e inscríbete en el path que más te interese — desde principiante hasta avanzado.',
-                accent: '#2596be',
+                title: 'Elige un Path',
+                body: 'Explora cursos desde nivel principiante hasta escenarios avanzados.',
               },
               {
                 step: '03',
-                title: 'Trabaja los labs',
-                body: 'Lee el contenido del laboratorio, completa las actividades interactivas y responde el quiz al final.',
-                accent: '#1A3F96',
+                title: 'Resuelve Labs',
+                body: 'Ejecuta exploits, analiza vulnerabilidades y responde quizzes interactivos.',
               },
               {
                 step: '04',
-                title: 'Sube en el ranking',
-                body: 'Cada lab completado suma puntos. Escala posiciones y demuestra tu nivel en el ranking global.',
-                accent: '#F5C500',
+                title: 'Escala el Ranking',
+                body: 'Obtén puntos por cada lab superado y sube en la clasificación global.',
               },
-            ].map(({ step, title, body, accent }) => (
-              <div
-                key={step}
-                className="hud-panel p-8 relative cursor-default"
-                style={{
-                  background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                  '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
-                  '--hud-border-hover': `${accent}99`,
-                } as React.CSSProperties}
-              >
-                <p
-                  className="num-display absolute top-4 right-6 pointer-events-none select-none"
-                  style={{ fontSize: '5rem', lineHeight: 1, color: accent, opacity: 0.07 }}
-                >
+            ].map(({ step, title, body }) => (
+              <div key={step} className="glass-card-wm p-7 flex flex-col justify-between relative overflow-hidden group">
+                <span className="num-display text-6xl font-black text-slate-300/20 dark:text-white/5 absolute top-3 right-4 pointer-events-none select-none group-hover:scale-110 transition-transform">
                   {step}
-                </p>
-                <p
-                  className="font-mono text-[11px] tracking-[0.22em] uppercase mb-5"
-                  style={{ color: accent }}
-                >
-                  // paso {step}
-                </p>
-                <h3
-                  className="font-display mb-3"
-                  style={{ fontSize: '1.35rem', color: isDark ? '#EEF3FC' : '#0A1545' }}
-                >
-                  {title}
-                </h3>
-                <p
-                  className="text-[14px] font-light"
-                  style={{ color: isDark ? '#4A70CC' : '#2451C8', lineHeight: 1.65 }}
-                >
-                  {body}
-                </p>
+                </span>
+                <div>
+                  <span className="font-mono text-xs text-teal-400 font-bold tracking-widest block mb-4">
+                    // PASO {step}
+                  </span>
+                  <h3 className="font-display text-xl font-bold mb-2">{title}</h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{body}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── RANKING ─── */}
-      <section
-        className="border-t relative overflow-hidden"
-        style={{
-          borderColor: isDark ? 'rgba(26,63,150,0.12)' : 'rgba(26,63,150,0.10)',
-          background: isDark
-            ? 'linear-gradient(180deg, #060D1F 0%, #091520 100%)'
-            : 'linear-gradient(180deg, #EEF3FC 0%, #E8EEFA 100%)',
-        }}
-      >
-        <div className="relative max-w-3xl mx-auto px-6 lg:px-10 py-20 lg:py-28">
-          <div className="mb-12">
-            <p
-              className="font-mono text-xs tracking-[0.22em] uppercase mb-4"
-              style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-            >
-              // top operadores
-            </p>
-            <h2
-              className="font-display mb-4"
-              style={{
-                fontSize: 'clamp(1.9rem, 3.5vw, 2.75rem)',
-                lineHeight: 1.15,
-                color: isDark ? '#C8D5EE' : '#0A1545',
-              }}
-            >
-              Los <span style={{ color: '#F5C500' }}>5 mejores</span> hackers de la plataforma.
+      {/* ─── LEADERBOARD SECTION ─── */}
+      <section className="relative py-24 border-t border-slate-200 dark:border-white/10">
+        <div className="max-w-4xl mx-auto px-6 lg:px-10">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <span className="font-mono text-xs tracking-widest text-amber-400 uppercase font-semibold block mb-3">
+              // Top Operadores
+            </span>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight">
+              Los 5 mejores hackers de la plataforma
             </h2>
-            <p
-              className="text-[15px] max-w-xl"
-              style={{ color: isDark ? '#4A70CC' : '#1A3F96', lineHeight: 1.65 }}
-            >
-              Ranking en tiempo real. Haz clic en cualquier operador para ver su perfil público.
-            </p>
           </div>
 
-          <Ranking limit={5} />
+          <div className="glass-card-wm p-6 sm:p-8">
+            <Ranking limit={5} />
+          </div>
         </div>
       </section>
 
-      {/* ─── CTA ─── */}
+      {/* ─── CTA BANNER ─── */}
       {!token && (
-        <section
-          className="border-t"
-          style={{ borderColor: isDark ? 'rgba(26,63,150,0.12)' : 'rgba(26,63,150,0.10)' }}
-        >
-          <div className="max-w-4xl mx-auto px-6 lg:px-10 py-20 lg:py-28 text-center">
-            <p
-              className="font-mono text-xs tracking-[0.22em] uppercase mb-5"
-              style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-            >
-              // ready_player_one
-            </p>
-            <h2
-              className="font-display mb-6"
-              style={{
-                fontSize: 'clamp(2rem, 4.5vw, 3.25rem)',
-                lineHeight: 1.1,
-                color: isDark ? '#C8D5EE' : '#0A1545',
-              }}
-            >
-              ¿Listo para <span style={{ color: '#1A3F96' }}>hackear</span>?
+        <section className="relative py-24 border-t border-slate-200 dark:border-white/10 overflow-hidden">
+          <div className="wm-orb w-96 h-96 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-teal-500/20 blur-3xl" />
+          <div className="relative max-w-4xl mx-auto px-6 text-center">
+            <h2 className="font-display text-4xl sm:text-5xl font-extrabold mb-6">
+              ¿Listo para empezar a <span className="text-teal-400">hackear</span>?
             </h2>
-            <p
-              className="text-base lg:text-lg font-light max-w-xl mx-auto mb-10"
-              style={{ color: isDark ? '#4A70CC' : '#2451C8', lineHeight: 1.65 }}
-            >
-              Crea tu cuenta gratis, completa tu primer lab y empieza a sumar puntos.
+            <p className="text-slate-600 dark:text-slate-300 text-lg mb-10 max-w-xl mx-auto">
+              Crea tu cuenta totalmente gratis hoy mismo y accede a la librería completa de laboratorios.
             </p>
-            <Link
-              to="/register"
-              className="btn-neon inline-block px-8 py-4 rounded-xl text-[15px] font-semibold"
-            >
-              Crear cuenta gratis →
+            <Link to="/register" className="btn-wm-primary text-lg py-4 px-10">
+              Crear Cuenta Gratis →
             </Link>
           </div>
         </section>

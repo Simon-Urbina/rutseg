@@ -62,34 +62,35 @@ export default function DashboardPage() {
 
   const stats = [
     {
-      label: 'Labs completados',
+      label: 'Labs Completados',
       value: profile?.completedLabs?.toString() ?? '—',
-      unit: '',
       accent: '#2596be',
+      badge: 'PROGRESO',
       icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
         </svg>
       ),
     },
     {
-      label: 'Puntos totales',
+      label: 'Puntos Totales',
       value: profile?.points?.toLocaleString('es-CO') ?? '—',
       unit: 'pts',
       accent: '#F5C500',
+      badge: 'SCORE',
       icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
         </svg>
       ),
     },
     {
-      label: 'Posición ranking',
+      label: 'Posición Global',
       value: profile?.rank ? `#${profile.rank}` : '—',
-      unit: '',
-      accent: '#1A3F96',
+      accent: '#10B981',
+      badge: 'RANKING',
       icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
           <circle cx="9" cy="7" r="4"/>
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
@@ -100,360 +101,223 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div style={{ background: isDark ? '#060D1F' : '#EEF3FC' }}>
-      <div className="min-h-[calc(100vh-72px)]">
+    <div className={`min-h-screen ${isDark ? 'bg-[#060D1F] text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
+      {/* Ambient background mesh orbs */}
+      <div className="wm-orb w-96 h-96 top-0 left-[-50px] bg-teal-500/10 blur-3xl pointer-events-none" />
+      <div className="wm-orb w-[500px] h-[500px] top-[300px] right-[-100px] bg-indigo-500/10 blur-3xl pointer-events-none" />
 
-        {/* ─── Hero ─── */}
-        <div
-          className={`relative overflow-hidden border-b ${isDark ? 'scanline-overlay' : ''}`}
-          style={{
-            borderColor: isDark ? 'rgba(26,63,150,0.12)' : 'rgba(26,63,150,0.10)',
-            backgroundImage: isDark
-              ? 'linear-gradient(160deg, #0D1630 0%, #060D1F 100%), linear-gradient(rgba(26,63,150,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(26,63,150,0.07) 1px, transparent 1px)'
-              : 'linear-gradient(160deg, #E8EEFA 0%, #EEF3FC 100%), linear-gradient(rgba(26,63,150,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(26,63,150,0.06) 1px, transparent 1px)',
-            backgroundSize: 'cover, 32px 32px, 32px 32px',
-          }}
-        >
-          <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-14 animate-fade-up-1">
-            <div className="flex items-center justify-between flex-wrap gap-6">
+      {/* ─── Hero Section ─── */}
+      <div className="relative border-b border-slate-200 dark:border-white/10 pt-8 pb-12">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10">
+          <div className="flex items-center justify-between flex-wrap gap-6">
 
-              {/* Avatar + greeting */}
-              <div className="flex items-center gap-6">
-                <UserAvatar
-                  src={profile?.profileImage ? `data:image/jpeg;base64,${profile.profileImage}` : null}
-                  username={profile?.username ?? user?.username ?? '?'}
-                  size={80}
-                  isDark={isDark}
-                />
-                <div>
-                  <p
-                    className="font-mono text-xs tracking-[0.18em] mb-3"
-                    style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-                  >
-                    // dashboard — {new Date().toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                  </p>
-                  <h1
-                    className="font-display mb-2"
-                    style={{
-                      fontSize: 'clamp(2rem, 4vw, 3rem)',
-                      lineHeight: 1.1,
-                      color: isDark ? '#C8D5EE' : '#0A1545',
-                    }}
-                  >
-                    Hola,{' '}
-                    <span style={{
-                      color: '#1A3F96',
-                      textShadow: isDark ? '0 0 32px rgba(26,63,150,0.4)' : 'none',
-                    }}>
-                      {user?.username}
-                    </span>
-                  </h1>
-                  <p
-                    className="text-base font-light max-w-lg"
-                    style={{ color: isDark ? '#4A70CC' : '#2451C8', lineHeight: 1.65 }}
-                  >
-                    Continúa donde lo dejaste o explora nuevos laboratorios.
-                  </p>
-                </div>
+            {/* Avatar + greeting */}
+            <div className="flex items-center gap-5 sm:gap-6">
+              <UserAvatar
+                src={profile?.profileImage ? `data:image/jpeg;base64,${profile.profileImage}` : null}
+                username={profile?.username ?? user?.username ?? '?'}
+                size={76}
+                isDark={isDark}
+              />
+              <div>
+                <p className="font-mono text-xs text-teal-400 font-bold tracking-widest uppercase mb-2">
+                  // OPERADOR ACTIVO — {new Date().toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </p>
+                <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">
+                  Hola, <span className="bg-gradient-to-r from-teal-400 to-sky-400 bg-clip-text text-transparent">{user?.username}</span>
+                </h1>
+                <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base font-normal mt-1">
+                  Continúa donde lo dejaste o explora nuevos laboratorios.
+                </p>
               </div>
-
-              <button
-                onClick={() => setEditOpen(true)}
-                disabled={!profile}
-                className="flex items-center gap-2 px-5 py-3 rounded-xl text-[14px] font-medium transition-all disabled:opacity-40"
-                style={{
-                  color: isDark ? '#7B9FE8' : '#1A3F96',
-                  background: isDark ? 'rgba(26,63,150,0.08)' : 'rgba(26,63,150,0.06)',
-                  border: '1px solid rgba(26,63,150,0.20)',
-                }}
-                onMouseEnter={e => {
-                  if (!profile) return
-                  ;(e.currentTarget as HTMLElement).style.background = 'rgba(26,63,150,0.15)'
-                  ;(e.currentTarget as HTMLElement).style.color = '#2451C8'
-                }}
-                onMouseLeave={e => {
-                  ;(e.currentTarget as HTMLElement).style.background = isDark ? 'rgba(26,63,150,0.08)' : 'rgba(26,63,150,0.06)'
-                  ;(e.currentTarget as HTMLElement).style.color = isDark ? '#7B9FE8' : '#1A3F96'
-                }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-                Editar perfil
-              </button>
             </div>
+
+            <button
+              onClick={() => setEditOpen(true)}
+              disabled={!profile}
+              className="btn-wm-secondary text-sm font-semibold py-2.5 px-5 flex items-center gap-2"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              Editar Perfil
+            </button>
           </div>
         </div>
+      </div>
 
-        {/* ─── Body ─── */}
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-14 space-y-16">
+      {/* ─── Main Body Bento Dashboard ─── */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-12 space-y-12">
 
-          {/* Stats */}
-          <section className="grid grid-cols-1 sm:grid-cols-3 gap-5 animate-fade-up-2">
-            {stats.map(({ label, value, unit, icon, accent }, i) => (
-              <div
-                key={label}
-                className="hud-panel cursor-default"
-                style={{
-                  background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                  '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
-                  '--hud-border-hover': `${accent}99`,
-                  '--hud-focus': accent,
-                } as React.CSSProperties}
-              >
-                {/* Top accent strip */}
-                <div style={{ height: '2px', background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }} />
-
-                <span className="hud-corner-tag" style={{ color: accent }}>{String(i + 1).padStart(2, '0')}</span>
-
-                <div className="relative p-7">
-                  {/* Top row: label kicker + icon */}
-                  <div className="flex items-start justify-between mb-6">
-                    <p
-                      className="font-mono text-[10px] tracking-[0.22em] uppercase"
-                      style={{ color: accent }}
-                    >
-                      {label}
-                    </p>
-                    <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                      style={{
-                        background: `${accent}18`,
-                        border: `1px solid ${accent}35`,
-                        color: accent,
-                      }}
-                    >
-                      {icon}
-                    </div>
-                  </div>
-
-                  {/* Value */}
-                  <p
-                    className="num-display"
-                    style={{ fontSize: '3rem', lineHeight: 1.1, color: isDark ? '#C8D5EE' : '#0A1545' }}
-                  >
-                    {loadingProfile ? '—' : value}
-                    {unit && (
-                      <span className="font-mono ml-2" style={{ fontSize: '1rem', color: accent, letterSpacing: '0.05em' }}>
-                        {unit}
-                      </span>
-                    )}
-                  </p>
-
-                  {/* Bottom accent line */}
-                  <div
-                    style={{
-                      marginTop: '1.5rem',
-                      height: '1px',
-                      background: `linear-gradient(90deg, ${accent}55, ${accent}18, transparent)`,
-                    }}
-                  />
+        {/* BENTO STATS GRID */}
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-6 animate-fade-up-2">
+          {stats.map(({ label, value, unit, icon, accent, badge }) => (
+            <div
+              key={label}
+              className="glass-card-wm p-7 flex flex-col justify-between group hover:border-teal-500/40 relative overflow-hidden"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <span className="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded-full border border-white/10 bg-white/5 text-slate-400">
+                  {badge}
+                </span>
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
+                  style={{
+                    background: `${accent}15`,
+                    color: accent,
+                    border: `1px solid ${accent}30`,
+                  }}
+                >
+                  {icon}
                 </div>
               </div>
-            ))}
+
+              <div>
+                <p className="font-mono text-xs tracking-widest uppercase text-slate-500 dark:text-slate-400 mb-2">
+                  {label}
+                </p>
+                <p className="num-display text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white leading-none">
+                  {loadingProfile ? '—' : value}
+                  {unit && (
+                    <span className="font-mono ml-2 text-base text-amber-400 font-bold">
+                      {unit}
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {/* SEARCH BAR */}
+        {!coursesLoading && courses.length > 0 && (
+          <section className="animate-fade-up-2">
+            <CourseSearchBar value={searchQuery} onChange={setSearchQuery} isDark={isDark} />
           </section>
+        )}
 
-          {/* Búsqueda de cursos */}
-          {!coursesLoading && courses.length > 0 && (
-            <section className="animate-fade-up-2 -mt-6">
-              <CourseSearchBar value={searchQuery} onChange={setSearchQuery} isDark={isDark} />
-            </section>
-          )}
-
-          {/* Mis cursos */}
-          {(coursesLoading || enrolledCourses.length > 0) && (
-            <section className="animate-fade-up-3">
-              <SectionHeader
-                kicker="// tu progreso"
-                title="Mis cursos"
-                subtitle={
-                  enrolledCourses.length === 0
-                    ? 'Cargando…'
-                    : `Estás inscrito en ${enrolledCourses.length} curso${enrolledCourses.length === 1 ? '' : 's'}.`
-                }
-                isDark={isDark}
-              />
-
-              {coursesLoading && enrolledCourses.length === 0 ? (
-                <SkeletonGrid isDark={isDark} count={2} />
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {enrolledCourses.map(course => (
-                    <CourseCard
-                      key={course.id}
-                      course={course}
-                      onEnroll={() => {}}
-                      onContinue={c => navigate(`/courses/${c.slug}`)}
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
-          )}
-
-          {/* Cursos disponibles */}
+        {/* MIS CURSOS INSCRITOS */}
+        {(coursesLoading || enrolledCourses.length > 0) && (
           <section className="animate-fade-up-3">
             <SectionHeader
-              kicker="// catálogo"
-              title={enrolledCourses.length > 0 ? 'Otros cursos disponibles' : 'Cursos disponibles'}
-              subtitle="Inscríbete y empieza a sumar puntos en el ranking."
+              kicker="// TU PROGRESO"
+              title="Mis Cursos"
+              subtitle={
+                enrolledCourses.length === 0
+                  ? 'Cargando…'
+                  : `Estás inscrito en ${enrolledCourses.length} curso${enrolledCourses.length === 1 ? '' : 's'}.`
+              }
               isDark={isDark}
-              badge={availableCourses.length > 0 ? `${availableCourses.length}` : undefined}
             />
 
-            {coursesError && (
-              <div
-                className="flex items-start gap-3 px-4 py-3 rounded-xl"
-                style={{
-                  background: isDark ? 'rgba(6,13,31,0.6)' : '#eef0f8',
-                  border: '1px solid rgba(26,63,150,0.25)',
-                  borderLeft: '3px solid #1A3F96',
-                }}
-              >
-                <span className="font-mono text-xs mt-0.5" style={{ color: '#1A3F96' }}>ERR</span>
-                <p className="text-sm" style={{ color: isDark ? '#93B0F0' : '#0A1545' }}>{coursesError}</p>
-              </div>
-            )}
-
-            {!coursesError && coursesLoading && <SkeletonGrid isDark={isDark} count={3} />}
-
-            {!coursesError && !coursesLoading && availableCourses.length === 0 && (
-              <EmptyState
-                isDark={isDark}
-                title={query ? 'Sin resultados' : 'Estás al día'}
-                body={
-                  query
-                    ? `No hay cursos que coincidan con «${searchQuery.trim()}».`
-                    : enrolledCourses.length > 0
-                      ? 'Ya estás inscrito en todos los cursos disponibles.'
-                      : 'Aún no hay cursos publicados. Vuelve pronto.'
-                }
-              />
-            )}
-
-            {!coursesError && availableCourses.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {availableCourses.map(course => (
-                  <CourseCard key={course.id} course={course} onEnroll={c => setPendingEnroll(c)} />
+            {coursesLoading && enrolledCourses.length === 0 ? (
+              <SkeletonGrid count={2} />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {enrolledCourses.map(course => (
+                  <CourseCard
+                    key={course.id}
+                    course={course}
+                    onEnroll={() => {}}
+                    onContinue={c => navigate(`/courses/${c.slug}`)}
+                  />
                 ))}
               </div>
             )}
           </section>
+        )}
 
-          {/* Profile card + ranking */}
-          <section className="grid grid-cols-1 lg:grid-cols-5 gap-5 animate-fade-up-3">
-            <div
-              className="hud-panel lg:col-span-2 p-8"
-              style={{
-                background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
-                '--hud-border-hover': 'rgba(26,63,150,0.65)',
-                '--hud-focus': '#1A3F96',
-              } as React.CSSProperties}
-            >
-              <p
-                className="font-mono text-[10px] tracking-[0.22em] uppercase mb-6"
-                style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-              >
-                // identidad
-              </p>
+        {/* CURSOS DISPONIBLES */}
+        <section className="animate-fade-up-3">
+          <SectionHeader
+            kicker="// CATÁLOGO COMPLETO"
+            title={enrolledCourses.length > 0 ? 'Otros Cursos Disponibles' : 'Cursos Disponibles'}
+            subtitle="Inscríbete y empieza a sumar puntos en el ranking global."
+            isDark={isDark}
+            badge={availableCourses.length > 0 ? `${availableCourses.length}` : undefined}
+          />
+
+          {coursesError && (
+            <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 font-mono text-sm">
+              ERROR: {coursesError}
+            </div>
+          )}
+
+          {!coursesError && coursesLoading && <SkeletonGrid count={3} />}
+
+          {!coursesError && !coursesLoading && availableCourses.length === 0 && (
+            <EmptyState
+              title={query ? 'Sin resultados' : 'Estás al día'}
+              body={
+                query
+                  ? `No hay cursos que coincidan con «${searchQuery.trim()}».`
+                  : enrolledCourses.length > 0
+                    ? 'Ya estás inscrito en todos los cursos disponibles.'
+                    : 'Aún no hay cursos publicados. Vuelve pronto.'
+              }
+            />
+          )}
+
+          {!coursesError && availableCourses.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {availableCourses.map(course => (
+                <CourseCard key={course.id} course={course} onEnroll={c => setPendingEnroll(c)} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* PROFILE CARD & RANKING SECTION */}
+        <section className="grid grid-cols-1 lg:grid-cols-5 gap-6 animate-fade-up-3">
+          {/* Identity Card */}
+          <div className="glass-card-wm lg:col-span-2 p-8 flex flex-col justify-between">
+            <div>
+              <span className="font-mono text-xs text-teal-400 font-bold tracking-widest uppercase block mb-6">
+                // IDENTIDAD DE OPERADOR
+              </span>
 
               {profileError && (
-                <p className="text-sm" style={{ color: '#1A3F96' }}>{profileError}</p>
+                <p className="text-sm text-rose-400">{profileError}</p>
               )}
 
               {!profileError && (
-                <div className="space-y-5">
-                  <Row label="Username" value={profile?.username ?? '—'} isDark={isDark} mono />
-                  <Row label="Email" value={profile?.email ?? '—'} isDark={isDark} mono />
+                <div className="space-y-6">
+                  <Row label="Usuario" value={profile?.username ?? '—'} mono />
+                  <Row label="Correo Electrónico" value={profile?.email ?? '—'} mono />
                   <Row
-                    label="Bio"
-                    value={profile?.bio || 'Sin bio aún. Edita tu perfil para agregar una.'}
-                    isDark={isDark}
+                    label="Biografía"
+                    value={profile?.bio || 'Sin biografía aún. Edita tu perfil para agregar una.'}
                     muted={!profile?.bio}
                   />
                   <Row
-                    label="Miembro desde"
+                    label="Miembro Desde"
                     value={profile?.createdAt
                       ? new Date(profile.createdAt).toLocaleDateString('es-CO', { year: 'numeric', month: 'long' })
                       : '—'}
-                    isDark={isDark}
                     mono
                   />
-
-                  {/* Cursos inscritos */}
-                  <div>
-                    <p
-                      className="font-mono text-[10px] tracking-[0.18em] uppercase mb-2"
-                      style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-                    >
-                      Cursos inscritos
-                    </p>
-                    {coursesLoading ? (
-                      <p className="font-mono text-[13px]" style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}>—</p>
-                    ) : enrolledCourses.length === 0 ? (
-                      <p className="text-[14px] italic" style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}>
-                        Sin cursos inscritos aún.
-                      </p>
-                    ) : (
-                      <div className="flex flex-col gap-2">
-                        {enrolledCourses.map(c => (
-                          <button
-                            key={c.id}
-                            onClick={() => navigate(`/courses/${c.slug}`)}
-                            className="flex items-center gap-2 w-fit px-3 py-1.5 rounded-lg text-[13px] font-mono transition-all duration-150 text-left"
-                            style={{
-                              color: isDark ? '#7B9FE8' : '#1A3F96',
-                              background: isDark ? 'rgba(26,63,150,0.08)' : 'rgba(26,63,150,0.06)',
-                              border: '1px solid rgba(26,63,150,0.18)',
-                            }}
-                            onMouseEnter={e => {
-                              const el = e.currentTarget as HTMLElement
-                              el.style.background = 'rgba(26,63,150,0.16)'
-                              el.style.color = '#2596be'
-                            }}
-                            onMouseLeave={e => {
-                              const el = e.currentTarget as HTMLElement
-                              el.style.background = isDark ? 'rgba(26,63,150,0.08)' : 'rgba(26,63,150,0.06)'
-                              el.style.color = isDark ? '#7B9FE8' : '#1A3F96'
-                            }}
-                          >
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.6 }}>
-                              <polyline points="9 18 15 12 9 6"/>
-                            </svg>
-                            {c.title}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
                 </div>
               )}
             </div>
+          </div>
 
-            <div className="lg:col-span-3">
-              <div className="mb-6">
-                <p
-                  className="font-mono text-[10px] tracking-[0.22em] uppercase mb-2"
-                  style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-                >
-                  // top operadores
-                </p>
-                <h3
-                  className="font-display"
-                  style={{ fontSize: '1.5rem', color: isDark ? '#C8D5EE' : '#0A1545' }}
-                >
-                  Top 5 del ranking
-                </h3>
-              </div>
+          {/* Ranking Widget */}
+          <div className="lg:col-span-3">
+            <div className="mb-6">
+              <span className="font-mono text-xs text-amber-400 font-bold tracking-widest uppercase block mb-2">
+                // CLASIFICACIÓN
+              </span>
+              <h3 className="font-display text-2xl font-bold">Top 5 del Ranking Global</h3>
+            </div>
+            <div className="glass-card-wm p-6 sm:p-8">
               <Ranking
                 limit={5}
                 selfProfile={profile ? { username: profile.username, rank: profile.rank, points: profile.points, bio: profile.bio } : null}
               />
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
       </div>
 
       <Footer />
@@ -480,7 +344,7 @@ export default function DashboardPage() {
 }
 
 function UserAvatar({
-  src, username, size = 72, isDark,
+  src, username, size = 76, isDark,
 }: {
   src?: string | null
   username: string
@@ -492,34 +356,24 @@ function UserAvatar({
 
   return (
     <div
-      style={{
-        width: size,
-        height: size,
-        borderRadius: '50%',
-        overflow: 'hidden',
-        background: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.08)',
-        border: `2px solid ${isDark ? 'rgba(26,63,150,0.40)' : 'rgba(26,63,150,0.25)'}`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-      }}
+      style={{ width: size, height: size }}
+      className="rounded-full overflow-hidden border-2 border-teal-500/30 flex items-center justify-center shrink-0 bg-teal-500/10 shadow-lg"
     >
       {showImg ? (
         <img
           src={src}
           alt={username}
           onError={() => setImgError(true)}
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          className="w-full h-full object-cover"
         />
       ) : (
         <svg
-          width={Math.round(size * 0.52)}
-          height={Math.round(size * 0.52)}
+          width={Math.round(size * 0.5)}
+          height={Math.round(size * 0.5)}
           viewBox="0 0 24 24"
           fill="none"
-          stroke={isDark ? '#7B9FE8' : '#1A3F96'}
-          strokeWidth="1.5"
+          stroke={isDark ? '#2596be' : '#1A3F96'}
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
@@ -532,179 +386,88 @@ function UserAvatar({
 }
 
 function SectionHeader({
-  kicker, title, subtitle, isDark, badge,
+  kicker, title, subtitle, badge,
 }: {
   kicker: string; title: string; subtitle: string; isDark: boolean; badge?: string
 }) {
   return (
-    <div className="mb-7 flex items-end justify-between gap-4 flex-wrap">
+    <div className="mb-8 flex items-end justify-between gap-4 flex-wrap">
       <div>
-        <p
-          className="font-mono text-[10px] tracking-[0.22em] uppercase mb-2"
-          style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-        >
+        <span className="font-mono text-xs text-teal-400 font-bold tracking-widest uppercase block mb-2">
           {kicker}
-        </p>
-        <h2
-          className="font-display"
-          style={{
-            fontSize: 'clamp(1.6rem, 2.5vw, 2rem)',
-            lineHeight: 1.15,
-            color: isDark ? '#C8D5EE' : '#0A1545',
-          }}
-        >
+        </span>
+        <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">
           {title}
         </h2>
-        <p className="text-[14px] mt-2" style={{ color: isDark ? '#4A70CC' : '#2451C8' }}>
+        <p className="text-slate-600 dark:text-slate-300 text-sm mt-1">
           {subtitle}
         </p>
       </div>
       {badge && (
-        <span
-          className="font-mono text-[11px] tracking-[0.18em] px-3 py-1.5 rounded-md"
-          style={{
-            color: '#1A3F96',
-            background: isDark ? 'rgba(26,63,150,0.08)' : 'rgba(26,63,150,0.07)',
-            border: '1px solid rgba(26,63,150,0.18)',
-          }}
-        >
-          {badge}
+        <span className="font-mono text-xs px-3 py-1.5 rounded-full border border-teal-500/20 bg-teal-500/10 text-teal-400 font-bold">
+          {badge} DISPONIBLES
         </span>
       )}
     </div>
   )
 }
 
-function SkeletonGrid({ isDark, count }: { isDark: boolean; count: number }) {
+function SkeletonGrid({ count }: { count: number }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {Array.from({ length: count }).map((_, i) => (
-        <div
-          key={i}
-          className="rounded-2xl animate-pulse"
-          style={{
-            height: '320px',
-            background: isDark ? 'rgba(6,13,31,0.5)' : '#f8faff',
-            border: `1px solid ${isDark ? 'rgba(26,63,150,0.08)' : 'rgba(26,63,150,0.07)'}`,
-            opacity: 0.5,
-          }}
-        />
+        <div key={i} className="glass-card-wm h-80 animate-pulse bg-white/5" />
       ))}
     </div>
   )
 }
 
-function EmptyState({ isDark, title, body }: { isDark: boolean; title: string; body: string }) {
+function EmptyState({ title, body }: { title: string; body: string }) {
   return (
-    <div
-      className="hud-panel hud-static px-6 py-12 text-center"
-      style={{
-        background: isDark ? 'rgba(6,13,31,0.6)' : '#f8faff',
-        '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
-        '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
-      } as React.CSSProperties}
-    >
-      <p
-        className="font-display mb-2"
-        style={{ fontSize: '1.25rem', color: isDark ? '#C8D5EE' : '#0A1545' }}
-      >
-        {title}
-      </p>
-      <p
-        className="text-[14px] font-light max-w-sm mx-auto"
-        style={{ color: isDark ? '#4A70CC' : '#2451C8', lineHeight: 1.6 }}
-      >
-        {body}
-      </p>
+    <div className="glass-card-wm p-12 text-center">
+      <h3 className="font-display text-xl font-bold mb-2">{title}</h3>
+      <p className="text-slate-600 dark:text-slate-400 text-sm max-w-md mx-auto">{body}</p>
     </div>
   )
 }
 
-function CourseSearchBar({ value, onChange, isDark }: { value: string; onChange: (v: string) => void; isDark: boolean }) {
+function CourseSearchBar({ value, onChange }: { value: string; onChange: (v: string) => void; isDark: boolean }) {
   return (
-    <div>
-      <p
-        className="font-mono text-[10px] tracking-[0.22em] uppercase mb-2"
-        style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-      >
-        // buscar
-      </p>
-      <div
-        className="flex items-center gap-3 px-4 rounded-xl transition-all duration-150"
-        style={{
-          background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-          border: `1px solid ${isDark ? 'rgba(26,63,150,0.20)' : 'rgba(26,63,150,0.15)'}`,
-          height: '48px',
-        }}
-        onFocusCapture={e => {
-          (e.currentTarget as HTMLElement).style.borderColor = '#1A3F96'
-          ;(e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 2px rgba(26,63,150,0.15)'
-        }}
-        onBlurCapture={e => {
-          (e.currentTarget as HTMLElement).style.borderColor = isDark ? 'rgba(26,63,150,0.20)' : 'rgba(26,63,150,0.15)'
-          ;(e.currentTarget as HTMLElement).style.boxShadow = 'none'
-        }}
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: isDark ? '#3A5AB8' : '#1A3F96', flexShrink: 0 }}>
-          <circle cx="11" cy="11" r="8"/>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input
-          type="text"
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder="Buscar cursos…"
-          autoComplete="off"
-          className="flex-1 bg-transparent outline-none text-[14px]"
-          style={{
-            color: isDark ? '#C8D5EE' : '#0A1545',
-            caretColor: '#1A3F96',
-          }}
-        />
-        {value && (
-          <button
-            onClick={() => onChange('')}
-            className="flex items-center justify-center w-5 h-5 rounded-full transition-colors shrink-0"
-            style={{
-              color: isDark ? '#3A5AB8' : '#4A70CC',
-              background: isDark ? 'rgba(26,63,150,0.10)' : 'rgba(26,63,150,0.07)',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#1A3F96' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = isDark ? '#3A5AB8' : '#4A70CC' }}
-            aria-label="Limpiar búsqueda"
-          >
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        )}
-      </div>
+    <div className="glass-card-wm p-3 flex items-center gap-3">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-400 shrink-0 ml-2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder="Buscar cursos por título o tecnología…"
+        className="flex-1 bg-transparent outline-none text-sm px-2 text-slate-900 dark:text-white placeholder-slate-400"
+      />
+      {value && (
+        <button
+          onClick={() => onChange('')}
+          className="text-slate-400 hover:text-white px-3 py-1 font-mono text-xs rounded-lg bg-white/5"
+        >
+          Limpiar
+        </button>
+      )}
     </div>
   )
 }
 
 function Row({
-  label, value, isDark, mono = false, muted = false,
+  label, value, mono = false, muted = false,
 }: {
-  label: string; value: string; isDark: boolean; mono?: boolean; muted?: boolean
+  label: string; value: string; mono?: boolean; muted?: boolean
 }) {
   return (
     <div>
-      <p
-        className="font-mono text-[10px] tracking-[0.18em] uppercase mb-1.5"
-        style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-      >
+      <p className="font-mono text-[10px] tracking-widest text-slate-400 uppercase mb-1">
         {label}
       </p>
-      <p
-        className={mono ? 'font-mono text-[14px]' : 'text-[15px]'}
-        style={{
-          color: muted ? (isDark ? '#3A5AB8' : '#4A70CC') : (isDark ? '#C8D5EE' : '#0A1545'),
-          fontStyle: muted ? 'italic' : 'normal',
-          lineHeight: 1.5,
-        }}
-      >
+      <p className={`${mono ? 'font-mono text-sm' : 'text-sm'} ${muted ? 'text-slate-500 italic' : 'text-slate-900 dark:text-slate-100'}`}>
         {value}
       </p>
     </div>

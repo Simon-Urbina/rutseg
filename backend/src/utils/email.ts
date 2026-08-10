@@ -1,64 +1,27 @@
-async function getAccessToken(): Promise<string> {
-  const clientId = process.env.GMAIL_CLIENT_ID
-  const clientSecret = process.env.GMAIL_CLIENT_SECRET
-  const refreshToken = process.env.GMAIL_REFRESH_TOKEN
-  if (!clientId || !clientSecret || !refreshToken)
-    throw new Error('GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET y GMAIL_REFRESH_TOKEN son requeridos')
-
-  const res = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      client_id: clientId,
-      client_secret: clientSecret,
-      refresh_token: refreshToken,
-      grant_type: 'refresh_token',
-    }),
-  })
-  const data = (await res.json()) as { access_token?: string; error?: string }
-  if (!res.ok || !data.access_token) throw new Error(`OAuth2 error: ${data.error}`)
-  return data.access_token
-}
-
-// Codificación Base64 RFC 2047 para cabeceras MIME — necesaria para caracteres no ASCII (ñ, —, etc.)
-function encodeHeader(text: string): string {
-  return `=?UTF-8?B?${Buffer.from(text, 'utf-8').toString('base64')}?=`
-}
-
 async function sendRawEmail(to: string, subject: string, html: string): Promise<void> {
-  const from = process.env.GMAIL_USER
-  if (!from) throw new Error('GMAIL_USER es requerido')
+  const apiKey = process.env.BREVO_API_KEY
+  const senderEmail = process.env.BREVO_SENDER_EMAIL
+  if (!apiKey || !senderEmail)
+    throw new Error('BREVO_API_KEY y BREVO_SENDER_EMAIL son requeridos')
 
-  const accessToken = await getAccessToken()
-
-  const mime = [
-    `From: =?UTF-8?B?${Buffer.from('RutSeg', 'utf-8').toString('base64')}?= <${from}>`,
-    `To: ${to}`,
-    `Subject: ${encodeHeader(subject)}`,
-    'MIME-Version: 1.0',
-    'Content-Type: text/html; charset=utf-8',
-    '',
-    html,
-  ].join('\r\n')
-
-  const raw = Buffer.from(mime, 'utf-8')
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '')
-
-  const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      'api-key': apiKey,
       'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
-    body: JSON.stringify({ raw }),
+    body: JSON.stringify({
+      sender: { name: 'RutSeg', email: senderEmail },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+    }),
   })
 
   if (!res.ok) {
     const body = await res.text()
-    throw new Error(`Gmail API error ${res.status}: ${body}`)
+    throw new Error(`Brevo API error ${res.status}: ${body}`)
   }
 }
 
