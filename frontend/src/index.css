@@ -265,6 +265,14 @@
 .hud-panel:hover { transform: translateY(-3px); }
 .hud-panel:active { transform: translateY(-1px) scale(0.985); }
 
+/* Non-interactive containers (forms, decorative widgets) — border still
+   reacts, but no lift, so hovering while aiming for an inner input/button
+   doesn't visibly bob the whole panel. */
+.hud-panel.hud-static:hover,
+.hud-panel.hud-static:active {
+  transform: none;
+}
+
 button.hud-panel:focus-visible,
 a.hud-panel:focus-visible,
 [tabindex].hud-panel:focus-visible {

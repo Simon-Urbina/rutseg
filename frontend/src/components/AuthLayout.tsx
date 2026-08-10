@@ -58,30 +58,6 @@ export default function AuthLayout({
           }}
         />
 
-        {/* Pink orb */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            bottom: '-8%', left: '-8%',
-            width: '540px', height: '540px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(26,63,150,0.28) 0%, rgba(26,63,150,0.08) 42%, transparent 68%)',
-            animation: 'glowPulse 5s ease-in-out infinite',
-          }}
-        />
-
-        {/* Teal orb */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: '-6%', right: '-4%',
-            width: '320px', height: '320px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(37,150,190,0.22) 0%, rgba(37,150,190,0.06) 50%, transparent 72%)',
-            animation: 'glowPulse 7s ease-in-out infinite reverse',
-          }}
-        />
-
         {/* Scanline */}
         <div className="scanline-sweep" />
 
@@ -153,13 +129,14 @@ export default function AuthLayout({
 
           {/* Terminal widget */}
           <div
-            className="animate-fade-up-5 rounded-2xl overflow-hidden mt-14"
+            className="hud-panel hud-static animate-fade-up-5 mt-14"
             style={{
               background: 'rgba(6, 13, 31, 0.85)',
-              border: '1px solid rgba(26, 63, 150, 0.22)',
               backdropFilter: 'blur(12px)',
               boxShadow: '0 0 50px rgba(26,63,150,0.06), inset 0 0 30px rgba(26,63,150,0.03)',
-            }}
+              '--hud-border': 'rgba(26,63,150,0.35)',
+              '--hud-border-hover': 'rgba(26,63,150,0.35)',
+            } as React.CSSProperties}
           >
             <div
               className="flex items-center gap-2 px-5 py-3"
@@ -218,14 +195,14 @@ export default function AuthLayout({
         {/* Form */}
         <div className="flex-1 flex items-center justify-center px-8 py-10">
           <div
-            className="w-full max-w-[440px] animate-slide-in"
+            className="hud-panel hud-static w-full max-w-[440px] animate-slide-in"
             style={{
               background: isDark ? 'rgba(13,27,70,0.85)' : '#ffffff',
-              border: `1px solid ${isDark ? 'rgba(26,63,150,0.12)' : 'rgba(26,63,150,0.16)'}`,
-              borderRadius: '24px',
               padding: '44px',
               boxShadow: isDark ? 'none' : '0 4px 40px rgba(10,21,69,0.07)',
-            }}
+              '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+              '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+            } as React.CSSProperties}
           >
             {children}
           </div>
