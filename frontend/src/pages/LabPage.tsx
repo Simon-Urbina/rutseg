@@ -73,8 +73,9 @@ function esc(s: string) {
 }
 
 function inline(s: string) {
-  return s
+  return esc(s)
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
     .replace(/`([^`]+)`/g, '<code class="md-inline">$1</code>')
 }
 
@@ -90,7 +91,7 @@ function tableToHtml(block: string): string {
 }
 
 function markdownToHtml(md: string): string {
-  const blocks = md.split(/\n\n+/)
+  const blocks = md.replace(/\n[ \t]*-{3,}[ \t]*\n/g, '\n\n---\n\n').split(/\n\n+/)
   return blocks.map(block => {
     const b = block.trim()
     if (!b) return ''
@@ -98,12 +99,22 @@ function markdownToHtml(md: string): string {
       const code = b.replace(/^```\w*\n?/, '').replace(/\n?```$/, '').trim()
       return `<pre class="md-pre"><code>${esc(code)}</code></pre>`
     }
+    if (/^-{3,}$/.test(b)) return '<hr class="md-hr" />'
     if (b.includes('|') && b.includes('\n')) return tableToHtml(b)
     if (b.startsWith('## ')) return `<h2 class="md-h2">${inline(b.slice(3))}</h2>`
     if (b.startsWith('### ')) return `<h3 class="md-h3">${inline(b.slice(4))}</h3>`
+    if (b.startsWith('> ')) {
+      const text = b.split('\n').map(l => l.replace(/^>\s?/, '')).join(' ')
+      return `<blockquote class="md-quote">${inline(text)}</blockquote>`
+    }
     if (b.startsWith('- ') || b.startsWith('* ')) {
       const items = b.split('\n').map(l => `<li>${inline(l.replace(/^[-*]\s+/, ''))}</li>`).join('')
       return `<ul class="md-list">${items}</ul>`
+    }
+    if (/^\d+\.\s/.test(b)) {
+      const start = b.match(/^(\d+)\./)?.[1] ?? '1'
+      const items = b.split('\n').map(l => `<li>${inline(l.replace(/^\d+\.\s+/, ''))}</li>`).join('')
+      return `<ol class="md-list md-list-ordered" start="${start}">${items}</ol>`
     }
     return `<p class="md-p">${inline(b.replace(/\n/g, ' '))}</p>`
   }).join('')
@@ -123,8 +134,8 @@ function mdToTerminalLines(md: string) {
     } else if (b.startsWith('#')) {
       lines.push({ type: 'heading', text: b.replace(/^#+\s+/, '') })
     } else {
-      const plain = b.replace(/\*\*(.*?)\*\*/g, '$1').replace(/`([^`]+)`/g, '$1')
-      for (const l of plain.split('\n')) if (l.trim()) lines.push({ type: 'text', text: l.trim() })
+      const plain = b.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*([^*\n]+)\*/g, '$1').replace(/`([^`]+)`/g, '$1')
+      for (const l of plain.split('\n')) if (l.trim()) lines.push({ type: 'text', text: l.trim().replace(/^>\s?/, '').replace(/^\d+\.\s+/, '') })
     }
   }
   return lines

@@ -404,7 +404,7 @@ function UserAvatar({
         border: `2px solid ${isDark ? 'rgba(26,63,150,0.40)' : 'rgba(26,63,150,0.25)'}`,
         display: 'flex',
         alignItems: 'center',
-        justify-content: 'center',
+        justifyContent: 'center',
         flexShrink: 0,
       }}
     >
