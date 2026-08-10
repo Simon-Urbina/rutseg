@@ -420,8 +420,12 @@ export default function PrivacyPolicyPage() {
 
         {/* Intro note */}
         <div
-          className="rounded-2xl px-7 py-6 mb-12"
-          style={{ background: isDark ? 'rgba(37,150,190,0.07)' : 'rgba(37,150,190,0.05)', border: '1px solid rgba(37,150,190,0.20)' }}
+          className="hud-panel hud-static px-7 py-6 mb-12"
+          style={{
+            background: isDark ? 'rgba(37,150,190,0.07)' : 'rgba(37,150,190,0.05)',
+            '--hud-border': 'rgba(37,150,190,0.35)',
+            '--hud-border-hover': 'rgba(37,150,190,0.35)',
+          } as React.CSSProperties}
         >
           <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-2" style={{ color: '#2596be' }}>// resumen ejecutivo</p>
           <p className="text-[14px] leading-relaxed" style={{ color: isDark ? '#93B0F0' : '#1A3F96' }}>
@@ -438,14 +442,15 @@ export default function PrivacyPolicyPage() {
             return (
               <div
                 key={id}
-                className="rounded-2xl overflow-hidden transition-all duration-200"
+                className="hud-panel hud-static"
                 style={{
                   background: cardBg,
-                  border: `1px solid ${isOpen ? 'rgba(26,63,150,0.30)' : cardBorder}`,
                   boxShadow: isOpen
                     ? isDark ? '0 8px 40px rgba(0,0,0,0.25)' : '0 8px 32px rgba(10,21,69,0.07)'
                     : 'none',
-                }}
+                  '--hud-border': isOpen ? 'rgba(26,63,150,0.55)' : cardBorder,
+                  '--hud-border-hover': isOpen ? 'rgba(26,63,150,0.55)' : cardBorder,
+                } as React.CSSProperties}
               >
                 {/* Header */}
                 <button
@@ -495,8 +500,12 @@ export default function PrivacyPolicyPage() {
 
         {/* Bottom note */}
         <div
-          className="mt-16 rounded-2xl px-7 py-6 text-center"
-          style={{ background: isDark ? 'rgba(13,27,70,0.6)' : '#f0f4ff', border: `1px solid ${cardBorder}` }}
+          className="hud-panel hud-static mt-16 px-7 py-6 text-center"
+          style={{
+            background: isDark ? 'rgba(13,27,70,0.6)' : '#f0f4ff',
+            '--hud-border': cardBorder,
+            '--hud-border-hover': cardBorder,
+          } as React.CSSProperties}
         >
           <p className="font-mono text-[10px] tracking-[0.22em] uppercase mb-3" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
             // marco legal

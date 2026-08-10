@@ -248,11 +248,12 @@ export default function TermsOfUsePage() {
           <section
             key={id}
             id={id}
-            className="rounded-2xl p-8"
+            className="hud-panel hud-static p-8"
             style={{
               background: isDark ? 'rgba(13,27,70,0.60)' : '#f8faff',
-              border: `1px solid ${isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'}`,
-            }}
+              '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+              '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+            } as React.CSSProperties}
           >
             <div className="flex items-start gap-5 mb-5">
               <span

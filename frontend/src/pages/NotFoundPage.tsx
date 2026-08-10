@@ -37,34 +37,6 @@ export default function NotFoundPage() {
           />
         )}
 
-        {/* Blue orb */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: '5%', left: '-8%',
-            width: '540px', height: '540px',
-            borderRadius: '50%',
-            background: isDark
-              ? 'radial-gradient(circle, rgba(26,63,150,0.20) 0%, transparent 62%)'
-              : 'radial-gradient(circle, rgba(26,63,150,0.08) 0%, transparent 62%)',
-            animation: 'glowPulse 6s ease-in-out infinite',
-          }}
-        />
-
-        {/* Teal orb */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            bottom: '10%', right: '-5%',
-            width: '380px', height: '380px',
-            borderRadius: '50%',
-            background: isDark
-              ? 'radial-gradient(circle, rgba(37,150,190,0.12) 0%, transparent 65%)'
-              : 'radial-gradient(circle, rgba(37,150,190,0.06) 0%, transparent 65%)',
-            animation: 'glowPulse 8s ease-in-out infinite reverse',
-          }}
-        />
-
         <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-20 w-full">
           <div className="max-w-xl">
             <p
