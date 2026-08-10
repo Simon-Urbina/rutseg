@@ -237,6 +237,82 @@
 }
 
 /* ────────────────────────────────────────────────
+   HUD PANEL — clipped-corner container replacing rounded-xl/2xl
+──────────────────────────────────────────────── */
+.hud-panel {
+  position: relative;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+  isolation: isolate;
+  transition: transform 0.2s ease;
+}
+.hud-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  clip-path: inherit;
+  padding: 1px;
+  background: var(--hud-border, rgba(26, 63, 150, 0.30));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: background 0.2s ease;
+}
+.hud-panel:hover::before,
+.hud-panel:focus-within::before {
+  background: var(--hud-border-hover, rgba(26, 63, 150, 0.65));
+}
+.hud-panel:hover { transform: translateY(-3px); }
+.hud-panel:active { transform: translateY(-1px) scale(0.985); }
+
+button.hud-panel:focus-visible,
+a.hud-panel:focus-visible,
+[tabindex].hud-panel:focus-visible {
+  outline: 2px solid var(--hud-focus, #2596be);
+  outline-offset: 2px;
+}
+
+.hud-corner-tag {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+.hud-panel:hover .hud-corner-tag { opacity: 1; }
+
+/* ────────────────────────────────────────────────
+   TECHNICAL BACKGROUND — replaces blurred gradient orbs
+──────────────────────────────────────────────── */
+.tech-grid {
+  background-image:
+    linear-gradient(rgba(26, 63, 150, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 63, 150, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.scanline-overlay {
+  position: relative;
+}
+.scanline-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.025) 0px,
+    rgba(255, 255, 255, 0.025) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* ────────────────────────────────────────────────
    CARD
 ──────────────────────────────────────────────── */
 .glass-card {
