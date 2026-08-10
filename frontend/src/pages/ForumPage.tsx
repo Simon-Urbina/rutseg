@@ -153,7 +153,11 @@ function CommentCard({
   const border = isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)'
 
   return (
-    <div className="rounded-2xl overflow-hidden" style={{ background: cardBg, border: `1px solid ${border}` }}>
+    <div className="hud-panel hud-static" style={{
+      background: cardBg,
+      '--hud-border': border,
+      '--hud-border-hover': border,
+    } as React.CSSProperties}>
       <div className="p-5">
         <div className="flex items-start gap-3">
           <Avatar author={comment.author} isDark={isDark} />
@@ -261,10 +265,9 @@ function CommentCard({
                 onChange={e => setReplyText(e.target.value)}
                 placeholder="Escribe una respuesta…"
                 maxLength={2000}
-                className="flex-1 rounded-xl px-4 py-2 text-[13px] outline-none transition-all"
+                className="tech-input flex-1 px-4 py-2 text-[13px]"
                 style={{
                   background: isDark ? 'rgba(6,13,31,0.6)' : '#fff',
-                  border: `1px solid ${isDark ? 'rgba(26,63,150,0.25)' : 'rgba(26,63,150,0.20)'}`,
                   color: isDark ? '#C8D5EE' : '#0A1545',
                 }}
               />
@@ -364,15 +367,6 @@ export default function ForumPage() {
 
       {/* Hero */}
       <div className="relative border-b overflow-hidden" style={{ borderColor: border, background: heroBg }}>
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: '-40%', right: '-5%', width: '420px', height: '420px', borderRadius: '50%',
-            background: isDark
-              ? 'radial-gradient(circle, rgba(26,63,150,0.18) 0%, transparent 60%)'
-              : 'radial-gradient(circle, rgba(26,63,150,0.07) 0%, transparent 60%)',
-          }}
-        />
         <div className="relative max-w-4xl mx-auto px-6 lg:px-10 py-14">
           <p className="font-mono text-[10px] tracking-[0.22em] uppercase mb-4" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
             // comunidad
@@ -399,8 +393,12 @@ export default function ForumPage() {
 
         {/* Composer */}
         <div
-          className="rounded-2xl p-6"
-          style={{ background: isDark ? 'rgba(13,27,70,0.70)' : '#f8faff', border: `1px solid ${border}` }}
+          className="hud-panel hud-static p-6"
+          style={{
+            background: isDark ? 'rgba(13,27,70,0.70)' : '#f8faff',
+            '--hud-border': border,
+            '--hud-border-hover': border,
+          } as React.CSSProperties}
         >
           <p className="font-mono text-[10px] tracking-[0.22em] uppercase mb-4" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
             // nuevo comentario
@@ -414,10 +412,9 @@ export default function ForumPage() {
                 placeholder="Escribe tu comentario aquí…"
                 rows={4}
                 maxLength={2000}
-                className="w-full rounded-xl px-4 py-3 text-[14px] outline-none resize-none transition-all"
+                className="tech-input w-full px-4 py-3 text-[14px] resize-none"
                 style={{
                   background: isDark ? 'rgba(6,13,31,0.6)' : '#fff',
-                  border: `1px solid ${isDark ? 'rgba(26,63,150,0.25)' : 'rgba(26,63,150,0.20)'}`,
                   color: isDark ? '#C8D5EE' : '#0A1545',
                 }}
               />
@@ -460,12 +457,13 @@ export default function ForumPage() {
 
         {error && (
           <div
-            className="rounded-xl px-4 py-3"
+            className="hud-panel hud-static px-4 py-3"
             style={{
               background: isDark ? 'rgba(6,13,31,0.6)' : '#eef0f8',
-              border: '1px solid rgba(26,63,150,0.25)',
               borderLeft: '3px solid #1A3F96',
-            }}
+              '--hud-border': 'rgba(26,63,150,0.35)',
+              '--hud-border-hover': 'rgba(26,63,150,0.35)',
+            } as React.CSSProperties}
           >
             <p className="text-sm" style={{ color: isDark ? '#93B0F0' : '#0A1545' }}>{error}</p>
           </div>
@@ -475,8 +473,12 @@ export default function ForumPage() {
           <div className="space-y-4">
             {data.comments.length === 0 ? (
               <div
-                className="rounded-2xl px-6 py-12 text-center"
-                style={{ background: isDark ? 'rgba(6,13,31,0.6)' : '#f8faff', border: `1px solid ${border}` }}
+                className="hud-panel hud-static px-6 py-12 text-center"
+                style={{
+                  background: isDark ? 'rgba(6,13,31,0.6)' : '#f8faff',
+                  '--hud-border': border,
+                  '--hud-border-hover': border,
+                } as React.CSSProperties}
               >
                 <p className="font-display mb-2" style={{ fontSize: '1.25rem', color: isDark ? '#C8D5EE' : '#0A1545' }}>
                   Sin comentarios aún
