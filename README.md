@@ -85,10 +85,8 @@ DATABASE_URL=postgresql://user:password@host:5432/dbname
 JWT_SECRET=tu_secreto_muy_seguro
 PORT=3000
 FRONTEND_URL=http://localhost:5173
-GMAIL_USER=tucorreo@gmail.com
-GMAIL_CLIENT_ID=xxxxx.apps.googleusercontent.com
-GMAIL_CLIENT_SECRET=GOCSPX-xxxxx
-GMAIL_REFRESH_TOKEN=1//xxxxxxxxxxxxxxxxx
+BREVO_API_KEY=xkeysib-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+BREVO_SENDER_EMAIL=tucorreo@gmail.com
 ```
 
 **`chatbot/.env`**
@@ -345,13 +343,11 @@ DATABASE_URL
 JWT_SECRET
 PORT
 FRONTEND_URL=https://rutseg.vercel.app
-GMAIL_USER
-GMAIL_CLIENT_ID
-GMAIL_CLIENT_SECRET
-GMAIL_REFRESH_TOKEN
+BREVO_API_KEY
+BREVO_SENDER_EMAIL
 ```
 
-> El email usa la Gmail REST API (OAuth2), no SMTP. Railway bloquea los puertos SMTP salientes, por lo que nodemailer con Gmail SMTP no funciona en este entorno.
+> El email usa la API HTTP de [Brevo](https://www.brevo.com/) (antes Sendinblue), no SMTP. Railway bloquea los puertos SMTP salientes, por lo que nodemailer con SMTP no funciona en este entorno. `BREVO_SENDER_EMAIL` debe ser un remitente verificado en el panel de Brevo (verificación de un solo correo, no requiere dominio propio).
 
 Configuración en `backend/railway.json`.
 
