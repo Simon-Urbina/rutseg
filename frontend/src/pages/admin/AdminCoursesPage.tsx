@@ -5,6 +5,8 @@ import { adminApi, slugify, type AdminCourse } from '../../lib/adminApi'
 import { AdminInput, AdminTextarea, AdminSelect, ErrorBanner } from './AdminFormControls'
 import { IconPlus, IconChevronRight } from './AdminIcons'
 import { PageShell, Breadcrumb } from './AdminCourseDetailPage'
+import { CourseFilterPanel } from '../../components/CourseFilters'
+import { emptyCourseFilters, courseMatchesFilters, type CourseFilterState } from '../../lib/courseFilters'
 
 const DIFFICULTIES = [
   { value: 'principiante', label: 'Principiante' },
@@ -21,6 +23,8 @@ export default function AdminCoursesPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filters, setFilters] = useState<CourseFilterState>(emptyCourseFilters())
 
   useEffect(() => {
     setLoading(true)
@@ -29,6 +33,11 @@ export default function AdminCoursesPage() {
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
   }, [])
+
+  const query = searchQuery.toLowerCase().trim()
+  const filteredCourses = courses
+    .filter(c => !query || c.title.toLowerCase().includes(query) || (c.description ?? '').toLowerCase().includes(query))
+    .filter(c => courseMatchesFilters(c, filters))
 
   return (
     <PageShell isDark={isDark}>
@@ -59,8 +68,21 @@ export default function AdminCoursesPage() {
         </p>
       )}
 
+      {!loading && !error && courses.length > 0 && (
+        <div className="mt-6 space-y-3">
+          <CourseSearchBar value={searchQuery} onChange={setSearchQuery} isDark={isDark} />
+          <CourseFilterPanel filters={filters} onChange={setFilters} isDark={isDark} />
+        </div>
+      )}
+
+      {!loading && !error && courses.length > 0 && filteredCourses.length === 0 && (
+        <p className="text-[14px] mt-6" style={{ color: isDark ? '#4A70CC' : '#2451C8' }}>
+          Ningún curso coincide con la búsqueda o los filtros.
+        </p>
+      )}
+
       <div className="mt-8 flex flex-col gap-3">
-        {courses.map(course => (
+        {filteredCourses.map(course => (
           <button
             key={course.id}
             onClick={() => navigate(`/admin/courses/${course.slug}`)}
@@ -88,6 +110,46 @@ export default function AdminCoursesPage() {
         ))}
       </div>
     </PageShell>
+  )
+}
+
+function CourseSearchBar({ value, onChange, isDark }: { value: string; onChange: (v: string) => void; isDark: boolean }) {
+  return (
+    <div
+      className="hud-panel p-3 flex items-center gap-3"
+      style={{ background: isDark ? 'rgba(13,27,70,0.85)' : '#FFFFFF' }}
+    >
+      <svg
+        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+        style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
+        className="shrink-0 ml-2"
+      >
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder="Buscar por nombre o temática…"
+        className="flex-1 bg-transparent outline-none text-sm px-2"
+        style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}
+      />
+      {value && (
+        <button
+          onClick={() => onChange('')}
+          className="text-xs font-mono px-2.5 py-1 rounded transition-colors"
+          style={{
+            background: isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.08)',
+            color: isDark ? '#7B9FE8' : '#1A3F96',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.14)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.08)' }}
+        >
+          Limpiar
+        </button>
+      )}
+    </div>
   )
 }
 

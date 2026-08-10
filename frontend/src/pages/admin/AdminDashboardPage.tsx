@@ -44,6 +44,19 @@ export default function AdminDashboardPage() {
 
   return (
     <PageShell isDark={isDark}>
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.18em] uppercase transition-colors mb-6"
+        style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}
+        onMouseEnter={e => (e.currentTarget.style.color = '#2596be')}
+        onMouseLeave={e => (e.currentTarget.style.color = isDark ? '#3A5AB8' : '#4A70CC')}
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Volver
+      </button>
+
       <p className="font-mono text-[10px] tracking-[0.22em] uppercase mb-2" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
         // panel de administración
       </p>

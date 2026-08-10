@@ -17,10 +17,13 @@ interface PublicProfile {
   enrolledCourses: { id: string; title: string; slug: string }[]
 }
 
-const RANK_STYLE: Record<number, { color: string; label: string; glow: string }> = {
-  1: { color: '#F5C500', label: 'GOLD',   glow: 'rgba(245,197,0,0.18)' },
-  2: { color: '#7B9FE8', label: 'SILVER', glow: 'rgba(123,159,232,0.14)' },
-  3: { color: '#CD7F32', label: 'BRONZE', glow: 'rgba(205,127,50,0.14)' },
+// `color` tints backgrounds/borders/glows at low alpha, where any hue reads
+// fine. `textColor` is a darker shade used for solid text in light mode,
+// since gold/silver/bronze read at ~1.6-3:1 directly on a white card.
+const RANK_STYLE: Record<number, { color: string; textColor: string; label: string; glow: string }> = {
+  1: { color: '#F5C500', textColor: '#8A7000', label: 'GOLD',   glow: 'rgba(245,197,0,0.18)' },
+  2: { color: '#7B9FE8', textColor: '#3A5AB8', label: 'SILVER', glow: 'rgba(123,159,232,0.14)' },
+  3: { color: '#CD7F32', textColor: '#8A5423', label: 'BRONZE', glow: 'rgba(205,127,50,0.14)' },
 }
 
 function Avatar({ image, username, size = 96 }: { image: string | null; username: string; size?: number }) {
@@ -140,7 +143,7 @@ export default function PublicProfilePage() {
               } as React.CSSProperties}
             >
               {rankStyle && (
-                <span className="hud-corner-tag" style={{ color: rankStyle.color, opacity: 1 }}>{rankStyle.label}</span>
+                <span className="hud-corner-tag" style={{ color: isDark ? rankStyle.color : rankStyle.textColor, opacity: 1 }}>{rankStyle.label}</span>
               )}
 
               <div className="relative flex items-start gap-6">
@@ -166,7 +169,7 @@ export default function PublicProfilePage() {
                     {rankStyle && (
                       <span
                         className="font-mono text-[10px] tracking-[0.2em] px-2 py-1 rounded"
-                        style={{ color: rankStyle.color, background: rankStyle.color + '18', border: `1px solid ${rankStyle.color}30` }}
+                        style={{ color: isDark ? rankStyle.color : rankStyle.textColor, background: rankStyle.color + '18', border: `1px solid ${rankStyle.color}30` }}
                       >
                         {rankStyle.label}
                       </span>
@@ -189,9 +192,9 @@ export default function PublicProfilePage() {
             {/* Stats row */}
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: 'Posición', value: profile.rank ? `#${profile.rank}` : '—', accent: rankStyle?.color ?? textSub },
-                { label: 'Puntos', value: profile.points.toLocaleString('es-CO'), accent: '#F5C500' },
-                { label: 'Labs completados', value: profile.completedLabs, accent: '#4ade80' },
+                { label: 'Posición', value: profile.rank ? `#${profile.rank}` : '—', accent: isDark ? (rankStyle?.color ?? textSub) : (rankStyle?.textColor ?? textSub) },
+                { label: 'Puntos', value: profile.points.toLocaleString('es-CO'), accent: isDark ? '#F5C500' : '#998000' },
+                { label: 'Labs completados', value: profile.completedLabs, accent: isDark ? '#4ade80' : '#2E7D46' },
               ].map(({ label, value, accent }, i) => (
                 <div
                   key={label}

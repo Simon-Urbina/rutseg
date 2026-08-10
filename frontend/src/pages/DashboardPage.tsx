@@ -8,6 +8,8 @@ import Ranking from '../components/Ranking'
 import CourseCard, { type Course } from '../components/CourseCard'
 import EnrollConfirmModal from '../components/EnrollConfirmModal'
 import Footer from '../components/Footer'
+import { CourseFilterPanel } from '../components/CourseFilters'
+import { emptyCourseFilters, courseMatchesFilters, type CourseFilterState } from '../lib/courseFilters'
 
 interface FullProfile {
   id: string
@@ -38,6 +40,7 @@ export default function DashboardPage() {
   const [coursesError, setCoursesError] = useState<string | null>(null)
   const [pendingEnroll, setPendingEnroll] = useState<Course | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [filters, setFilters] = useState<CourseFilterState>(emptyCourseFilters())
 
   useEffect(() => {
     setLoadingProfile(true)
@@ -56,7 +59,9 @@ export default function DashboardPage() {
   }, [])
 
   const query = searchQuery.toLowerCase().trim()
-  const filteredCourses = query ? courses.filter(c => c.title.toLowerCase().includes(query)) : courses
+  const filteredCourses = courses
+    .filter(c => !query || c.title.toLowerCase().includes(query) || (c.description ?? '').toLowerCase().includes(query))
+    .filter(c => courseMatchesFilters(c, filters))
   const enrolledCourses = filteredCourses.filter(c => c.isEnrolled)
   const availableCourses = filteredCourses.filter(c => !c.isEnrolled)
 
@@ -115,6 +120,19 @@ export default function DashboardPage() {
           }}
         >
           <div className="max-w-7xl mx-auto px-6 lg:px-10">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.18em] uppercase transition-colors mb-6"
+              style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#2596be')}
+              onMouseLeave={e => (e.currentTarget.style.color = isDark ? '#3A5AB8' : '#4A70CC')}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+              Volver
+            </button>
+
             <div className="flex items-center justify-between flex-wrap gap-6">
 
               {/* Avatar + greeting */}
@@ -209,10 +227,16 @@ export default function DashboardPage() {
             ))}
           </section>
 
-          {/* Search bar */}
+          {/* Search + filters */}
           {!coursesLoading && courses.length > 0 && (
-            <section className="animate-fade-up-2">
+            <section className="animate-fade-up-2 space-y-3">
               <CourseSearchBar value={searchQuery} onChange={setSearchQuery} isDark={isDark} />
+              <CourseFilterPanel filters={filters} onChange={setFilters} isDark={isDark} />
+              {filteredCourses.length === 0 && (
+                <p className="text-sm font-mono" style={{ color: isDark ? '#4A70CC' : '#2451C8' }}>
+                  Ningún curso coincide con la búsqueda o los filtros.
+                </p>
+              )}
             </section>
           )}
 
@@ -530,7 +554,7 @@ function CourseSearchBar({ value, onChange, isDark }: { value: string; onChange:
         type="text"
         value={value}
         onChange={e => onChange(e.target.value)}
-        placeholder="Buscar cursos…"
+        placeholder="Buscar por nombre o temática…"
         className="flex-1 bg-transparent outline-none text-sm px-2"
         style={{
           color: isDark ? '#C8D5EE' : '#0A1545',
@@ -539,7 +563,13 @@ function CourseSearchBar({ value, onChange, isDark }: { value: string; onChange:
       {value && (
         <button
           onClick={() => onChange('')}
-          className="text-xs font-mono px-2.5 py-1 rounded bg-black/10 text-slate-400 hover:text-white transition-colors"
+          className="text-xs font-mono px-2.5 py-1 rounded transition-colors"
+          style={{
+            background: isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.08)',
+            color: isDark ? '#7B9FE8' : '#1A3F96',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.14)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.08)' }}
         >
           Limpiar
         </button>

@@ -163,7 +163,7 @@ export default function LandingPage() {
                 {[
                   { label: 'CURSOS', val: stats ? String(stats.courseCount) : '—', color: isDark ? '#EEF3FC' : '#0A1545' },
                   { label: 'LABORATORIOS', val: stats ? String(stats.labCount) : '—', color: isDark ? '#7B9FE8' : '#1A3F96' },
-                  { label: 'PUNTOS DISPONIBLES', val: stats ? `${stats.totalPoints.toLocaleString('es-CO')}` : '—', color: '#F5C500' },
+                  { label: 'PUNTOS DISPONIBLES', val: stats ? `${stats.totalPoints.toLocaleString('es-CO')}` : '—', color: isDark ? '#F5C500' : '#998000' },
                   { label: 'USUARIOS', val: stats ? String(stats.userCount) : '—', color: '#2596be' },
                 ].map(({ label, val, color }) => (
                   <div key={label}>
@@ -411,7 +411,7 @@ export default function LandingPage() {
               className="font-display text-3xl sm:text-4xl font-bold tracking-tight mb-2"
               style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}
             >
-              Los <span style={{ color: '#F5C500' }}>5 mejores</span> estudiantes de la plataforma.
+              Los <span style={{ color: isDark ? '#F5C500' : '#998000' }}>5 mejores</span> estudiantes de la plataforma.
             </h2>
             <p
               className="text-sm font-light"

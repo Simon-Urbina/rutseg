@@ -52,10 +52,13 @@ type LabStatus = 'completed' | 'in_progress' | 'available' | 'locked'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
+// `textColor` mirrors `color` except for gold, which is too light to read as
+// solid text on a white card in light mode (~1.6:1 contrast) — swapped for
+// the darker gold-700 token there instead.
 const DIFF_META = {
-  principiante: { color: '#2596be', label: 'PRINCIPIANTE' },
-  intermedio:   { color: '#F5C500', label: 'INTERMEDIO'   },
-  avanzado:     { color: '#1A3F96', label: 'AVANZADO'     },
+  principiante: { color: '#2596be', textColor: '#2596be', label: 'PRINCIPIANTE' },
+  intermedio:   { color: '#F5C500', textColor: '#998000', label: 'INTERMEDIO'   },
+  avanzado:     { color: '#1A3F96', textColor: '#1A3F96', label: 'AVANZADO'     },
 } as const
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -148,7 +151,7 @@ export default function CoursePage() {
             onClick={() => navigate('/dashboard')}
             className="flex items-center gap-2 mb-8 font-mono text-[11px] tracking-[0.2em] uppercase transition-colors"
             style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = diff.color }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = isDark ? diff.color : diff.textColor }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = isDark ? '#3A5AB8' : '#4A70CC' }}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -161,7 +164,7 @@ export default function CoursePage() {
           <div className="flex items-center gap-3 mb-5 animate-fade-up-1">
             <span
               className="font-mono text-[10px] tracking-[0.22em] px-3 py-1.5 rounded"
-              style={{ color: diff.color, background: `${diff.color}12`, border: `1px solid ${diff.color}30` }}
+              style={{ color: isDark ? diff.color : diff.textColor, background: `${diff.color}12`, border: `1px solid ${diff.color}30` }}
             >
               {diff.label}
             </span>
@@ -196,18 +199,18 @@ export default function CoursePage() {
 
           {/* Stats */}
           <div className="flex items-center gap-6 flex-wrap animate-fade-up-2">
-            <HeroStat label="Módulos"      value={course.moduleCount.toString()}              accent={diff.color} isDark={isDark} />
+            <HeroStat label="Módulos"      value={course.moduleCount.toString()}              accent={isDark ? diff.color : diff.textColor} isDark={isDark} />
             <Divider isDark={isDark} />
-            <HeroStat label="Laboratorios" value={course.labCount.toString()}                 accent={diff.color} isDark={isDark} />
+            <HeroStat label="Laboratorios" value={course.labCount.toString()}                 accent={isDark ? diff.color : diff.textColor} isDark={isDark} />
             <Divider isDark={isDark} />
-            <HeroStat label="Puntos"       value={course.totalPoints.toLocaleString('es-CO')} accent="#F5C500"   isDark={isDark} />
+            <HeroStat label="Puntos"       value={course.totalPoints.toLocaleString('es-CO')} accent={isDark ? '#F5C500' : '#998000'}       isDark={isDark} />
           </div>
 
           {/* Progress bar */}
           {course.isEnrolled && total > 0 && (
             <div className="mt-8 max-w-sm animate-fade-up-3">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: diff.color }}>
+                <span className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: isDark ? diff.color : diff.textColor }}>
                   Tu progreso
                 </span>
                 <span className="font-mono text-[11px]" style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}>
@@ -303,7 +306,7 @@ function ModuleSection({
             <div>
               <p
                 className="font-mono text-[12px] tracking-[0.22em] uppercase mb-3"
-                style={{ color: diff.color }}
+                style={{ color: isDark ? diff.color : diff.textColor }}
               >
                 // módulo {String(modIdx + 1).padStart(2, '0')}
               </p>
@@ -412,7 +415,7 @@ const STATUS_STYLES: Record<LabStatus, StatusStyle> = {
   completed:  { lightBg: '#EEF8F2', darkBg: '#091C10',  lightBorder: 'rgba(82,173,112,0.55)',  darkBorder: 'rgba(82,173,112,0.60)',  lightFg: '#316843', darkFg: '#52ad70', glow: 'rgba(82,173,112,0.28)' },
   in_progress:{ lightBg: '#EAF5FA', darkBg: '#07151F',  lightBorder: '#2596be',                darkBorder: '#2596be',                lightFg: '#1E7DA0', darkFg: '#3DAED0', glow: 'rgba(37,150,190,0.32)' },
   available:  { lightBg: '#EEF3FC', darkBg: '#0D1A3D',  lightBorder: 'rgba(26,63,150,0.45)',   darkBorder: 'rgba(26,63,150,0.60)',   lightFg: '#1A3F96', darkFg: '#7B9FE8', glow: 'none' },
-  locked:     { lightBg: '#F5F7FE', darkBg: '#080D1C',  lightBorder: 'rgba(26,63,150,0.14)',   darkBorder: 'rgba(26,63,150,0.18)',   lightFg: '#9BADD0', darkFg: '#3A5AB8', glow: 'none' },
+  locked:     { lightBg: '#F5F7FE', darkBg: '#080D1C',  lightBorder: 'rgba(26,63,150,0.35)',   darkBorder: 'rgba(26,63,150,0.18)',   lightFg: '#2451C8', darkFg: '#3A5AB8', glow: 'none' },
 }
 
 function LabRow({ lab, status, isLeft, isDark, onClick }: {
@@ -517,7 +520,7 @@ function LabCard({ lab, status, fg, isDark, clickable, hovered, onHover, onClick
     ? 'rgba(82,173,112,0.30)'
     : isInProgress
     ? 'rgba(37,150,190,0.40)'
-    : isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.14)'
+    : isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.30)'
 
   const activeBorder = isCompleted
     ? 'rgba(82,173,112,0.65)'
@@ -543,7 +546,7 @@ function LabCard({ lab, status, fg, isDark, clickable, hovered, onHover, onClick
       style={{
         background: isDark ? 'rgba(13,27,70,0.90)' : '#f8faff',
         border: `1px solid ${hovered && clickable ? activeBorder : borderColor}`,
-        opacity: isLocked ? 0.45 : 1,
+        opacity: isLocked ? 0.6 : 1,
         cursor: clickable ? 'pointer' : 'default',
         transform: hovered && clickable ? 'scale(1.03)' : 'scale(1)',
         boxShadow: hovered && clickable ? '0 4px 24px rgba(0,0,0,0.22)' : 'none',
@@ -562,7 +565,7 @@ function LabCard({ lab, status, fg, isDark, clickable, hovered, onHover, onClick
       </p>
 
       <div className="flex items-center gap-4">
-        <span className="flex items-center gap-1.5 font-mono text-[11px]" style={{ color: '#F5C500' }}>
+        <span className="flex items-center gap-1.5 font-mono text-[11px]" style={{ color: isDark ? '#F5C500' : '#998000' }}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
           </svg>

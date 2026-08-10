@@ -90,8 +90,8 @@
 
 html:not(.dark) .hud-panel {
   background: #FFFFFF;
-  border: 1px solid rgba(26, 63, 150, 0.16);
-  box-shadow: 0 4px 20px rgba(26, 63, 150, 0.05);
+  border: 1px solid rgba(26, 63, 150, 0.30);
+  box-shadow: 0 4px 20px rgba(26, 63, 150, 0.08);
 }
 
 .hud-panel:hover {
@@ -190,6 +190,21 @@ html.dark .btn-ghost-light:hover {
   background: rgba(123, 159, 232, 0.1);
   border-color: #7B9FE8;
   color: #EEF3FC;
+}
+
+/* Disabled buttons: Tailwind's disabled:opacity-* fades text and background
+   together, so on light-mode's near-white surfaces the label nearly vanishes
+   (e.g. white .btn-neon text over a washed-out blue). Pin a legible muted
+   state for light mode instead of relying on raw opacity. Dark mode already
+   reads fine with the opacity fade, so it's left untouched. */
+html:not(.dark) .btn-neon:disabled,
+html:not(.dark) .btn-gold:disabled,
+html:not(.dark) .btn-ghost-light:disabled {
+  opacity: 1;
+  background: rgba(26, 63, 150, 0.14);
+  color: rgba(10, 21, 69, 0.55);
+  border-color: transparent;
+  box-shadow: none;
 }
 
 /* ────────────────────────────────────────────────

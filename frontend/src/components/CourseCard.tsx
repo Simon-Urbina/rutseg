@@ -13,10 +13,14 @@ export interface Course {
   completedLabsCount?: number
 }
 
-const DIFFICULTY_META: Record<Course['difficulty'], { color: string; label: string; bg: string }> = {
-  principiante: { color: '#2596be', label: 'PRINCIPIANTE', bg: 'rgba(37, 150, 190, 0.10)' },
-  intermedio:   { color: '#F5C500', label: 'INTERMEDIO',   bg: 'rgba(245, 197, 0, 0.10)' },
-  avanzado:     { color: '#1A3F96', label: 'AVANZADO',     bg: 'rgba(26, 63, 150, 0.10)' },
+// `color` tints backgrounds/borders at low alpha, where any hue reads fine.
+// `textColor` is what actually gets used as solid text/icon color: gold is
+// too light to read as text on a white card (~1.6:1), so light mode swaps in
+// the darker gold-700 token there instead.
+const DIFFICULTY_META: Record<Course['difficulty'], { color: string; textColor: string; label: string; bg: string }> = {
+  principiante: { color: '#2596be', textColor: '#2596be', label: 'PRINCIPIANTE', bg: 'rgba(37, 150, 190, 0.10)' },
+  intermedio:   { color: '#F5C500', textColor: '#998000', label: 'INTERMEDIO',   bg: 'rgba(245, 197, 0, 0.10)' },
+  avanzado:     { color: '#1A3F96', textColor: '#1A3F96', label: 'AVANZADO',     bg: 'rgba(26, 63, 150, 0.10)' },
 }
 
 interface Props {
@@ -46,7 +50,7 @@ export default function CourseCard({ course, onEnroll, onContinue }: Props) {
           <div
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full font-mono text-[10px] font-semibold tracking-widest uppercase border"
             style={{
-              color: diff.color,
+              color: isDark ? diff.color : diff.textColor,
               backgroundColor: diff.bg,
               borderColor: `${diff.color}35`,
             }}
@@ -107,7 +111,7 @@ export default function CourseCard({ course, onEnroll, onContinue }: Props) {
           </div>
 
           <div>
-            <p className="num-display text-lg font-bold leading-none" style={{ color: '#F5C500' }}>
+            <p className="num-display text-lg font-bold leading-none" style={{ color: isDark ? '#F5C500' : '#998000' }}>
               {course.totalPoints.toLocaleString('es-CO')}
             </p>
             <p className="font-mono text-[9px] tracking-widest uppercase mt-1" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>

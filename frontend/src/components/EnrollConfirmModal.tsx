@@ -115,7 +115,7 @@ export default function EnrollConfirmModal({ course, onClose, onEnrolled }: Prop
               {course.labCount} laboratorio{course.labCount === 1 ? '' : 's'}
             </span>
             {' '}y podrás empezar a sumar hasta{' '}
-            <span style={{ color: '#F5C500', fontWeight: 600 }}>
+            <span style={{ color: isDark ? '#F5C500' : '#998000', fontWeight: 600 }}>
               {course.totalPoints.toLocaleString('es-CO')} puntos
             </span>.
           </p>

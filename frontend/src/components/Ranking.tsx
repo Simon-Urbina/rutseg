@@ -24,10 +24,15 @@ interface SelfProfile {
   bio: string | null
 }
 
-const RANK_ACCENTS: Record<number, { color: string; label: string }> = {
-  1: { color: '#F5C500', label: 'GOLD' },
-  2: { color: '#7B9FE8', label: 'SILVER' },
-  3: { color: '#CD7F32', label: 'BRONZE' },
+// `color` is the vivid medal hue — used for backgrounds/borders/dots at low
+// alpha, where it reads fine on any surface. `textColor` is a darker shade of
+// the same hue reserved for text/icons in light mode: gold, silver and bronze
+// are all light enough that used directly as text on a white card they fall
+// well under readable contrast (e.g. gold text on white is ~1.6:1).
+const RANK_ACCENTS: Record<number, { color: string; textColor: string; label: string }> = {
+  1: { color: '#F5C500', textColor: '#8A7000', label: 'GOLD' },
+  2: { color: '#7B9FE8', textColor: '#3A5AB8', label: 'SILVER' },
+  3: { color: '#CD7F32', textColor: '#8A5423', label: 'BRONZE' },
 }
 
 export default function Ranking({ limit = 5, selfProfile }: { limit?: number; selfProfile?: SelfProfile | null }) {
@@ -112,6 +117,10 @@ export default function Ranking({ limit = 5, selfProfile }: { limit?: number; se
 
       {!loading && !error && rows.map(row => {
         const accent = RANK_ACCENTS[row.rank]?.color ?? (isDark ? '#3A5AB8' : '#4A70CC')
+        // Text/icon color: in light mode the vivid medal hues (gold, silver,
+        // bronze) are too close to white to read as text, so swap in the
+        // darker textColor variant there. Dark mode keeps the vivid hue.
+        const textAccent = isDark ? accent : (RANK_ACCENTS[row.rank]?.textColor ?? '#4A70CC')
         const label = RANK_ACCENTS[row.rank]?.label
         const isTop = row.rank === 1
         const ratio = row.points > 0 ? row.points / maxPoints : 0
@@ -134,7 +143,7 @@ export default function Ranking({ limit = 5, selfProfile }: { limit?: number; se
               }),
             } as React.CSSProperties}
           >
-            {label && <span className="hud-corner-tag" style={{ color: accent }}>{label}</span>}
+            {label && <span className="hud-corner-tag" style={{ color: textAccent }}>{label}</span>}
 
             <div className="relative flex items-center gap-5">
               {/* Rank number */}
@@ -143,7 +152,7 @@ export default function Ranking({ limit = 5, selfProfile }: { limit?: number; se
                 style={{
                   fontSize: '1.5rem',
                   background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.04)',
-                  color: accent,
+                  color: textAccent,
                   border: `1px solid ${accent}33`,
                 }}
               >
@@ -165,7 +174,7 @@ export default function Ranking({ limit = 5, selfProfile }: { limit?: number; se
                   {label && (
                     <span
                       className="font-mono text-[9px] tracking-[0.18em] px-1.5 py-0.5 rounded"
-                      style={{ color: accent, background: `${accent}15`, border: `1px solid ${accent}30` }}
+                      style={{ color: textAccent, background: `${accent}15`, border: `1px solid ${accent}30` }}
                     >
                       {label}
                     </span>
@@ -212,7 +221,7 @@ export default function Ranking({ limit = 5, selfProfile }: { limit?: number; se
                 </p>
                 <p
                   className="font-mono text-[10px] tracking-[0.18em] uppercase mt-1"
-                  style={{ color: accent }}
+                  style={{ color: textAccent }}
                 >
                   pts
                 </p>

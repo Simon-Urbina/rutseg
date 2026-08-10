@@ -436,7 +436,11 @@ function ResultModal({
   onNext?: () => void
 }) {
   const passed = result.scorePercent >= 60
-  const accent = passed ? '#4ade80' : '#f87171'
+  // Light mode: neon green/red read at ~1.7:1 and ~2.7:1 on a white card —
+  // too faint. Darker shades of the same hues keep the signal legible there.
+  const accent = passed
+    ? (isDark ? '#4ade80' : '#2E7D46')
+    : (isDark ? '#f87171' : '#B23B3B')
 
   const [displayScore, setDisplayScore] = useState(0)
   const [showSparkles, setShowSparkles] = useState(false)
@@ -493,7 +497,7 @@ function ResultModal({
           {result.pointsEarned > 0 && (
             <div className="flex items-center justify-center gap-2">
               <Sparkles active={showSparkles}>
-                <span className="font-mono text-[13px] font-semibold" style={{ color: '#F5C500' }}>
+                <span className="font-mono text-[13px] font-semibold" style={{ color: isDark ? '#F5C500' : '#998000' }}>
                   +{result.pointsEarned} pts
                 </span>
               </Sparkles>
@@ -582,6 +586,12 @@ function QuestionItem({
     ? state?.checked
     : !!state?.responseText
 
+  // Light mode: neon green/red read too faint as solid text/border on white
+  // cards (~1.7:1 / ~2.7:1) — darker shades of the same hues keep the
+  // correct/incorrect signal legible there. Dark mode is unaffected.
+  const correctColor = isDark ? '#4ade80' : '#2E7D46'
+  const wrongColor   = isDark ? '#f87171' : '#B23B3B'
+
   return (
     <div
       className="hud-panel hud-static relative"
@@ -611,7 +621,7 @@ function QuestionItem({
               ? state?.isCorrect ? 'rgba(74,222,128,0.30)' : 'rgba(248,113,113,0.30)'
               : 'rgba(26,63,150,0.22)'}`,
             color: isAnswered
-              ? state?.isCorrect ? '#4ade80' : '#f87171'
+              ? state?.isCorrect ? correctColor : wrongColor
               : isDark ? '#7B9FE8' : '#1A3F96',
           }}
         >
@@ -652,9 +662,9 @@ function QuestionItem({
                 let textColor = isDark ? '#C8D5EE' : '#0A1545'
 
                 if (isCorrectOpt) {
-                  bg = 'rgba(74,222,128,0.10)'; border = 'rgba(74,222,128,0.35)'; textColor = '#4ade80'
+                  bg = 'rgba(74,222,128,0.10)'; border = 'rgba(74,222,128,0.35)'; textColor = correctColor
                 } else if (isWrongSelection) {
-                  bg = 'rgba(248,113,113,0.10)'; border = 'rgba(248,113,113,0.35)'; textColor = '#f87171'
+                  bg = 'rgba(248,113,113,0.10)'; border = 'rgba(248,113,113,0.35)'; textColor = wrongColor
                 } else if (selected && !state?.checked) {
                   bg = isDark ? 'rgba(26,63,150,0.22)' : 'rgba(26,63,150,0.10)'
                   border = '#1A3F96'
@@ -670,15 +680,15 @@ function QuestionItem({
                   >
                     <span
                       className="w-4 h-4 rounded-full shrink-0 flex items-center justify-center transition-all"
-                      style={{ border: `2px solid ${isCorrectOpt ? '#4ade80' : isWrongSelection ? '#f87171' : selected ? '#1A3F96' : isDark ? '#3A5AB8' : '#4A70CC'}` }}
+                      style={{ border: `2px solid ${isCorrectOpt ? correctColor : isWrongSelection ? wrongColor : selected ? '#1A3F96' : isDark ? '#3A5AB8' : '#4A70CC'}` }}
                     >
                       {(selected || isCorrectOpt) && (
-                        <span className="w-2 h-2 rounded-full" style={{ background: isCorrectOpt ? '#4ade80' : isWrongSelection ? '#f87171' : '#1A3F96' }} />
+                        <span className="w-2 h-2 rounded-full" style={{ background: isCorrectOpt ? correctColor : isWrongSelection ? wrongColor : '#1A3F96' }} />
                       )}
                     </span>
                     <span className="text-[14px]" style={{ color: textColor }}>{opt.optionText}</span>
-                    {isCorrectOpt && <span className="ml-auto font-mono text-[11px]" style={{ color: '#4ade80' }}>✓ correcta</span>}
-                    {isWrongSelection && <span className="ml-auto font-mono text-[11px]" style={{ color: '#f87171' }}>✗ incorrecta</span>}
+                    {isCorrectOpt && <span className="ml-auto font-mono text-[11px]" style={{ color: correctColor }}>✓ correcta</span>}
+                    {isWrongSelection && <span className="ml-auto font-mono text-[11px]" style={{ color: wrongColor }}>✗ incorrecta</span>}
                   </button>
                 )
               })}
@@ -689,7 +699,7 @@ function QuestionItem({
                   className="hud-panel hud-static mt-3 px-4 py-3"
                   style={{
                     background: isDark ? 'rgba(26,63,150,0.08)' : 'rgba(26,63,150,0.05)',
-                    borderLeft: `3px solid ${state.isCorrect ? '#4ade80' : '#f87171'}`,
+                    borderLeft: `3px solid ${state.isCorrect ? correctColor : wrongColor}`,
                     '--hud-border': 'rgba(26,63,150,0.30)',
                     '--hud-border-hover': 'rgba(26,63,150,0.30)',
                   } as React.CSSProperties}
@@ -733,7 +743,7 @@ function QuestionItem({
                 <button
                   onClick={() => onOpenTerminal(q.activity!)}
                   className="flex items-center gap-2.5 px-5 py-3 rounded-xl font-mono text-[13px] tracking-wide transition-all duration-150"
-                  style={{ background: 'rgba(0,200,100,0.06)', border: '1px solid rgba(0,200,100,0.18)', color: '#4ade80' }}
+                  style={{ background: 'rgba(0,200,100,0.06)', border: '1px solid rgba(0,200,100,0.18)', color: isDark ? '#4ade80' : '#2E7D46' }}
                   onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'rgba(0,200,100,0.12)'; el.style.borderColor = 'rgba(0,200,100,0.32)' }}
                   onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'rgba(0,200,100,0.06)'; el.style.borderColor = 'rgba(0,200,100,0.18)' }}
                 >
@@ -781,7 +791,7 @@ function QuestionItem({
                 <div className="space-y-2.5">
                   <span
                     className="font-mono text-[11px] tracking-[0.15em] uppercase"
-                    style={{ color: state.isCorrect ? '#4ade80' : '#f87171' }}
+                    style={{ color: state.isCorrect ? correctColor : wrongColor }}
                   >
                     {state.isCorrect ? '✓ Respuesta correcta' : '✗ Respuesta incorrecta'}
                   </span>
@@ -790,7 +800,7 @@ function QuestionItem({
                     style={{
                       background: state.isCorrect ? 'rgba(74,222,128,0.05)' : 'rgba(248,113,113,0.05)',
                       border: `1px solid ${state.isCorrect ? 'rgba(74,222,128,0.18)' : 'rgba(248,113,113,0.18)'}`,
-                      color: state.isCorrect ? '#4ade80' : '#f87171',
+                      color: state.isCorrect ? correctColor : wrongColor,
                       whiteSpace: 'pre-wrap', wordBreak: 'break-all',
                     }}
                   >
@@ -1069,7 +1079,9 @@ export default function LabPage() {
                 style={{
                   background: data.progress.status === 'completed' ? 'rgba(74,222,128,0.08)' : 'rgba(245,197,0,0.08)',
                   border: `1px solid ${data.progress.status === 'completed' ? 'rgba(74,222,128,0.25)' : 'rgba(245,197,0,0.25)'}`,
-                  color: data.progress.status === 'completed' ? '#4ade80' : '#F5C500',
+                  color: data.progress.status === 'completed'
+                    ? (isDark ? '#4ade80' : '#316843')
+                    : (isDark ? '#F5C500' : '#998000'),
                 }}
               >
                 {data.progress.status === 'completed' ? '✓ Completado' : 'En progreso'}
@@ -1154,7 +1166,7 @@ export default function LabPage() {
                       </span>
                       <div
                         className="font-mono text-[13px] font-semibold"
-                        style={{ color: ok ? '#4ade80' : '#f87171', minWidth: '3.5rem' }}
+                        style={{ color: ok ? (isDark ? '#4ade80' : '#2E7D46') : (isDark ? '#f87171' : '#B23B3B'), minWidth: '3.5rem' }}
                       >
                         {Math.round(h.scorePercent)}%
                       </div>
@@ -1219,7 +1231,7 @@ export default function LabPage() {
           </button>
 
           {submitError && (
-            <p className="text-[13px] text-center" style={{ color: '#f87171' }}>{submitError}</p>
+            <p className="text-[13px] text-center" style={{ color: isDark ? '#f87171' : '#B23B3B' }}>{submitError}</p>
           )}
         </div>
       </main>
