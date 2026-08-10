@@ -6,7 +6,66 @@ import { api } from '../lib/api'
 import Header from '../components/Header'
 import Ranking from '../components/Ranking'
 import Footer from '../components/Footer'
-import CourseCard, { type Course } from '../components/CourseCard'
+
+const FEATURES = [
+  {
+    title: 'Aprende practicando',
+    kicker: '// PRÁCTICA REAL',
+    body: 'Laboratorios interactivos basados en escenarios reales de ciberseguridad. Sin teoría plana ni presentaciones: acceso directo a terminales y sistemas vulnerables.',
+    accent: '#1A3F96',
+    gridSpan: 'col-span-12 lg:col-span-7',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="4 17 10 11 4 5"/>
+        <line x1="12" y1="19" x2="20" y2="19"/>
+      </svg>
+    ),
+  },
+  {
+    title: 'Compite en el ranking',
+    kicker: '// CLASIFICACIÓN',
+    body: 'Cada laboratorio completado otorga puntos de experiencia. Escala posiciones en la tabla general de la universidad y mide tu nivel técnico.',
+    accent: '#F5C500',
+    gridSpan: 'col-span-12 lg:col-span-5',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+        <path d="M4 22h16"/>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+      </svg>
+    ),
+  },
+  {
+    title: 'Cero relleno teórico',
+    kicker: '// HABILIDADES CLAVE',
+    body: 'Formación hands-on orientada al ejercicio profesional de la ciberseguridad. Cada actividad enseña conceptos prácticos directamente aplicables.',
+    accent: '#2596be',
+    gridSpan: 'col-span-12 lg:col-span-5',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+    ),
+  },
+  {
+    title: 'Entornos de ejecución aislados',
+    kicker: '// INFRAESTRUCTURA',
+    body: 'Contenedores dedicados y seguros en la nube para ejecutar pruebas de seguridad de la información sin necesidad de configuraciones locales complejas.',
+    accent: '#1A3F96',
+    gridSpan: 'col-span-12 lg:col-span-7',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+        <line x1="6" y1="6" x2="6.01" y2="6"/>
+        <line x1="6" y1="18" x2="6.01" y2="18"/>
+      </svg>
+    ),
+  },
+]
 
 export default function LandingPage() {
   const { theme } = useTheme()
@@ -14,91 +73,107 @@ export default function LandingPage() {
   const isDark = theme === 'dark'
 
   const [stats, setStats] = useState<{ courseCount: number; labCount: number; totalPoints: number; userCount: number } | null>(null)
-  const [courses, setCourses] = useState<Course[]>([])
-  const [coursesLoading, setCoursesLoading] = useState(true)
-
-  const [activeTab, setActiveTab] = useState<'terminal' | 'exploit' | 'flag'>('terminal')
-
+  
   useEffect(() => {
     api.get<{ courseCount: number; labCount: number; totalPoints: number; userCount: number }>('/api/stats')
       .then(setStats).catch(() => {})
-
-    api.get<Course[]>('/api/courses')
-      .then(setCourses)
-      .catch(() => {})
-      .finally(() => setCoursesLoading(false))
   }, [])
 
   return (
-    <div className={`min-h-screen selection:bg-cyan-500/30 selection:text-white transition-colors duration-300 ${isDark ? 'bg-[#070913] text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
+    <div style={{ background: isDark ? '#060D1F' : '#EEF3FC', color: isDark ? '#EEF3FC' : '#0A1545' }}>
       <Header />
 
-      {/* ─── HERO SECTION WITH INTERACTIVE TERMINAL PREVIEW ─── */}
-      <section className="relative pt-8 pb-20 lg:pt-16 lg:pb-32 overflow-hidden">
-        {/* Bioluminescent Watermelon Glow Orbs */}
-        <div className="wm-orb w-[550px] h-[550px] top-[-100px] left-[-150px] bg-cyan-500/20 blur-[120px]" />
-        <div className="wm-orb w-[600px] h-[600px] top-[150px] right-[-200px] bg-purple-600/20 blur-[130px]" />
-        <div className="wm-orb w-[400px] h-[400px] bottom-[-50px] left-[35%] bg-emerald-400/15 blur-[100px]" />
-
-        <div className="relative max-w-7xl mx-auto px-6 lg:px-10">
+      {/* ─── HERO SECTION INSTITUCIONAL ─── */}
+      <section
+        className="relative border-b overflow-hidden"
+        style={{
+          borderColor: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.12)',
+          background: isDark
+            ? 'linear-gradient(180deg, #0D1630 0%, #060D1F 100%)'
+            : 'linear-gradient(180deg, #E8EEFA 0%, #EEF3FC 100%)',
+        }}
+      >
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-12 pb-20 lg:pt-20 lg:pb-28">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
-            {/* Left Hero Content */}
-            <div className="lg:col-span-7 space-y-8 text-left">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 backdrop-blur-xl text-cyan-300 font-mono text-xs font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(5,217,232,0.2)]">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-400"></span>
-                </span>
-                PLATAFORMA DE HACKING & CIBERSEGURIDAD 2.0
+            {/* Columna Izquierda: Mensaje Principal */}
+            <div className="lg:col-span-7 space-y-6">
+              <div
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-[0.18em] uppercase border"
+                style={{
+                  color: isDark ? '#7B9FE8' : '#1A3F96',
+                  background: isDark ? 'rgba(26,63,150,0.12)' : 'rgba(26,63,150,0.06)',
+                  borderColor: isDark ? 'rgba(26,63,150,0.25)' : 'rgba(26,63,150,0.20)',
+                }}
+              >
+                <span className="w-2 h-2 rounded-full" style={{ background: '#2596be' }} />
+                Plataforma Institucional de Laboratorios Prácticos
               </div>
 
-              {/* Title */}
-              <h1 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight">
+              <h1
+                className="font-display font-bold tracking-tight text-4xl sm:text-5xl lg:text-6xl leading-[1.08]"
+                style={{ color: isDark ? '#EEF3FC' : '#0A1545' }}
+              >
                 Tu ruta segura hacia el{' '}
-                <span className="bg-gradient-to-r from-cyan-400 via-emerald-300 to-pink-500 bg-clip-text text-transparent drop-shadow-sm">
+                <span
+                  style={{
+                    color: '#1A3F96',
+                    backgroundImage: isDark
+                      ? 'linear-gradient(135deg, #7B9FE8 0%, #2451C8 60%, #2596be 100%)'
+                      : 'linear-gradient(135deg, #1A3F96 0%, #2451C8 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
                   hacking real
                 </span>
                 .
               </h1>
 
-              {/* Paragraph */}
-              <p className="text-base sm:text-lg font-normal text-slate-300 dark:text-slate-300 max-w-2xl leading-relaxed">
-                Entrena con laboratorios interactivos en vivo, escenarios de pentesting y exploits reales. Sin diapositivas y sin teoría aburrida: conecta tu terminal y resuelve problemas.
+              <p
+                className="text-base sm:text-lg font-light max-w-2xl leading-relaxed"
+                style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}
+              >
+                RutSeg es la plataforma de entrenamiento práctico en ciberseguridad.
+                Aprende con escenarios reales, a tu propio ritmo, sin presentaciones teóricas y con validación automática.
               </p>
 
-              {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-4 pt-2">
                 {token ? (
-                  <Link to="/dashboard" className="btn-wm-primary text-base py-4 px-8">
-                    Ir al Dashboard →
+                  <Link to="/dashboard" className="btn-neon text-[15px]">
+                    Ir al dashboard →
                   </Link>
                 ) : (
                   <>
-                    <Link to="/register" className="btn-wm-primary text-base py-4 px-8">
-                      Empezar Gratis Ahora →
+                    <Link to="/register" className="btn-neon text-[15px]">
+                      Empezar gratis →
                     </Link>
-                    <Link to="/login" className="btn-wm-secondary text-base py-4 px-8">
+                    <Link to="/login" className="btn-ghost-light text-[15px]">
                       Ya tengo cuenta
                     </Link>
                   </>
                 )}
               </div>
 
-              {/* Live Metric Pills */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-white/10">
+              {/* Métricas Numéricas */}
+              <div
+                className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t"
+                style={{ borderColor: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.12)' }}
+              >
                 {[
-                  { label: 'CURSOS', val: stats ? String(stats.courseCount) : '—', color: 'text-cyan-400' },
-                  { label: 'LABORATORIOS', val: stats ? String(stats.labCount) : '—', color: 'text-emerald-400' },
-                  { label: 'PUNTOS DISP.', val: stats ? `${stats.totalPoints.toLocaleString('es-CO')}` : '—', color: 'text-amber-400' },
-                  { label: 'OPERADORES', val: stats ? String(stats.userCount) : '—', color: 'text-pink-400' },
+                  { label: 'CURSOS', val: stats ? String(stats.courseCount) : '—', color: isDark ? '#EEF3FC' : '#0A1545' },
+                  { label: 'LABORATORIOS', val: stats ? String(stats.labCount) : '—', color: isDark ? '#7B9FE8' : '#1A3F96' },
+                  { label: 'PUNTOS DISPONIBLES', val: stats ? `${stats.totalPoints.toLocaleString('es-CO')}` : '—', color: '#F5C500' },
+                  { label: 'USUARIOS', val: stats ? String(stats.userCount) : '—', color: '#2596be' },
                 ].map(({ label, val, color }) => (
-                  <div key={label} className="p-3 rounded-2xl bg-white/5 border border-white/10">
-                    <p className={`num-display text-2xl sm:text-3xl font-extrabold ${color} leading-none mb-1`}>
+                  <div key={label}>
+                    <p className="num-display text-2xl sm:text-3xl leading-none font-bold" style={{ color }}>
                       {val}
                     </p>
-                    <p className="font-mono text-[9px] tracking-widest text-slate-400 uppercase">
+                    <p
+                      className="font-mono text-[10px] tracking-[0.2em] uppercase mt-2 font-medium"
+                      style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
+                    >
                       {label}
                     </p>
                   </div>
@@ -106,90 +181,54 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right Hero: Interactive Terminal Mockup */}
+            {/* Columna Derecha: Terminal Profesional de Laboratorio */}
             <div className="lg:col-span-5">
-              <div className="terminal-card relative shadow-[0_25px_60px_-15px_rgba(5,217,232,0.3)]">
-                {/* Header */}
-                <div className="terminal-header">
-                  <div className="terminal-dots">
-                    <span className="terminal-dot terminal-dot-red" />
-                    <span className="terminal-dot terminal-dot-yellow" />
-                    <span className="terminal-dot terminal-dot-green" />
+              <div className="tech-terminal">
+                <div className="tech-terminal-header">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-rose-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-amber-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
                   </div>
-                  <span className="font-mono text-xs text-slate-400 font-semibold tracking-wider">
-                    root@rutseg-lab:~#
+                  <span className="font-mono text-xs text-slate-300 tracking-wider">
+                    operador@rutseg-lab:~#
                   </span>
-                  <div className="flex gap-2 font-mono text-[10px]">
-                    <button
-                      onClick={() => setActiveTab('terminal')}
-                      className={`px-2 py-1 rounded transition-colors ${activeTab === 'terminal' ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-500 hover:text-slate-300'}`}
-                    >
-                      terminal.sh
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('exploit')}
-                      className={`px-2 py-1 rounded transition-colors ${activeTab === 'exploit' ? 'bg-purple-500/20 text-purple-300' : 'text-slate-500 hover:text-slate-300'}`}
-                    >
-                      exploit.py
-                    </button>
+                  <span className="font-mono text-[10px] text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20">
+                    CONEXIÓN SEGURA
+                  </span>
+                </div>
+
+                <div className="p-5 font-mono text-xs text-slate-200 space-y-3 min-h-[300px] leading-relaxed">
+                  <div className="text-slate-400">// Entorno virtual de pruebas RutSeg</div>
+                  <div className="flex items-center gap-2 text-teal-400">
+                    <span>$</span>
+                    <span>rutseg lab start --id sql-injection-01</span>
+                  </div>
+                  <div className="text-slate-300 pl-3 border-l-2 border-teal-500/40 space-y-1">
+                    <div>[+] Inicializando contenedor aislado... [OK]</div>
+                    <div>[+] IP asignada: 10.10.14.88</div>
+                    <div>[+] Objetivo: Vulnerabilidad SQL Injection</div>
+                  </div>
+                  <div className="flex items-center gap-2 text-indigo-300">
+                    <span>$</span>
+                    <span>curl -s "http://10.10.14.88/login?user=admin'--"</span>
+                  </div>
+                  <div className="p-3 rounded bg-white/5 border border-white/10 text-emerald-400 text-[11px]">
+                    <div>[+] Respuesta 200 OK — Sesión de Administrador Obtenida</div>
+                    <div className="font-bold text-amber-300 mt-1">FLAG CAPTURADA: RUTSEG{`{sql_injection_master_2026}`}</div>
+                  </div>
+                  <div className="flex items-center gap-2 text-teal-400 cursor-blink">
+                    <span>$</span>
+                    <span className="text-slate-400">rutseg submit --flag RUTSEG{`{...}`}</span>
                   </div>
                 </div>
 
-                {/* Body Content */}
-                <div className="p-5 font-mono text-xs sm:text-sm text-slate-200 space-y-3 min-h-[320px]">
-                  {activeTab === 'terminal' ? (
-                    <>
-                      <div className="text-slate-400"># RutSeg Cybersec Sandbox v2.4.0</div>
-                      <div className="flex items-center gap-2 text-cyan-400">
-                        <span>$</span>
-                        <span>rutseg connect --target lab-sqli-v1</span>
-                      </div>
-                      <div className="text-emerald-400 text-[12px] pl-3 border-l border-emerald-500/40 space-y-1">
-                        <div>[+] Connecting to isolated docker container... OK</div>
-                        <div>[+] Target IP: 10.10.14.88 (Port 80)</div>
-                        <div>[+] Vulnerability detected: Blind SQL Injection</div>
-                      </div>
-                      <div className="flex items-center gap-2 text-pink-400">
-                        <span>$</span>
-                        <span>python3 exploit.py --url http://10.10.14.88/api</span>
-                      </div>
-                      <div className="text-amber-300 bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/20 space-y-1">
-                        <div>[!] Extracting database admin hash...</div>
-                        <div>[!] Cracking hash via hashcat dictionary attack...</div>
-                        <div className="text-emerald-400 font-bold">🎉 FLAG CAPTURED: RUTSEG{`{sql_injection_master_2026}`}</div>
-                      </div>
-                      <div className="flex items-center gap-2 text-cyan-300 pt-2 cursor-blink">
-                        <span>$</span>
-                        <span className="text-slate-400">submit-flag --points 500</span>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-purple-400"># Python Exploit Script - Proof of Concept</div>
-                      <pre className="text-slate-300 text-xs leading-relaxed overflow-x-auto p-2 bg-black/40 rounded border border-white/5">
-{`import requests
-
-url = "http://10.10.14.88/api/v1/auth"
-payload = {"username": "admin' OR 1=1 --", "pass": "x"}
-
-res = requests.post(url, json=payload)
-if "flag" in res.text:
-    print("[+] SUCCESS! Access granted.")`}
-                      </pre>
-                      <div className="p-2.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs">
-                        Status: EXPLOIT READY TO EXECUTE
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Footer bar */}
-                <div className="bg-black/60 px-4 py-2 border-t border-white/10 flex items-center justify-between font-mono text-[11px] text-slate-400">
-                  <span className="flex items-center gap-1.5 text-emerald-400">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    CONTAINER ONLINE
+                <div className="bg-black/40 px-4 py-2.5 border-t border-white/10 flex items-center justify-between font-mono text-[11px] text-slate-400">
+                  <span className="flex items-center gap-2 text-emerald-400">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    ESTADO: ACTIVO
                   </span>
-                  <span>100% HANDS-ON</span>
+                  <span>HANDS-ON LAB</span>
                 </div>
               </div>
             </div>
@@ -198,202 +237,73 @@ if "flag" in res.text:
         </div>
       </section>
 
-      {/* ─── BENTO BOX FEATURES GRID ─── */}
-      <section className="relative py-24 border-t border-white/10 bg-slate-950/60">
+      {/* ─── CARACTERÍSTICAS BENTO GRID INSTITUCIONAL ─── */}
+      <section
+        className="py-20 border-b"
+        style={{ borderColor: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.12)' }}
+      >
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
-          <div className="max-w-3xl mb-16 text-left">
-            <span className="font-mono text-xs tracking-widest text-cyan-400 uppercase font-bold block mb-3">
-              // VENTAJAS EXCLUSIVAS DE RUTSEG
-            </span>
-            <h2 className="font-display text-3xl sm:text-5xl font-black tracking-tight">
-              Una plataforma diseñada para aprender <span className="text-cyan-400">haciendo</span>.
+          <div className="max-w-3xl mb-14">
+            <p
+              className="font-mono text-xs tracking-[0.22em] uppercase mb-3 font-semibold"
+              style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
+            >
+              // ¿POR QUÉ RUTSEG?
+            </p>
+            <h2
+              className="font-display text-3xl sm:text-4xl font-bold tracking-tight"
+              style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}
+            >
+              Una plataforma pensada para aprender{' '}
+              <span style={{ color: '#1A3F96' }}>haciendo</span>
+              , no solo leyendo.
             </h2>
           </div>
 
-          {/* ASYMMETRIC BENTO GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-
-            {/* Bento Card 1 (Span 8): Interactive Labs */}
-            <div className="md:col-span-8 glass-card-wm p-8 flex flex-col justify-between group">
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center font-mono font-bold text-lg">
-                    &gt;_
-                  </div>
-                  <span className="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 font-bold">
-                    LABORATORIOS EN VIVO
-                  </span>
-                </div>
-                <h3 className="font-display text-2xl sm:text-3xl font-extrabold mb-3">
-                  Laboratorios Interactivos con Escenarios Reales
-                </h3>
-                <p className="text-slate-300 text-base leading-relaxed max-w-xl">
-                  Sin teoría plana, sin PDF de 100 páginas: accede directamente a entornos vulnerables preparados para practicar inyección SQL, XSS, escalación de privilegios y pentesting web.
-                </p>
-              </div>
-
-              <div className="mt-8 p-4 rounded-2xl bg-black/40 border border-white/10 font-mono text-xs text-emerald-400 flex items-center justify-between">
-                <span>[+] Target machine: Linux Ubuntu 22.04 LTS</span>
-                <span className="text-cyan-400">LIVE CONTAINER</span>
-              </div>
-            </div>
-
-            {/* Bento Card 2 (Span 4): Gamification & Leaderboard */}
-            <div className="md:col-span-4 glass-card-wm p-8 flex flex-col justify-between group">
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center text-xl">
-                    🏆
-                  </div>
-                  <span className="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 font-bold">
-                    LEADERBOARD
-                  </span>
-                </div>
-                <h3 className="font-display text-2xl font-extrabold mb-3">
-                  Compite en el Ranking Global
-                </h3>
-                <p className="text-slate-300 text-sm leading-relaxed">
-                  Cada laboratorio superado otorga puntos de experiencia. Sube puestos en la tabla general y demuestra tu nivel técnico ante la comunidad.
-                </p>
-              </div>
-
-              <div className="mt-6 space-y-2">
-                <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
-                  <span className="text-amber-400 font-bold">#1 @cyber_ninja</span>
-                  <span className="text-slate-300">12,450 PTS</span>
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
-                  <span className="text-slate-300 font-bold">#2 @root_seeker</span>
-                  <span className="text-slate-300">10,800 PTS</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Bento Card 3 (Span 4): Zero Filler */}
-            <div className="md:col-span-4 glass-card-wm p-8 flex flex-col justify-between group">
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-pink-500/20 border border-pink-500/40 text-pink-400 flex items-center justify-center text-xl">
-                    ⚡
-                  </div>
-                  <span className="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded-full border border-pink-500/30 bg-pink-500/10 text-pink-300 font-bold">
-                    CERO RELLENO
-                  </span>
-                </div>
-                <h3 className="font-display text-2xl font-extrabold mb-3">
-                  100% Efectividad Táctica
-                </h3>
-                <p className="text-slate-300 text-sm leading-relaxed">
-                  Aprende lo que realmente se exige en auditorías de seguridad y puestos de Ciberseguridad. Directo al grano desde el minuto 1.
-                </p>
-              </div>
-
-              <div className="mt-6 flex items-center gap-2 font-mono text-xs text-pink-400">
-                <span>✓ SIN DIAPOSITIVAS</span>
-                <span>✓ SOLO PRÁCTICA</span>
-              </div>
-            </div>
-
-            {/* Bento Card 4 (Span 8): Progress Tracking */}
-            <div className="md:col-span-8 glass-card-wm p-8 flex flex-col justify-between group">
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center text-xl">
-                    📊
-                  </div>
-                  <span className="font-mono text-[10px] tracking-widest uppercase px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 font-bold">
-                    MÉTRICAS REALES
-                  </span>
-                </div>
-                <h3 className="font-display text-2xl sm:text-3xl font-extrabold mb-3">
-                  Seguimiento de Progreso y Flags Capturadas
-                </h3>
-                <p className="text-slate-300 text-base leading-relaxed max-w-xl">
-                  Visualiza estadísticas detalladas de laboratorios completados, módulos aprobados y habilidades adquiridas en tu perfil público de operador.
-                </p>
-              </div>
-
-              <div className="mt-6 grid grid-cols-3 gap-4">
-                <div className="p-3 rounded-xl bg-white/5 text-center">
-                  <p className="num-display text-xl font-bold text-emerald-400">100%</p>
-                  <p className="font-mono text-[10px] text-slate-400 uppercase">Validación Automática</p>
-                </div>
-                <div className="p-3 rounded-xl bg-white/5 text-center">
-                  <p className="num-display text-xl font-bold text-cyan-400">24/7</p>
-                  <p className="font-mono text-[10px] text-slate-400 uppercase">Acceso a Labs</p>
-                </div>
-                <div className="p-3 rounded-xl bg-white/5 text-center">
-                  <p className="num-display text-xl font-bold text-amber-400">LIVE</p>
-                  <p className="font-mono text-[10px] text-slate-400 uppercase">Ranking Instantáneo</p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* ─── LIVE COURSES SHOWCASE ─── */}
-      {!coursesLoading && courses.length > 0 && (
-        <section className="relative py-24 border-t border-white/10">
-          <div className="max-w-7xl mx-auto px-6 lg:px-10">
-            <div className="flex items-end justify-between flex-wrap gap-4 mb-14">
-              <div>
-                <span className="font-mono text-xs tracking-widest text-cyan-400 uppercase font-bold block mb-3">
-                  // CATÁLOGO DESTACADO DE CURSOS
-                </span>
-                <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">
-                  Explora las Rutas de Aprendizaje
-                </h2>
-              </div>
-              <Link to="/register" className="btn-wm-secondary text-sm py-2.5 px-5">
-                Ver Todos los Cursos →
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.slice(0, 3).map(course => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
-                  onEnroll={() => {}}
-                  onContinue={() => {}}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ─── CÓMO FUNCIONA STEPS ─── */}
-      <section className="relative py-24 border-t border-white/10 bg-slate-950/40">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10">
-          <div className="max-w-2xl mb-16">
-            <span className="font-mono text-xs tracking-widest text-emerald-400 uppercase font-bold block mb-3">
-              // PASO A PASO
-            </span>
-            <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">
-              De cero a operador en 4 sencillos pasos.
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { step: '01', title: 'Crea tu Cuenta', desc: 'Registro instantáneo en menos de 2 minutos sin tarjeta de crédito.' },
-              { step: '02', title: 'Elige un Path', desc: 'Selecciona cursos desde nivel principiante hasta escenarios avanzados.' },
-              { step: '03', title: 'Resuelve Labs', desc: 'Ejecuta exploits, descubre vulnerabilidades y responde los retos.' },
-              { step: '04', title: 'Escala el Ranking', desc: 'Acumula puntos por cada laboratorio y posiciónate en el TOP 10.' },
-            ].map(({ step, title, desc }) => (
-              <div key={step} className="glass-card-wm p-8 relative overflow-hidden group">
-                <span className="num-display text-7xl font-black text-white/5 absolute top-2 right-4 pointer-events-none select-none group-hover:scale-110 transition-transform">
-                  {step}
-                </span>
+          {/* Grilla Bento Asimétrica Formal */}
+          <div className="grid grid-cols-12 gap-6">
+            {FEATURES.map(({ title, kicker, body, icon, accent, gridSpan }) => (
+              <div
+                key={title}
+                className={`${gridSpan} hud-panel p-8 flex flex-col justify-between`}
+              >
                 <div>
-                  <span className="font-mono text-xs text-cyan-400 font-bold tracking-widest block mb-4">
-                    // PASO {step}
-                  </span>
-                  <h3 className="font-display text-xl font-bold mb-2">{title}</h3>
-                  <p className="text-slate-300 text-sm leading-relaxed">{desc}</p>
+                  <div className="flex items-center justify-between mb-6">
+                    <div
+                      className="w-12 h-12 rounded-xl flex items-center justify-center"
+                      style={{
+                        background: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.08)',
+                        border: `1px solid ${accent}40`,
+                        color: accent,
+                      }}
+                    >
+                      {icon}
+                    </div>
+                    <span
+                      className="font-mono text-[10px] tracking-[0.18em] uppercase px-3 py-1 rounded border font-semibold"
+                      style={{
+                        color: accent,
+                        background: `${accent}10`,
+                        borderColor: `${accent}30`,
+                      }}
+                    >
+                      {kicker}
+                    </span>
+                  </div>
+
+                  <h3
+                    className="font-display text-2xl font-bold mb-3"
+                    style={{ color: isDark ? '#EEF3FC' : '#0A1545' }}
+                  >
+                    {title}
+                  </h3>
+
+                  <p
+                    className="text-sm font-light leading-relaxed"
+                    style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}
+                  >
+                    {body}
+                  </p>
                 </div>
               </div>
             ))}
@@ -401,38 +311,146 @@ if "flag" in res.text:
         </div>
       </section>
 
-      {/* ─── RANKING PODIUM ─── */}
-      <section className="relative py-24 border-t border-white/10">
-        <div className="max-w-4xl mx-auto px-6 lg:px-10">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="font-mono text-xs tracking-widest text-amber-400 uppercase font-bold block mb-3">
-              // CLASIFICACIÓN EN TIEMPO REAL
-            </span>
-            <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">
-              Top Operadores de RutSeg
+      {/* ─── CÓMO FUNCIONA — PASO A PASO ─── */}
+      <section
+        className="py-20 border-b relative"
+        style={{
+          borderColor: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.12)',
+          background: isDark
+            ? 'linear-gradient(180deg, #060D1F 0%, #091520 100%)'
+            : 'linear-gradient(180deg, #EEF3FC 0%, #E8EEFA 100%)',
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-6 lg:px-10">
+          <div className="max-w-2xl mb-14">
+            <p
+              className="font-mono text-xs tracking-[0.22em] uppercase mb-3 font-semibold"
+              style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
+            >
+              // METODOLOGÍA
+            </p>
+            <h2
+              className="font-display text-3xl sm:text-4xl font-bold tracking-tight"
+              style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}
+            >
+              De cero a operador en <span style={{ color: '#2596be' }}>cuatro pasos</span>.
             </h2>
           </div>
 
-          <div className="glass-card-wm p-6 sm:p-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                step: '01',
+                title: 'Crea tu cuenta',
+                body: 'Regístrate gratis en menos de 2 minutos con tu correo universitario o personal.',
+                accent: '#1A3F96',
+              },
+              {
+                step: '02',
+                title: 'Elige un curso',
+                body: 'Inscríbete en los cursos según tu nivel de conocimiento, desde principiante hasta avanzado.',
+                accent: '#2596be',
+              },
+              {
+                step: '03',
+                title: 'Trabaja los labs',
+                body: 'Ejecuta actividades en entornos seguros, resuelve los retos y responde las evaluaciones.',
+                accent: '#1A3F96',
+              },
+              {
+                step: '04',
+                title: 'Sube en el ranking',
+                body: 'Obtén puntos por cada laboratorio completado y destaca en la clasificación general.',
+                accent: '#F5C500',
+              },
+            ].map(({ step, title, body, accent }) => (
+              <div
+                key={step}
+                className="hud-panel p-7 relative flex flex-col justify-between"
+              >
+                <div>
+                  <span
+                    className="font-mono text-xs font-semibold tracking-[0.2em] uppercase block mb-4"
+                    style={{ color: accent }}
+                  >
+                    // PASO {step}
+                  </span>
+                  <h3
+                    className="font-display text-xl font-bold mb-2"
+                    style={{ color: isDark ? '#EEF3FC' : '#0A1545' }}
+                  >
+                    {title}
+                  </h3>
+                  <p
+                    className="text-xs sm:text-sm font-light leading-relaxed"
+                    style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}
+                  >
+                    {body}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── RANKING ─── */}
+      <section
+        className="py-20 border-b"
+        style={{ borderColor: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.12)' }}
+      >
+        <div className="max-w-4xl mx-auto px-6 lg:px-10">
+          <div className="mb-12">
+            <p
+              className="font-mono text-xs tracking-[0.22em] uppercase mb-3 font-semibold"
+              style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
+            >
+              // TOP OPERADORES
+            </p>
+            <h2
+              className="font-display text-3xl sm:text-4xl font-bold tracking-tight mb-2"
+              style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}
+            >
+              Los <span style={{ color: '#F5C500' }}>5 mejores</span> estudiantes de la plataforma.
+            </h2>
+            <p
+              className="text-sm font-light"
+              style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}
+            >
+              Tabla de clasificación en tiempo real. Haz clic en cualquier perfil para explorar sus estadísticas.
+            </p>
+          </div>
+
+          <div className="hud-panel p-6 sm:p-8">
             <Ranking limit={5} />
           </div>
         </div>
       </section>
 
-      {/* ─── HIGH CONVERSION CTA ─── */}
+      {/* ─── CTA BANNER INSTITUCIONAL ─── */}
       {!token && (
-        <section className="relative py-28 border-t border-white/10 overflow-hidden">
-          <div className="wm-orb w-[600px] h-[600px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-cyan-500/20 blur-[130px]" />
-          
-          <div className="relative max-w-4xl mx-auto px-6 text-center">
-            <h2 className="font-display text-4xl sm:text-6xl font-black tracking-tight mb-6">
-              ¿Listo para empezar a <span className="text-cyan-400">hackear</span>?
-            </h2>
-            <p className="text-slate-300 text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
-              Crea tu cuenta totalmente gratis hoy mismo y accede a la librería completa de laboratorios.
+        <section className="py-20 text-center">
+          <div className="max-w-3xl mx-auto px-6">
+            <p
+              className="font-mono text-xs tracking-[0.22em] uppercase mb-4 font-semibold"
+              style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
+            >
+              // REGISTRO DE ESTUDIANTES
             </p>
-            <Link to="/register" className="btn-wm-primary text-lg py-5 px-12 shadow-[0_0_40px_rgba(5,217,232,0.4)]">
-              Crear Cuenta Gratis Ahora →
+            <h2
+              className="font-display text-3xl sm:text-5xl font-bold tracking-tight mb-6"
+              style={{ color: isDark ? '#EEF3FC' : '#0A1545' }}
+            >
+              ¿Listo para <span style={{ color: '#1A3F96' }}>empezar</span>?
+            </h2>
+            <p
+              className="text-base sm:text-lg font-light mb-8 max-w-xl mx-auto"
+              style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}
+            >
+              Crea tu cuenta institucional gratis, accede a tu primer laboratorio y comienza a sumar puntos.
+            </p>
+            <Link to="/register" className="btn-neon text-[16px] py-3.5 px-8">
+              Crear cuenta gratis →
             </Link>
           </div>
         </section>

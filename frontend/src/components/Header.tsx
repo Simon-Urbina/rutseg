@@ -19,24 +19,30 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full px-4 sm:px-6 pt-3 pb-2 transition-all duration-300 pointer-events-none">
-      <div className="max-w-7xl mx-auto pointer-events-auto">
-        <div className="glass-dock rounded-2xl sm:rounded-3xl px-5 sm:px-8 py-3 flex items-center justify-between transition-all duration-300">
+    <header
+      className={`sticky top-0 z-50 w-full transition-all duration-300 backdrop-blur-xl border-b ${
+        isDark 
+          ? 'bg-[#060D1F]/90 border-rosewood-500/15 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' 
+          : 'bg-[#EEF3FC]/95 border-rosewood-500/12 shadow-xs'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+        <div className="flex items-center justify-between h-[72px]">
           
           {/* Logo */}
           <Link
             to="/"
-            className="shrink-0 transition-transform duration-300 hover:scale-105 active:scale-95 flex items-center gap-2"
+            className="shrink-0 transition-transform duration-300 hover:scale-[1.02] active:scale-95 flex items-center gap-2"
           >
             <LogoWordmark isDark={isDark} />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6 lg:gap-8">
+          <div className="hidden md:flex items-center gap-8">
             <Link
               to="/forum"
-              className={`nav-link text-[14px] tracking-tight font-medium transition-all ${
-                isDark ? 'text-violet-200 hover:text-white' : 'text-slate-700 hover:text-rosewood-600'
+              className={`nav-link text-[14px] tracking-wide font-medium transition-colors ${
+                isDark ? 'text-violet-300 hover:text-rosewood-400' : 'text-rosewood-700 hover:text-rosewood-500'
               }`}
             >
               Foro
@@ -45,53 +51,45 @@ export default function Header() {
             {user?.role === 'admin' && (
               <Link
                 to="/admin"
-                className={`nav-link text-[14px] tracking-tight font-medium transition-all ${
-                  isDark ? 'text-violet-200 hover:text-white' : 'text-slate-700 hover:text-rosewood-600'
+                className={`nav-link text-[14px] tracking-wide font-medium transition-colors ${
+                  isDark ? 'text-violet-300 hover:text-rosewood-400' : 'text-rosewood-700 hover:text-rosewood-500'
                 }`}
               >
                 Admin
               </Link>
             )}
 
-            <div className="h-4 w-px bg-white/10 dark:bg-white/10 bg-slate-300" />
-
             <ThemeToggle />
 
             {user ? (
-              <div className="flex items-center gap-4 animate-fade-up-1">
-                {/* User Status Pill with Watermelon Pulse */}
+              <div className="flex items-center gap-5">
+                {/* User Status Pill */}
                 <div
-                  className={`flex items-center gap-2.5 font-mono text-[13px] px-3.5 py-1.5 rounded-full border transition-all ${
-                    isDark
-                      ? 'text-teal-300 bg-teal-500/10 border-teal-500/20 shadow-[0_0_15px_rgba(37,150,190,0.15)]'
-                      : 'text-rosewood-700 bg-rosewood-50 border-rosewood-200 shadow-sm'
+                  className={`flex items-center gap-2 font-mono text-[13px] px-3.5 py-1.5 rounded-full border ${
+                    isDark 
+                      ? 'text-rosewood-400 bg-rosewood-500/10 border-rosewood-500/20' 
+                      : 'text-rosewood-700 bg-rosewood-500/5 border-rosewood-500/20'
                   }`}
                 >
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  <span className="opacity-60 cursor-blink">~/</span>
-                  <span className="font-semibold tracking-tight">{user.username}</span>
+                  <span className="opacity-70 cursor-blink">~/</span>
+                  <span className="font-semibold">{user.username}</span>
                 </div>
 
                 <button
                   onClick={handleLogout}
-                  className={`text-[13px] tracking-tight font-medium px-3.5 py-1.5 rounded-xl border transition-all ${
-                    isDark
-                      ? 'text-violet-300 border-white/10 hover:bg-white/10 hover:text-white'
-                      : 'text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
+                  className={`text-[14px] font-medium transition-colors ${
+                    isDark ? 'text-violet-300 hover:text-rosewood-400' : 'text-rosewood-700 hover:text-rosewood-500'
                   }`}
                 >
                   Salir
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-4 animate-fade-up-1">
+              <div className="flex items-center gap-5">
                 <Link
                   to="/login"
-                  className={`text-[14px] font-medium px-4 py-2 rounded-xl transition-all ${
-                    isDark ? 'text-violet-200 hover:text-white hover:bg-white/5' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                  className={`nav-link text-[14px] tracking-wide font-medium transition-colors ${
+                    isDark ? 'text-violet-300 hover:text-rosewood-400' : 'text-rosewood-700 hover:text-rosewood-500'
                   }`}
                 >
                   Iniciar sesión
@@ -99,9 +97,9 @@ export default function Header() {
 
                 <Link
                   to="/register"
-                  className="btn-wm-primary text-[14px] !py-2.5 !px-5"
+                  className="btn-neon text-[14px] px-5 py-2.5 rounded-xl font-semibold"
                 >
-                  Empezar gratis
+                  Registrarse
                 </Link>
               </div>
             )}
@@ -115,8 +113,8 @@ export default function Header() {
               aria-label="Menú"
               className={`relative w-10 h-10 flex flex-col items-center justify-center gap-[5px] rounded-xl transition-all active:scale-95 border ${
                 isDark
-                  ? 'text-violet-200 bg-white/5 border-white/10'
-                  : 'text-slate-700 bg-slate-100 border-slate-200'
+                  ? 'text-violet-300 bg-white/5 border-white/10'
+                  : 'text-rosewood-700 bg-black/5 border-rosewood-500/20'
               }`}
             >
               <span
@@ -131,90 +129,88 @@ export default function Header() {
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Dropdown Drawer */}
+      {/* Mobile Dropdown Drawer */}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          menuOpen ? 'max-h-[280px] opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
         <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            menuOpen ? 'max-h-[300px] opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'
+          className={`px-6 pb-6 pt-4 space-y-3 shadow-inner border-t ${
+            isDark 
+              ? 'bg-[#0D1630] border-rosewood-500/20' 
+              : 'bg-[#EEF3FC] border-rosewood-500/20'
           }`}
         >
-          <div
-            className={`p-5 rounded-2xl space-y-3 glass-dock border ${
-              isDark ? 'border-white/10' : 'border-slate-200'
-            }`}
-          >
-            {user ? (
-              <div className="flex flex-col gap-3">
-                <div
-                  className={`w-full flex items-center justify-center gap-2 font-mono text-[13px] px-4 py-2.5 rounded-xl border ${
-                    isDark ? 'text-teal-300 bg-teal-500/10 border-teal-500/20' : 'text-rosewood-700 bg-rosewood-50 border-rosewood-200'
-                  }`}
-                >
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  <span className="opacity-70 cursor-blink">~/</span>{user.username}
-                </div>
-                <Link
-                  to="/forum"
-                  onClick={() => setMenuOpen(false)}
-                  className={`block w-full text-center px-4 py-2.5 rounded-xl text-[14px] font-medium transition-all ${
-                    isDark ? 'text-violet-200 hover:bg-white/5' : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  Foro
-                </Link>
-                {user.role === 'admin' && (
-                  <Link
-                    to="/admin"
-                    onClick={() => setMenuOpen(false)}
-                    className={`block w-full text-center px-4 py-2.5 rounded-xl text-[14px] font-medium transition-all ${
-                      isDark ? 'text-violet-200 hover:bg-white/5' : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    Admin
-                  </Link>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className={`w-full px-4 py-2.5 text-[14px] font-medium transition-all rounded-xl border ${
-                    isDark ? 'text-rose-400 border-rose-500/20 bg-rose-500/10' : 'text-rose-600 border-rose-200 bg-rose-50'
-                  }`}
-                >
-                  Cerrar sesión
-                </button>
+          {user ? (
+            <div className="flex flex-col gap-3">
+              <div
+                className={`w-full text-center font-mono text-[13px] px-4 py-2 rounded-lg border ${
+                  isDark ? 'text-rosewood-400 bg-rosewood-500/10 border-rosewood-500/20' : 'text-rosewood-600 bg-rosewood-500/5 border-rosewood-500/20'
+                }`}
+              >
+                <span className="opacity-70 cursor-blink">~/</span>{user.username}
               </div>
-            ) : (
-              <div className="flex flex-col gap-2.5">
+              <Link
+                to="/forum"
+                onClick={() => setMenuOpen(false)}
+                className={`block w-full text-center px-4 py-2.5 rounded-xl text-[14px] font-medium transition-all ${
+                  isDark ? 'text-violet-300 hover:bg-white/5' : 'text-rosewood-700 hover:bg-black/5'
+                }`}
+              >
+                Foro
+              </Link>
+              {user.role === 'admin' && (
                 <Link
-                  to="/forum"
+                  to="/admin"
                   onClick={() => setMenuOpen(false)}
                   className={`block w-full text-center px-4 py-2.5 rounded-xl text-[14px] font-medium transition-all ${
-                    isDark ? 'text-violet-200 hover:bg-white/5' : 'text-slate-700 hover:bg-slate-100'
+                    isDark ? 'text-violet-300 hover:bg-white/5' : 'text-rosewood-700 hover:bg-black/5'
                   }`}
                 >
-                  Foro
+                  Admin
                 </Link>
-                <Link
-                  to="/login"
-                  onClick={() => setMenuOpen(false)}
-                  className={`block w-full text-center px-4 py-2.5 rounded-xl text-[14px] font-medium transition-all ${
-                    isDark ? 'text-violet-200 hover:bg-white/5' : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  Iniciar sesión
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setMenuOpen(false)}
-                  className="btn-wm-primary block w-full text-center text-[14px] !py-3"
-                >
-                  Registrarse gratis
-                </Link>
-              </div>
-            )}
-          </div>
+              )}
+              <button
+                onClick={handleLogout}
+                className={`w-full px-4 py-2.5 text-[14px] font-medium rounded-xl ${
+                  isDark ? 'text-violet-300 bg-white/5' : 'text-rosewood-700 bg-black/5'
+                }`}
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2.5">
+              <Link
+                to="/forum"
+                onClick={() => setMenuOpen(false)}
+                className={`block w-full text-center px-4 py-2.5 rounded-xl text-[14px] font-medium ${
+                  isDark ? 'text-violet-300 hover:bg-white/5' : 'text-rosewood-700 hover:bg-black/5'
+                }`}
+              >
+                Foro
+              </Link>
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className={`block w-full text-center px-4 py-2.5 rounded-xl text-[14px] font-medium ${
+                  isDark ? 'text-violet-300 hover:bg-white/5' : 'text-rosewood-700 hover:bg-black/5'
+                }`}
+              >
+                Iniciar sesión
+              </Link>
+              <Link
+                to="/register"
+                onClick={() => setMenuOpen(false)}
+                className="btn-neon block w-full text-center text-[14px] py-2.5 rounded-xl"
+              >
+                Registrarse
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </header>
