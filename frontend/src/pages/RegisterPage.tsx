@@ -39,7 +39,7 @@ function InputField({
           style={{
             color: isDark ? '#C8D5EE' : '#0A1545',
             border: `1px solid ${focused ? '#F5C500' : isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.35)'}`,
-            borderRadius: '10px',
+            borderRadius: '2px',
             transition: 'border-color 0.2s ease',
             paddingRight: isPassword ? '2.75rem' : undefined,
           }}
@@ -121,7 +121,7 @@ export default function RegisterPage() {
         code: code.trim(),
       })
       login(res.token, res.user)
-      navigate('/dashboard')
+      navigate(res.user.role === 'admin' ? '/admin' : '/dashboard')
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -206,7 +206,7 @@ export default function RegisterPage() {
               style={{
                 color: isDark ? '#C8D5EE' : '#0A1545',
                 border: `1px solid ${codeFocused ? '#F5C500' : isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.35)'}`,
-                borderRadius: '10px',
+                borderRadius: '2px',
                 transition: 'border-color 0.2s ease',
                 fontFamily: 'monospace',
               }}

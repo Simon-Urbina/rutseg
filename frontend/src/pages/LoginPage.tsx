@@ -35,7 +35,7 @@ function InputField({
           style={{
             color: isDark ? '#C8D5EE' : '#0A1545',
             border: `1px solid ${focused ? '#2596be' : isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.35)'}`,
-            borderRadius: '10px',
+            borderRadius: '2px',
             transition: 'border-color 0.2s ease',
             paddingRight: isPassword ? '2.75rem' : undefined,
           }}
@@ -85,7 +85,7 @@ export default function LoginPage() {
     try {
       const res = await api.post<{ token: string; user: any }>('/api/auth/login', form)
       login(res.token, res.user)
-      navigate('/dashboard')
+      navigate(res.user.role === 'admin' ? '/admin' : '/dashboard')
     } catch (err: any) {
       setError(err.message)
     } finally {

@@ -116,7 +116,7 @@ export default function ResetPasswordPage() {
                 onBlur={() => setFocusPw(false)}
                 placeholder="mín. 8 caracteres"
                 className="input-terminal w-full text-[15px] px-5 py-3.5 pr-11"
-                style={{ color: textMain, border: `1px solid ${focusPw ? focusColor : borderIdle}`, borderRadius: '10px', transition: 'border-color 0.2s ease' }}
+                style={{ color: textMain, border: `1px solid ${focusPw ? focusColor : borderIdle}`, borderRadius: '2px', transition: 'border-color 0.2s ease' }}
               />
               <button type="button" onClick={() => setShowPw(s => !s)} tabIndex={-1}
                 className="absolute right-3 top-1/2 -translate-y-1/2"
@@ -141,7 +141,7 @@ export default function ResetPasswordPage() {
                 onBlur={() => setFocusCf(false)}
                 placeholder="repite la contraseña"
                 className="input-terminal w-full text-[15px] px-5 py-3.5 pr-11"
-                style={{ color: textMain, border: `1px solid ${focusCf ? focusColor : borderIdle}`, borderRadius: '10px', transition: 'border-color 0.2s ease' }}
+                style={{ color: textMain, border: `1px solid ${focusCf ? focusColor : borderIdle}`, borderRadius: '2px', transition: 'border-color 0.2s ease' }}
               />
               <button type="button" onClick={() => setShowCf(s => !s)} tabIndex={-1}
                 className="absolute right-3 top-1/2 -translate-y-1/2"
