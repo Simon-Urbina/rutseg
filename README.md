@@ -85,8 +85,20 @@ DATABASE_URL=postgresql://user:password@host:5432/dbname
 JWT_SECRET=tu_secreto_muy_seguro
 PORT=3000
 FRONTEND_URL=http://localhost:5173
-BREVO_API_KEY=xkeysib-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-BREVO_SENDER_EMAIL=tucorreo@gmail.com
+GMAIL_SENDER_EMAIL=tucorreo@gmail.com
+GMAIL_CLIENT_ID=xxxxx.apps.googleusercontent.com
+GMAIL_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+GMAIL_REFRESH_TOKEN=1//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com
+```
+
+> `GOOGLE_CLIENT_ID` es para **login social** (Sign in with Google) — solo se usa para verificar la firma del `id_token` que manda el frontend, no requiere client secret en el backend. Puede ser el mismo OAuth Client que `GMAIL_CLIENT_ID` o uno nuevo — son usos independientes (enviar correo vs. login), pero comparten el mismo proyecto de Google Cloud si quieres.
+>
+> El login con Microsoft está soportado en el backend (tabla `user_oauth_accounts`, provider `'microsoft'`) pero temporalmente sin implementar en `oauthProviders.ts`/rutas/frontend — el registro de la app en Azure quedó pendiente.
+
+**`frontend/.env`** (además de las ya existentes)
+```env
+VITE_GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com
 ```
 
 **`chatbot/.env`**
@@ -126,7 +138,8 @@ bun dev          # → http://localhost:5173
 |---------|---------|-----|
 | `hono` | ^4.12.5 | Framework web |
 | `postgres` | ^3.4.8 | Driver PostgreSQL (SQL crudo) |
-| `jsonwebtoken` | ^9.0.3 | Generación y verificación de JWT |
+| `jsonwebtoken` | ^9.0.3 | Generación y verificación de JWT (sesión propia de RutSeg) |
+| `jose` | ^6.2.8 | Verifica la firma de los `id_token` de Google en el login social |
 | `drizzle-orm` | ^0.45.1 | ORM (instalado, las queries usan `postgres` directamente) |
 | `@types/bun` | ^1.3.10 | Tipos de Bun |
 | `@types/jsonwebtoken` | ^9.0.9 | Tipos de jsonwebtoken |
@@ -197,6 +210,7 @@ Base URL: `http://localhost:3000`
 | POST | `/api/auth/logout` | Bearer | Cerrar sesión |
 | POST | `/api/auth/forgot-password` | — | Enviar email de restablecimiento |
 | POST | `/api/auth/reset-password` | — | Restablecer contraseña con token |
+| POST | `/api/auth/google` | — | Login/registro con Google (recibe `idToken` de Google Identity Services) |
 
 ### Usuarios (`/api/users`)
 
@@ -343,11 +357,14 @@ DATABASE_URL
 JWT_SECRET
 PORT
 FRONTEND_URL=https://rutseg.vercel.app
-BREVO_API_KEY
-BREVO_SENDER_EMAIL
+GMAIL_SENDER_EMAIL
+GMAIL_CLIENT_ID
+GMAIL_CLIENT_SECRET
+GMAIL_REFRESH_TOKEN
+GOOGLE_CLIENT_ID
 ```
 
-> El email usa la API HTTP de [Brevo](https://www.brevo.com/) (antes Sendinblue), no SMTP. Railway bloquea los puertos SMTP salientes, por lo que nodemailer con SMTP no funciona en este entorno. `BREVO_SENDER_EMAIL` debe ser un remitente verificado en el panel de Brevo (verificación de un solo correo, no requiere dominio propio).
+> El email se envía directo por la **API HTTP de Gmail con OAuth2** (no SMTP — Railway bloquea los puertos SMTP salientes). El correo sale firmado por Google mismo desde `GMAIL_SENDER_EMAIL`, por lo que no necesita dominio propio ni verificación de remitente en un tercero. `GMAIL_CLIENT_ID`/`GMAIL_CLIENT_SECRET` salen de un OAuth Client en Google Cloud Console, y `GMAIL_REFRESH_TOKEN` se obtiene una sola vez autorizando el scope `gmail.send` para `GMAIL_SENDER_EMAIL`.
 
 Configuración en `backend/railway.json`.
 
@@ -370,7 +387,10 @@ Variables de entorno requeridas:
 ```
 VITE_API_URL=https://tu-backend.up.railway.app
 VITE_CHATBOT_URL=https://tu-chatbot.up.railway.app
+VITE_GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com
 ```
+
+> **Login social:** en Google Cloud Console (Credentials → tu OAuth Client) agrega `https://rutseg.vercel.app` y `http://localhost:5173` en "Authorized JavaScript origins". Login con Microsoft pendiente de agregar (ver nota en la sección de variables de entorno del backend).
 
 El archivo `frontend/vercel.json` configura el enrutamiento SPA — todas las rutas se redirigen a `index.html` para que React Router funcione correctamente al acceder directamente a una URL (ej: `/reset-password`, `/dashboard`).
 

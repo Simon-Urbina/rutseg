@@ -105,6 +105,9 @@ export class UserService {
     const user = await UserDAO.findById(userId)
     if (!user) throw new NotFoundError('Usuario no encontrado.')
 
+    if (!user.passwordHash)
+      throw new UnauthorizedError('Tu cuenta inicia sesión con Google o Microsoft y no tiene contraseña propia.')
+
     const ok = await Bun.password.verify(data.currentPassword, user.passwordHash)
     if (!ok) throw new UnauthorizedError('La contraseña actual es incorrecta.')
 

@@ -534,3 +534,23 @@ DROP TRIGGER IF EXISTS forum_comments_updated_at_trg ON forum_comments;
 CREATE TRIGGER forum_comments_updated_at_trg
 BEFORE UPDATE ON forum_comments
 FOR EACH ROW EXECUTE FUNCTION trg_updated_at();
+
+-- LOGIN SOCIAL (Google / Microsoft)
+-- Las cuentas creadas vía OAuth no tienen contraseña propia.
+ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
+
+-- Identidades externas vinculadas a una cuenta. Un mismo usuario puede tener
+-- Google Y Microsoft enganchados (una fila por proveedor), pero cada identidad
+-- externa (provider + provider_user_id) solo puede pertenecer a un usuario.
+CREATE TABLE IF NOT EXISTS user_oauth_accounts (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  provider VARCHAR(20) NOT NULL,
+  provider_user_id VARCHAR(255) NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT user_oauth_accounts_provider_chk CHECK (provider IN ('google', 'microsoft')),
+  UNIQUE(provider, provider_user_id),
+  UNIQUE(user_id, provider)
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_oauth_accounts_user_id ON user_oauth_accounts(user_id);

@@ -1,11 +1,15 @@
 [
   {
-    "q": "¿Qué es CyberSec Labs?",
-    "a": "CyberSec Labs es una plataforma de aprendizaje de ciberseguridad práctica de la Universidad Santo Tomás Tunja. Los estudiantes completan laboratorios interactivos con escenarios reales, ganan puntos y compiten en un ranking global."
+    "q": "¿Qué es RutSeg?",
+    "a": "RutSeg es una plataforma de aprendizaje de ciberseguridad práctica de la Universidad Santo Tomás Tunja. Los estudiantes completan laboratorios interactivos con escenarios reales, ganan puntos y compiten en un ranking global."
   },
   {
-    "q": "¿Qué hace diferente a CyberSec Labs de otras plataformas?",
-    "a": "CyberSec Labs es 100% hands-on: sin diapositivas, sin teoría plana. Cada actividad existe para enseñar algo concreto que se puede aplicar de inmediato. El enfoque es aprender rompiendo cosas en entornos controlados."
+    "q": "¿RutSeg se llamaba antes de otra forma?",
+    "a": "Sí. En una etapa anterior del proyecto se llamaba \"CyberSec Labs\". El nombre actual y único de la plataforma es RutSeg — si ves referencias antiguas a CyberSec Labs, son del mismo proyecto."
+  },
+  {
+    "q": "¿Qué hace diferente a RutSeg de otras plataformas?",
+    "a": "RutSeg es 100% hands-on: sin diapositivas, sin teoría plana. Cada actividad existe para enseñar algo concreto que se puede aplicar de inmediato. El enfoque es aprender rompiendo cosas en entornos controlados."
   },
   {
     "q": "¿Cómo me registro o creo una cuenta?",
@@ -13,7 +17,11 @@
   },
   {
     "q": "¿Para qué sirve el código que llega al correo al registrarse?",
-    "a": "Al registrarte, CyberSec Labs envía un código de verificación de 6 dígitos a tu correo. Debes ingresarlo en la pantalla de verificación dentro de 15 minutos para activar tu cuenta. Si no llega o expira, puedes pedir que se reenvíe desde esa misma pantalla."
+    "a": "Al registrarte, RutSeg envía un código de verificación de 6 dígitos a tu correo. Debes ingresarlo en la pantalla de verificación dentro de 15 minutos para activar tu cuenta. Si no llega o expira, puedes pedir que se reenvíe desde esa misma pantalla."
+  },
+  {
+    "q": "¿Qué pasa si el correo que uso para registrarme ya está registrado?",
+    "a": "El registro fallará indicando que ese correo ya está en uso. Si es tuya, inicia sesión normalmente o usa '¿Olvidaste tu contraseña?' si no la recuerdas."
   },
   {
     "q": "¿Cómo me inscribo en un curso?",
@@ -56,6 +64,14 @@
     "a": "Los laboratorios tienen tres niveles: principiante (conceptos básicos y primeros pasos), intermedio (técnicas más avanzadas con mayor complejidad) y avanzado (escenarios complejos que requieren combinar múltiples habilidades)."
   },
   {
+    "q": "¿Qué cursos hay disponibles en RutSeg?",
+    "a": "Actualmente hay 6 cursos publicados: 'Fundamentos de Ciberseguridad' (principiante), 'Seguridad en Redes y Criptografía' (intermedio), 'Pentesting Avanzado y Escalada de Privilegios' (avanzado), y tres cursos mapeados directamente a categorías del OWASP Top 10: 'OWASP A01: Control de Acceso Roto', 'OWASP A05: Inyección' y 'OWASP A07: Fallos de Autenticación' (los tres de dificultad intermedia)."
+  },
+  {
+    "q": "¿Qué son los cursos OWASP de RutSeg?",
+    "a": "Son tres cursos (A01, A05 y A07) diseñados sobre categorías específicas del OWASP Top 10, la lista de riesgos de seguridad web más críticos según la industria. A01 cubre control de acceso roto (IDOR, escalada de privilegios), A05 cubre inyección (SQL Injection, Command Injection, XSS, LDAP Injection) y A07 cubre fallos de autenticación (contraseñas débiles, sesiones vulnerables, MFA mal implementado)."
+  },
+  {
     "q": "¿Qué es el ranking?",
     "a": "El ranking muestra a los usuarios ordenados por puntos totales acumulados. Se actualiza en tiempo real cuando alguien completa un lab. Puedes ver el top 5 en la página principal haciendo clic en cualquier usuario para ver su perfil público, y el ranking completo en el Dashboard."
   },
@@ -69,7 +85,11 @@
   },
   {
     "q": "¿Cómo veo mi perfil o lo edito?",
-    "a": "Haz clic en tu avatar o nombre de usuario en el header (esquina superior derecha). Desde el modal de perfil puedes editar tu nombre de usuario, bio, foto de perfil y contraseña."
+    "a": "Haz clic en tu avatar o nombre de usuario en el header (esquina superior derecha). Desde el modal de perfil puedes editar tu nombre de usuario, correo, bio (máx. 500 caracteres), foto de perfil y contraseña."
+  },
+  {
+    "q": "¿Puedo cambiar mi correo o mi nombre de usuario?",
+    "a": "Sí. Ambos son editables desde el modal de perfil (clic en tu avatar en el header), junto con la bio y la foto de perfil. Cambiar la contraseña se hace desde esa misma pantalla."
   },
   {
     "q": "¿Cómo subo o cambio mi foto de perfil?",
@@ -97,47 +117,63 @@
   },
   {
     "q": "¿Cuánto tiempo dura mi sesión?",
-    "a": "Tu sesión en CyberSec Labs dura 7 días. Después de ese tiempo deberás iniciar sesión nuevamente. Si cierras el navegador, la sesión se mantiene hasta que expire o cierres sesión manualmente."
+    "a": "Tu sesión en RutSeg dura 7 días. Después de ese tiempo deberás iniciar sesión nuevamente. Si cierras el navegador, la sesión se mantiene hasta que expire o cierres sesión manualmente."
   },
   {
-    "q": "¿Quién creó CyberSec Labs?",
-    "a": "CyberSec Labs fue creada por Simón Urbina, estudiante de Ingeniería de Sistemas de la Universidad Santo Tomás seccional Tunja, como proyecto del semillero de investigación en ciberseguridad. Más info en /about."
+    "q": "¿Quién creó RutSeg?",
+    "a": "RutSeg fue creada por Simón Urbina, estudiante de Ingeniería de Sistemas de la Universidad Santo Tomás seccional Tunja, como proyecto del Semillero de Investigación en Ciberseguridad y Desarrollo de Software, bajo la dirección del docente Harrizon Alexander Soler Galindo. Más info en /about."
+  },
+  {
+    "q": "¿De dónde nace RutSeg? ¿Es un proyecto académico?",
+    "a": "Sí. RutSeg nació en el Semillero de Investigación en Ciberseguridad y Desarrollo de Software de la Universidad Santo Tomás — Tunja, como proyecto de Simón Urbina dirigido por el docente Harrizon Alexander Soler Galindo."
   },
   {
     "q": "¿La plataforma es gratuita?",
-    "a": "Sí, CyberSec Labs es completamente gratuita. Solo necesitas crear una cuenta para acceder a todos los cursos y laboratorios disponibles."
+    "a": "Sí, RutSeg es completamente gratuita. Solo necesitas crear una cuenta para acceder a todos los cursos y laboratorios disponibles."
   },
   {
-    "q": "¿Qué es ciberseguridad según CyberSec Labs?",
-    "a": "En CyberSec Labs entendemos la ciberseguridad como la práctica de proteger sistemas, redes y datos aprendiendo a atacarlos en entornos controlados. El enfoque es ofensivo-defensivo: para defender bien, primero hay que saber cómo se rompe."
+    "q": "¿Qué es ciberseguridad según RutSeg?",
+    "a": "En RutSeg entendemos la ciberseguridad como la práctica de proteger sistemas, redes y datos aprendiendo a atacarlos en entornos controlados. El enfoque es ofensivo-defensivo: para defender bien, primero hay que saber cómo se rompe."
   },
   {
     "q": "¿Qué es Uchi y para qué sirve?",
-    "a": "Uchi soy yo: el asistente de inteligencia artificial de CyberSec Labs. Puedo ayudarte con dudas sobre los labs (sin darte la solución directa), explicar conceptos de ciberseguridad y orientarte dentro de la plataforma. Estoy disponible en el botón de la esquina inferior izquierda."
+    "a": "Uchi soy yo: el asistente de inteligencia artificial de RutSeg. Puedo ayudarte con dudas sobre los labs (sin darte la solución directa), explicar conceptos de ciberseguridad y orientarte dentro de la plataforma. Estoy disponible en el botón de la esquina inferior izquierda."
   },
   {
     "q": "¿Qué puedo preguntarle a Uchi?",
-    "a": "Puedes preguntarme sobre cómo funciona la plataforma, qué significa un concepto de ciberseguridad, qué comando usar en un lab (te daré una pista sin darte la respuesta completa), dónde encontrar algo en CyberSec Labs, o cualquier duda general sobre los labs."
+    "a": "Puedes preguntarme sobre cómo funciona la plataforma, qué significa un concepto de ciberseguridad, qué comando usar en un lab (te daré una pista sin darte la respuesta completa), dónde encontrar algo en RutSeg, o cualquier duda general sobre los labs."
+  },
+  {
+    "q": "¿Cómo funciona Uchi por dentro?",
+    "a": "Uchi usa un sistema RAG (generación aumentada por recuperación): cuando escribes algo, busco las preguntas frecuentes más relevantes en la base de conocimiento de RutSeg y las uso como contexto adicional para el modelo de lenguaje que genera la respuesta (Llama 3.3 70B vía Groq). Así respondo con información precisa de la plataforma en vez de inventar detalles."
+  },
+  {
+    "q": "¿Uchi guarda el historial de mis conversaciones?",
+    "a": "No. El historial de chat vive solo en memoria mientras tienes la pestaña abierta — se pierde si recargas la página. El servidor no almacena tus mensajes; cada respuesta se genera con el historial que tu navegador envía en ese momento."
   },
   {
     "q": "¿Dónde está desplegada la plataforma?",
-    "a": "CyberSec Labs está disponible en cyberseclabs.vercel.app. El frontend está en Vercel, el backend en Railway y la base de datos en Supabase. El código fuente está en GitHub: github.com/Simon-Urbina/cyberseclabs."
+    "a": "RutSeg está disponible en rutseg.vercel.app. El frontend está en Vercel, el backend en Railway y la base de datos en Supabase."
   },
   {
     "q": "¿Cómo contacto al creador o reporto un error?",
-    "a": "Puedes contactar a Simón Urbina por correo (jacobitourbinalol@gmail.com), reportar bugs en GitHub Issues (github.com/Simon-Urbina/cyberseclabs/issues) o por LinkedIn. Más información en la página /about."
+    "a": "Puedes contactar a Simón Urbina por correo (jacobitourbinalol@gmail.com) o por LinkedIn (linkedin.com/in/simon-urbina-martinez). Más información en la página /about."
   },
   {
     "q": "¿Dónde está la política de privacidad?",
     "a": "La política de privacidad está en /privacy-policy o desde el enlace en el footer de la página. Cubre el tratamiento de datos según la Ley 1581 de 2012 de Colombia."
   },
   {
-    "q": "¿Qué datos recopila CyberSec Labs sobre mí?",
-    "a": "CyberSec Labs recopila: nombre de usuario, correo electrónico, contraseña (almacenada como hash seguro, nunca en texto plano), foto de perfil, bio y tu progreso en laboratorios. Consulta la política de privacidad en /privacy-policy para más detalles."
+    "q": "¿Dónde están los términos de uso?",
+    "a": "Los términos de uso están en /terms-of-use, también accesibles desde el enlace en el footer de la página."
   },
   {
-    "q": "¿Qué tecnologías usa CyberSec Labs?",
-    "a": "CyberSec Labs usa: React 19 con TypeScript en el frontend (Vercel), Hono + Bun en el backend (Railway), PostgreSQL en Supabase como base de datos, y un chatbot con FastAPI + Python + Groq usando el modelo llama-3.3-70b-versatile."
+    "q": "¿Qué datos recopila RutSeg sobre mí?",
+    "a": "RutSeg recopila: nombre de usuario, correo electrónico, contraseña (almacenada como hash seguro, nunca en texto plano), foto de perfil, bio y tu progreso en laboratorios. Consulta la política de privacidad en /privacy-policy para más detalles."
+  },
+  {
+    "q": "¿Qué tecnologías usa RutSeg?",
+    "a": "RutSeg usa: React 19 con TypeScript en el frontend (Vercel), Hono + Bun en el backend (Railway), PostgreSQL en Supabase como base de datos, y un chatbot con FastAPI + Python + Groq usando el modelo llama-3.3-70b-versatile."
   },
   {
     "q": "¿Puedo ver los cursos sin iniciar sesión?",
@@ -150,5 +186,9 @@
   {
     "q": "¿Qué información muestra el perfil público de un usuario?",
     "a": "El perfil público (/u/nombre-de-usuario) muestra: nombre de usuario, foto de perfil, bio, puntos totales, posición en el ranking y laboratorios completados."
+  },
+  {
+    "q": "¿Qué es el foro de RutSeg y cómo participo?",
+    "a": "En /forum los usuarios pueden discutir temas de la comunidad. Ver el foro no requiere sesión, pero para publicar un comentario o responder necesitas estar registrado. Cada comentario tiene un máximo de 2000 caracteres, y las respuestas van a un solo nivel (no hay respuestas anidadas dentro de respuestas)."
   }
 ]

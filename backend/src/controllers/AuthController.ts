@@ -2,6 +2,8 @@ import type { Context } from 'hono'
 import { AuthService } from '../services/AuthService.js'
 import { UserDAO } from '../daos/UserDAO.js'
 import { sendPasswordResetEmail, sendVerificationEmail } from '../utils/email.js'
+import { verifyGoogleIdToken } from '../utils/oauthProviders.js'
+import { BadRequestError } from '../utils/errors.js'
 
 // Tokens de restablecimiento en memoria (clave → {userId, expiresAt}). Se reinician al reiniciar el servidor.
 const resetTokens = new Map<string, { userId: string; expiresAt: number }>()
@@ -82,6 +84,20 @@ export class AuthController {
 
   static logout(c: Context) {
     return c.json({ message: 'Sesión cerrada.' })
+  }
+
+  static async google(c: Context) {
+    const { idToken, privacyPolicyVersion } = await c.req.json()
+    if (!idToken) throw new BadRequestError('idToken es requerido.')
+    const identity = await verifyGoogleIdToken(idToken)
+    const { user, token } = await AuthService.findOrCreateOAuthUser({
+      provider: 'google',
+      providerUserId: identity.providerUserId,
+      email: identity.email,
+      name: identity.name,
+      privacyPolicyVersion: privacyPolicyVersion ?? '1.0',
+    })
+    return c.json({ token, user: { id: user.id, username: user.username, email: user.email, role: user.role } })
   }
 
   static async forgotPassword(c: Context) {

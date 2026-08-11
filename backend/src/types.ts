@@ -8,7 +8,7 @@ export interface User {
   id: string
   username: string
   email: string
-  passwordHash: string
+  passwordHash: string | null
   role: UserRole
   bio: string | null
   profileImage: Buffer | null
@@ -16,6 +16,16 @@ export interface User {
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
+}
+
+export type OAuthProviderName = 'google' | 'microsoft'
+
+export interface UserOAuthAccount {
+  id: string
+  userId: string
+  provider: OAuthProviderName
+  providerUserId: string
+  createdAt: Date
 }
 
 export interface Course {

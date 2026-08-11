@@ -1,27 +1,76 @@
-async function sendRawEmail(to: string, subject: string, html: string): Promise<void> {
-  const apiKey = process.env.BREVO_API_KEY
-  const senderEmail = process.env.BREVO_SENDER_EMAIL
-  if (!apiKey || !senderEmail)
-    throw new Error('BREVO_API_KEY y BREVO_SENDER_EMAIL son requeridos')
+// ─── Envío vía Gmail API (OAuth2) ──────────────────────────────────────────────
+// Se usa la API HTTP de Gmail en vez de SMTP: Railway bloquea puertos SMTP
+// salientes, y el correo sale firmado por Google mismo (DKIM/DMARC alineados
+// con gmail.com), a diferencia de un proveedor externo enviando "de parte de"
+// una dirección @gmail.com.
 
-  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+async function getAccessToken(): Promise<string> {
+  const clientId = process.env.GMAIL_CLIENT_ID
+  const clientSecret = process.env.GMAIL_CLIENT_SECRET
+  const refreshToken = process.env.GMAIL_REFRESH_TOKEN
+  if (!clientId || !clientSecret || !refreshToken)
+    throw new Error('GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET y GMAIL_REFRESH_TOKEN son requeridos')
+
+  const res = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
-    headers: {
-      'api-key': apiKey,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-    body: JSON.stringify({
-      sender: { name: 'RutSeg', email: senderEmail },
-      to: [{ email: to }],
-      subject,
-      htmlContent: html,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      refresh_token: refreshToken,
+      grant_type: 'refresh_token',
     }),
   })
 
   if (!res.ok) {
     const body = await res.text()
-    throw new Error(`Brevo API error ${res.status}: ${body}`)
+    throw new Error(`Error al refrescar el token de Gmail (${res.status}): ${body}`)
+  }
+
+  const { access_token } = (await res.json()) as { access_token: string }
+  return access_token
+}
+
+function base64UrlEncode(input: string): string {
+  return Buffer.from(input, 'utf-8')
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '')
+}
+
+function encodeHeaderWord(text: string): string {
+  return `=?UTF-8?B?${Buffer.from(text, 'utf-8').toString('base64')}?=`
+}
+
+async function sendRawEmail(to: string, subject: string, html: string): Promise<void> {
+  const senderEmail = process.env.GMAIL_SENDER_EMAIL
+  if (!senderEmail) throw new Error('GMAIL_SENDER_EMAIL es requerido')
+
+  const accessToken = await getAccessToken()
+
+  const message = [
+    `From: RutSeg <${senderEmail}>`,
+    `To: ${to}`,
+    `Subject: ${encodeHeaderWord(subject)}`,
+    'MIME-Version: 1.0',
+    'Content-Type: text/html; charset="UTF-8"',
+    '',
+    html,
+  ].join('\r\n')
+
+  const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ raw: base64UrlEncode(message) }),
+  })
+
+  if (!res.ok) {
+    const body = await res.text()
+    throw new Error(`Gmail API error ${res.status}: ${body}`)
   }
 }
 

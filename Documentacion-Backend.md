@@ -628,11 +628,13 @@ Centraliza todo el envío de correos. Está organizado en helpers internos y dos
 
 | Función | Descripción |
 |---|---|
-| `sendRawEmail(to, subject, html)` | Hace `POST` a la API de Brevo (`https://api.brevo.com/v3/smtp/email`) con la API key en el header `api-key`, el remitente (`BREVO_SENDER_EMAIL`), el destinatario y el HTML del correo como JSON. Usado por ambas funciones exportadas para evitar duplicación |
+| `getAccessToken()` | Intercambia `GMAIL_REFRESH_TOKEN` por un `access_token` de corta duración vía `POST https://oauth2.googleapis.com/token` (`grant_type=refresh_token`) |
+| `base64UrlEncode(input)` / `encodeHeaderWord(text)` | Codifican el mensaje MIME crudo y el asunto (RFC 2047, para tildes/ñ) en base64url, formato que exige la API de Gmail |
+| `sendRawEmail(to, subject, html)` | Arma un mensaje MIME (`From`/`To`/`Subject`/`Content-Type: text/html`) y hace `POST` a `https://gmail.googleapis.com/gmail/v1/users/me/messages/send` con el `access_token` en `Authorization: Bearer`. Usado por ambas funciones exportadas para evitar duplicación |
 | `emailHeader(title, subtitle)` | Genera el bloque HTML de cabecera de todos los correos: fondo `#0A1545`, logo 🔐, nombre en amarillo `#F5C500`, subtítulo monoespacio, barra de degradado amarillo→cyan |
 | `emailFooter(note)` | Genera el bloque HTML de pie de todos los correos: nota legal en gris, barra oscura `#060D1F` con la URL de la plataforma |
 
-> **Historial:** hasta agosto de 2026 este módulo usaba la Gmail REST API con OAuth2 (`getAccessToken()` + `encodeHeader()` construyendo un mensaje MIME crudo en base64url). Se reemplazó por Brevo porque el proyecto de Google Cloud estaba en modo "Testing" y el `refresh_token` expiraba cada 7 días, exigiendo re-autenticación manual periódica. La API de Brevo recibe JSON directamente (`subject`/`htmlContent` como strings UTF-8), por lo que ya no hace falta ni la codificación MIME ni RFC 2047 para los asuntos con tildes.
+> **Historial:** este módulo usó Brevo entre mayo y agosto de 2026 porque el `refresh_token` de Gmail expiraba cada 7 días mientras el proyecto de Google Cloud estuviera en modo "Testing" (no verificado), exigiendo re-autenticación manual periódica. Se volvió a la Gmail REST API con OAuth2 porque Brevo empezó a marcar el remitente `@gmail.com` como no alineado con los nuevos requisitos DKIM/DMARC de Google/Yahoo/Microsoft (no se puede firmar DKIM para un dominio que no controlas). **Para que esta vez no vuelva a expirar cada 7 días, el proyecto de Google Cloud debe pasar por la verificación del scope `gmail.send`** (ver checklist en README) — mientras siga en "Testing", el problema original se repite.
 
 **Funciones exportadas:**
 
@@ -1107,10 +1109,12 @@ El backend necesita las siguientes variables en el archivo `.env` (o en Railway)
 | `JWT_SECRET` | ✅ | Clave secreta para firmar y verificar tokens JWT. Debe ser larga y aleatoria. |
 | `PORT` | ❌ | Puerto donde escucha el servidor. Railway lo inyecta automáticamente. |
 | `FRONTEND_URL` | ❌ | URL(s) del frontend para CORS (comma-separated). Default: `http://localhost:5173` |
-| `BREVO_API_KEY` | ✅ | API key de [Brevo](https://www.brevo.com/) (Menú → SMTP & API → API Keys) usada para enviar todos los emails de la plataforma (verificación de registro y recuperación de contraseña). No expira. |
-| `BREVO_SENDER_EMAIL` | ✅ | Correo remitente, verificado en Brevo vía "Senders" (un solo clic de confirmación al correo — no requiere dominio propio ni registros DNS). |
+| `GMAIL_SENDER_EMAIL` | ✅ | Dirección de Gmail desde la que se envían los correos (`From` y cuenta autorizada por OAuth2). |
+| `GMAIL_CLIENT_ID` | ✅ | Client ID del OAuth Client creado en Google Cloud Console (tipo "Web application"). |
+| `GMAIL_CLIENT_SECRET` | ✅ | Client Secret del mismo OAuth Client. |
+| `GMAIL_REFRESH_TOKEN` | ✅ | Token de larga duración obtenido una sola vez autorizando el scope `gmail.send` para `GMAIL_SENDER_EMAIL`. Se intercambia por un `access_token` en cada envío. |
 
-> **Por qué Brevo y no Gmail/SMTP:** Railway bloquea los puertos SMTP salientes (25, 465, 587) para prevenir spam, así que cualquier proveedor debe hablar HTTPS. Se usó la Gmail REST API con OAuth2 hasta agosto de 2026, pero con el proyecto de Google Cloud en modo "Testing" (no verificado), el `refresh_token` expiraba cada 7 días y obligaba a rehacer el login interactivo manualmente. Brevo usa una API key simple sin expiración — sin OAuth, sin dependencia de una sesión de Google logueada en ninguna máquina.
+> **Por qué Gmail API y no SMTP:** Railway bloquea los puertos SMTP salientes (25, 465, 587), así que el envío debe hablar HTTPS — la API de Gmail lo hace. Es la segunda vez que el proyecto usa este enfoque: se abandonó en mayo de 2026 a favor de Brevo porque el `refresh_token` expiraba cada 7 días con el proyecto de Google Cloud en modo "Testing" (no verificado). **Si el proyecto no completa la verificación del scope `gmail.send`, ese mismo problema se repite.** Se volvió a Gmail porque Brevo empezó a marcar el remitente `@gmail.com` como no alineado con los requisitos DKIM/DMARC de Google/Yahoo/Microsoft — un problema sin solución mientras el remitente sea un dominio que no controlas.
 
 **Ejemplo de `DATABASE_URL` de Supabase:**
 ```

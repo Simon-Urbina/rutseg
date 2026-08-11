@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken'
 import { UserDAO } from '../daos/UserDAO.js'
+import { UserOAuthDAO } from '../daos/UserOAuthDAO.js'
 import { ConflictError, UnauthorizedError, ValidationError } from '../utils/errors.js'
-import type { TokenPayload, User } from '../types.js'
+import type { OAuthProviderName, TokenPayload, User } from '../types.js'
 
 const TOKEN_TTL = '7d'
 
@@ -55,10 +56,67 @@ export class AuthService {
     const user = await UserDAO.findByEmail(email.toLowerCase())
     if (!user) throw new UnauthorizedError('Credenciales inválidas.')
 
+    if (!user.passwordHash)
+      throw new UnauthorizedError('Esta cuenta inicia sesión con Google o Microsoft. Usa esa opción para ingresar.')
+
     const match = await Bun.password.verify(password, user.passwordHash)
     if (!match) throw new UnauthorizedError('Credenciales inválidas.')
 
     return { user, token: AuthService.generateToken(user) }
+  }
+
+  /**
+   * Login/registro vía Google o Microsoft. Reglas de vinculación:
+   * 1. Si esta identidad externa ya está vinculada a un usuario, se usa ese usuario.
+   * 2. Si no, pero ya existe una cuenta con el mismo email (verificado por el proveedor),
+   *    se vincula el proveedor a esa cuenta existente (mismo criterio de confianza que
+   *    el código de verificación por correo: el proveedor ya confirmó que el email es tuyo).
+   * 3. Si no existe ninguna cuenta, se crea una nueva sin contraseña.
+   */
+  static async findOrCreateOAuthUser(params: {
+    provider: OAuthProviderName
+    providerUserId: string
+    email: string
+    name: string | null
+    privacyPolicyVersion: string
+  }): Promise<{ user: User; token: string; isNewUser: boolean }> {
+    const { provider, providerUserId, email, name, privacyPolicyVersion } = params
+
+    const linkedUser = await UserOAuthDAO.findUserByProvider(provider, providerUserId)
+    if (linkedUser) return { user: linkedUser, token: AuthService.generateToken(linkedUser), isNewUser: false }
+
+    const existingUser = await UserDAO.findByEmail(email)
+    if (existingUser) {
+      await UserOAuthDAO.link(existingUser.id, provider, providerUserId)
+      return { user: existingUser, token: AuthService.generateToken(existingUser), isNewUser: false }
+    }
+
+    const username = await AuthService.generateUniqueUsername(name ?? email.split('@')[0] ?? 'usuario')
+    const newUser = await UserDAO.create({
+      username,
+      email,
+      passwordHash: null,
+      privacyAcceptedAt: new Date(),
+      privacyPolicyVersion,
+    })
+    await UserOAuthDAO.link(newUser.id, provider, providerUserId)
+    return { user: newUser, token: AuthService.generateToken(newUser), isNewUser: true }
+  }
+
+  static async generateUniqueUsername(base: string): Promise<string> {
+    const cleaned = base
+      .toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '') // quita tildes
+      .replace(/[^a-z0-9_.-]/g, '')
+      .slice(0, 40) || 'usuario'
+
+    let candidate = cleaned
+    let suffix = 0
+    while (await UserDAO.findByUsername(candidate)) {
+      suffix += 1
+      candidate = `${cleaned}${suffix}`.slice(0, 50)
+    }
+    return candidate
   }
 
   static generateToken(user: User): string {

@@ -13,7 +13,7 @@ from retriever import retriever
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Uchi – CyberSec Labs AI Assistant")
+app = FastAPI(title="Uchi – RutSeg AI Assistant")
 
 app.add_middleware(
     CORSMiddleware,

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { useAuth } from '../context/AuthContext'
 
@@ -10,6 +10,39 @@ interface Message {
 
 const CHATBOT_URL = import.meta.env.VITE_CHATBOT_URL ?? 'http://localhost:8001'
 const MAX_HISTORY = 20
+
+// Reconoce enlaces estilo Markdown que Uchi genera para redirigir dentro de la plataforma: [texto](/ruta)
+const LINK_PATTERN = /\[([^\]]+)\]\((\/[^\s)]+|https?:\/\/[^\s)]+)\)/g
+
+function renderMessageContent(content: string, onNavigate: (path: string) => void, linkColor: string): ReactNode[] {
+  const nodes: ReactNode[] = []
+  let lastIndex = 0
+  let key = 0
+  let match: RegExpExecArray | null
+
+  LINK_PATTERN.lastIndex = 0
+  while ((match = LINK_PATTERN.exec(content)) !== null) {
+    if (match.index > lastIndex) nodes.push(content.slice(lastIndex, match.index))
+
+    const [full, label, href] = match
+    const isInternal = href.startsWith('/')
+    nodes.push(
+      <a
+        key={key++}
+        href={href}
+        onClick={isInternal ? (e) => { e.preventDefault(); onNavigate(href) } : undefined}
+        target={isInternal ? undefined : '_blank'}
+        rel={isInternal ? undefined : 'noopener noreferrer'}
+        style={{ color: linkColor, textDecoration: 'underline', textUnderlineOffset: '2px', fontWeight: 600, cursor: 'pointer' }}
+      >
+        {label}
+      </a>,
+    )
+    lastIndex = match.index + full.length
+  }
+  if (lastIndex < content.length) nodes.push(content.slice(lastIndex))
+  return nodes
+}
 
 function buildContext(pathname: string, username?: string) {
   if (pathname.match(/^\/courses\/[^/]+\/[^/]+\/[^/]+/)) {
@@ -29,6 +62,7 @@ export default function ChatWidget() {
   const { theme } = useTheme()
   const { user } = useAuth()
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const isDark = theme === 'dark'
 
   const [open, setOpen] = useState(false)
@@ -65,6 +99,11 @@ export default function ChatWidget() {
   }, [open])
 
   if (AUTH_PATHS.includes(pathname)) return null
+
+  const handleLinkNavigate = (path: string) => {
+    setOpen(false)
+    navigate(path)
+  }
 
   const send = async () => {
     const text = input.trim()
@@ -322,7 +361,9 @@ export default function ChatWidget() {
                     </span>
                   ) : (
                     <>
-                      {msg.content}
+                      {msg.role === 'assistant'
+                        ? renderMessageContent(msg.content, handleLinkNavigate, '#2596be')
+                        : msg.content}
                       {msg.role === 'assistant' && streaming && !thinking && i === messages.length - 1 && (
                         <span className="cursor-blink" style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#2596be' }}>▋</span>
                       )}

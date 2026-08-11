@@ -26,7 +26,7 @@ export class UserDAO {
   static async create(data: {
     username: string
     email: string
-    passwordHash: string
+    passwordHash?: string | null
     privacyAcceptedAt?: Date | null
     privacyPolicyVersion?: string | null
   }): Promise<User> {
@@ -35,7 +35,7 @@ export class UserDAO {
       VALUES (
         ${data.username},
         ${data.email},
-        ${data.passwordHash},
+        ${data.passwordHash ?? null},
         ${data.privacyAcceptedAt ?? null},
         ${data.privacyPolicyVersion ?? null}
       )

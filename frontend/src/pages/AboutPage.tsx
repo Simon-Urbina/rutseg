@@ -67,17 +67,6 @@ const SOCIAL = [
     ),
   },
   {
-    label: 'GitHub',
-    handle: 'Simon-Urbina',
-    href: 'https://github.com/Simon-Urbina',
-    color: '#C8D5EE',
-    svg: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.04c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5"/>
-      </svg>
-    ),
-  },
-  {
     label: 'Instagram',
     handle: '@simon__urbina',
     href: 'https://www.instagram.com/simon__urbina/',
@@ -463,7 +452,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Email */}
             <a
               href="mailto:jacobitourbinalol@gmail.com"
@@ -491,38 +480,6 @@ export default function AboutPage() {
                 </p>
                 <p className="font-mono text-[13px]" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
                   jacobitourbinalol@gmail.com
-                </p>
-              </div>
-            </a>
-
-            {/* GitHub Issues */}
-            <a
-              href="https://github.com/Simon-Urbina"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hud-panel p-7 flex flex-col gap-4"
-              style={{
-                background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                textDecoration: 'none',
-                '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
-                '--hud-border-hover': isDark ? 'rgba(200,213,238,0.55)' : 'rgba(10,21,69,0.55)',
-                '--hud-focus': isDark ? '#C8D5EE' : '#0A1545',
-              } as React.CSSProperties}
-            >
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center"
-                style={{ background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.03)', border: '1px solid rgba(200,213,238,0.20)', color: isDark ? '#C8D5EE' : '#0A1545' }}
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.04c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5"/>
-                </svg>
-              </div>
-              <div>
-                <p className="font-mono text-[10px] tracking-[0.18em] uppercase mb-1.5" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
-                  // reportar un bug
-                </p>
-                <p className="font-mono text-[13px]" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
-                  github.com/Simon-Urbina/rutseg
                 </p>
               </div>
             </a>

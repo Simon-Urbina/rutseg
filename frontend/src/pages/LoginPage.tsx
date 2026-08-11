@@ -4,6 +4,7 @@ import { useTheme } from '../context/ThemeContext'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
 import AuthLayout from '../components/AuthLayout'
+import SocialAuthButtons from '../components/SocialAuthButtons'
 
 function InputField({
   label, type, value, onChange, placeholder, isDark,
@@ -185,6 +186,8 @@ export default function LoginPage() {
           )}
         </button>
       </form>
+
+      <SocialAuthButtons />
     </AuthLayout>
   )
 }
