@@ -9,7 +9,7 @@ import CourseCard, { type Course } from '../components/CourseCard'
 import EnrollConfirmModal from '../components/EnrollConfirmModal'
 import Footer from '../components/Footer'
 import { CourseFilterPanel } from '../components/CourseFilters'
-import { emptyCourseFilters, courseMatchesFilters, type CourseFilterState } from '../lib/courseFilters'
+import { emptyCourseFilters, courseMatchesFilters, hasActiveCourseFilters, type CourseFilterState } from '../lib/courseFilters'
 
 interface FullProfile {
   id: string
@@ -41,6 +41,7 @@ export default function DashboardPage() {
   const [pendingEnroll, setPendingEnroll] = useState<Course | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<CourseFilterState>(emptyCourseFilters())
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   useEffect(() => {
     setLoadingProfile(true)
@@ -230,8 +231,20 @@ export default function DashboardPage() {
           {/* Search + filters */}
           {!coursesLoading && courses.length > 0 && (
             <section className="animate-fade-up-2 space-y-3">
-              <CourseSearchBar value={searchQuery} onChange={setSearchQuery} isDark={isDark} />
-              <CourseFilterPanel filters={filters} onChange={setFilters} isDark={isDark} />
+              <CourseSearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                isDark={isDark}
+                filtersOpen={filtersOpen}
+                onToggleFilters={() => setFiltersOpen(o => !o)}
+                filtersActive={hasActiveCourseFilters(filters)}
+              />
+              <div
+                className="overflow-hidden transition-all duration-300 ease-in-out"
+                style={{ maxHeight: filtersOpen ? '320px' : '0px', opacity: filtersOpen ? 1 : 0 }}
+              >
+                <CourseFilterPanel filters={filters} onChange={setFilters} isDark={isDark} />
+              </div>
               {filteredCourses.length === 0 && (
                 <p className="text-sm font-mono" style={{ color: isDark ? '#4A70CC' : '#2451C8' }}>
                   Ningún curso coincide con la búsqueda o los filtros.
@@ -534,7 +547,12 @@ function EmptyState({ isDark, title, body }: { isDark: boolean; title: string; b
   )
 }
 
-function CourseSearchBar({ value, onChange, isDark }: { value: string; onChange: (v: string) => void; isDark: boolean }) {
+function CourseSearchBar({
+  value, onChange, isDark, filtersOpen, onToggleFilters, filtersActive,
+}: {
+  value: string; onChange: (v: string) => void; isDark: boolean
+  filtersOpen: boolean; onToggleFilters: () => void; filtersActive: boolean
+}) {
   return (
     <div
       className="hud-panel p-3 flex items-center gap-3"
@@ -555,7 +573,7 @@ function CourseSearchBar({ value, onChange, isDark }: { value: string; onChange:
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder="Buscar por nombre o temática…"
-        className="flex-1 bg-transparent outline-none text-sm px-2"
+        className="flex-1 min-w-0 bg-transparent outline-none text-sm px-2"
         style={{
           color: isDark ? '#C8D5EE' : '#0A1545',
         }}
@@ -563,7 +581,7 @@ function CourseSearchBar({ value, onChange, isDark }: { value: string; onChange:
       {value && (
         <button
           onClick={() => onChange('')}
-          className="text-xs font-mono px-2.5 py-1 rounded transition-colors"
+          className="shrink-0 text-xs font-mono px-2.5 py-1 rounded transition-colors"
           style={{
             background: isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.08)',
             color: isDark ? '#7B9FE8' : '#1A3F96',
@@ -574,6 +592,30 @@ function CourseSearchBar({ value, onChange, isDark }: { value: string; onChange:
           Limpiar
         </button>
       )}
+      <button
+        onClick={onToggleFilters}
+        aria-label="Mostrar filtros"
+        aria-expanded={filtersOpen}
+        className="relative shrink-0 w-9 h-9 rounded-lg flex items-center justify-center transition-colors"
+        style={{
+          background: filtersOpen
+            ? '#1A3F96'
+            : isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.08)',
+          color: filtersOpen ? '#fff' : isDark ? '#7B9FE8' : '#1A3F96',
+        }}
+        onMouseEnter={e => { if (!filtersOpen) e.currentTarget.style.background = isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.14)' }}
+        onMouseLeave={e => { if (!filtersOpen) e.currentTarget.style.background = isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.08)' }}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+        </svg>
+        {filtersActive && !filtersOpen && (
+          <span
+            className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full"
+            style={{ background: '#F5C500', border: `2px solid ${isDark ? '#0D1B46' : '#FFFFFF'}` }}
+          />
+        )}
+      </button>
     </div>
   )
 }
