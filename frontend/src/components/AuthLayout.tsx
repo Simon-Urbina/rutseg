@@ -193,12 +193,11 @@ export default function AuthLayout({
         </div>
 
         {/* Form */}
-        <div className="flex-1 flex items-center justify-center px-8 py-10">
+        <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-8 sm:py-10">
           <div
-            className="hud-panel hud-static w-full max-w-[440px] animate-slide-in"
+            className="hud-panel hud-static w-full max-w-[440px] p-6 sm:p-9 lg:p-11 animate-slide-in"
             style={{
               background: isDark ? 'rgba(13,27,70,0.85)' : '#ffffff',
-              padding: '44px',
               boxShadow: isDark ? 'none' : '0 4px 40px rgba(10,21,69,0.07)',
               '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
               '--hud-border-hover': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
@@ -209,7 +208,7 @@ export default function AuthLayout({
         </div>
 
         {/* Footer */}
-        <div className="px-8 py-5 text-center">
+        <div className="px-4 sm:px-8 py-5 text-center">
           <p
             className="font-mono text-[10px] tracking-[0.2em] uppercase"
             style={{ color: isDark ? 'rgba(26,63,150,0.4)' : 'rgba(26,63,150,0.3)' }}

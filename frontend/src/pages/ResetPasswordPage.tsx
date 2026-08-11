@@ -71,7 +71,7 @@ export default function ResetPasswordPage() {
         <p className="font-mono text-[10px] tracking-[0.22em] uppercase mb-4" style={{ color: textSub }}>
           // restablecer acceso
         </p>
-        <h2 className="font-display" style={{ fontSize: '2.25rem', lineHeight: 1.1, color: textMain }}>
+        <h2 className="font-display" style={{ fontSize: 'clamp(1.6rem, 7vw, 2.25rem)', lineHeight: 1.15, color: textMain }}>
           Restablecer contraseña
         </h2>
       </div>

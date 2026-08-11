@@ -17,6 +17,7 @@ import AboutPage from './pages/AboutPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfUsePage from './pages/TermsOfUsePage'
 import ForumPage from './pages/ForumPage'
+import TrialLabPage from './pages/TrialLabPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ChatWidget from './components/ChatWidget'
 import CookieBanner from './components/CookieBanner'
@@ -108,6 +109,9 @@ function AppShell() {
 
         {/* Forum */}
         <Route path="/forum" element={<ForumPage />} />
+
+        {/* Laboratorio de prueba — público, sin login, sin backend */}
+        <Route path="/demo" element={<TrialLabPage />} />
 
         {/* Privacy policy */}
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />

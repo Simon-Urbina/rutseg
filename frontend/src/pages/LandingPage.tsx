@@ -449,9 +449,14 @@ export default function LandingPage() {
             >
               Crea tu cuenta institucional gratis, accede a tu primer laboratorio y comienza a sumar puntos.
             </p>
-            <Link to="/register" className="btn-neon text-[16px] py-3.5 px-8">
-              Crear cuenta gratis →
-            </Link>
+            <div className="flex flex-col items-center justify-center gap-4">
+              <Link to="/demo" className="btn-ghost-light text-[16px] py-3.5 px-8">
+                Probar un laboratorio gratis, sin registro →
+              </Link>
+              <Link to="/register" className="btn-neon text-[16px] py-3.5 px-8">
+                Crear cuenta gratis →
+              </Link>
+            </div>
           </div>
         </section>
       )}

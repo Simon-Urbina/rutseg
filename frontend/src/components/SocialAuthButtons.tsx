@@ -75,10 +75,14 @@ export default function SocialAuthButtons({ disabled }: { disabled?: boolean }) 
         })
         if (googleButtonRef.current) {
           googleButtonRef.current.innerHTML = ''
+          // Google no soporta ancho porcentual — se mide el contenedor real para que
+          // el botón nunca se desborde en tarjetas angostas (teléfonos pequeños).
+          const measured = Math.floor(googleButtonRef.current.getBoundingClientRect().width)
+          const width = measured > 0 ? Math.min(320, measured) : 280
           google.accounts.id.renderButton(googleButtonRef.current, {
             theme: isDark ? 'filled_black' : 'outline',
             size: 'large',
-            width: 320,
+            width,
             text: 'continue_with',
             locale: 'es',
           })

@@ -265,7 +265,7 @@ function CommentCard({
                 onChange={e => setReplyText(e.target.value)}
                 placeholder="Escribe una respuesta…"
                 maxLength={2000}
-                className="tech-input flex-1 px-4 py-2 text-[13px]"
+                className="tech-input flex-1 min-w-0 px-4 py-2 text-[13px]"
                 style={{
                   background: isDark ? 'rgba(6,13,31,0.6)' : '#fff',
                   color: isDark ? '#C8D5EE' : '#0A1545',

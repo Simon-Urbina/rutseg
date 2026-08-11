@@ -117,7 +117,7 @@ export default function LoginPage() {
         </p>
         <h2
           className="font-display"
-          style={{ fontSize: '2.25rem', lineHeight: 1.1, color: isDark ? '#C8D5EE' : '#0A1545' }}
+          style={{ fontSize: 'clamp(1.7rem, 7vw, 2.25rem)', lineHeight: 1.1, color: isDark ? '#C8D5EE' : '#0A1545' }}
         >
           Iniciar sesión
         </h2>

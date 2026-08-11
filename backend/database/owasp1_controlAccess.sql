@@ -33,7 +33,7 @@ INSERT INTO course_modules (course_id, slug, title, description, position)
 SELECT c.id,
   'fundamentos-control-acceso',
   'Fundamentos del Control de Acceso',
-  'Conceptos clave de autenticación vs autorización, modelos DAC/MAC/RBAC y las raíces del fallo de control de acceso según OWASP 2025.',
+  'Conceptos clave de autenticación vs autorización, modelos DAC/MAC/RBAC y IDOR: la causa raíz más común del fallo de control de acceso según OWASP 2025.',
   1
 FROM courses c WHERE c.slug = 'owasp-a01-control-acceso'
 ON CONFLICT (course_id, slug) DO UPDATE SET
@@ -457,7 +457,7 @@ ON CONFLICT (question_id, option_order) DO NOTHING;
 INSERT INTO question_activities (question_id, title, instructions_markdown, expected_action_key, success_feedback, is_published)
 SELECT q.id,
   'Decodificación de JWT en terminal',
-  E'## Objetivo\n\nDecodifica el payload de un token JWT desde la terminal para analizar sus claims y entender qué información expone.\n\n## Instrucciones\n\n```bash\necho "eyJzdWIiOiIxMjM0NTY3ODkwIiwicm9sZSI6InVzZXIifQ==" | base64 -d\n```\n\n**Desglose del pipeline:**\n- `echo "..."`: el token JWT completo\n- `cut -d. -f2`: extrae la segunda parte (payload) separando por puntos\n- `base64 -d`: decodifica el Base64\n- `2>/dev/null`: suprime advertencias de padding\n\n**Resultado esperado:** un JSON con los claims del token:\n\n```json\n{"sub":"1234567890","name":"John Doe","role":"user","iat":1516239022}\n```\n\n**Implicaciones de seguridad:**\n- El payload es legible por cualquiera que tenga el token\n- Si el backend no verifica la firma, modificar "role" a "admin" podría funcionar\n- NUNCA almacenar secretos en el payload de un JWT\n\nCopia la **respuesta generada** y úsala en el quiz.',
+  E'## Objetivo\n\nDecodifica el payload de un token JWT desde la terminal para analizar sus claims y entender qué información expone.\n\n## Instrucciones\n\nEjecuta exactamente este comando (ya es el payload del JWT, sin el header ni la firma):\n\n```bash\necho "eyJzdWIiOiIxMjM0NTY3ODkwIiwicm9sZSI6InVzZXIifQ==" | base64 -d\n```\n\n**Desglose del comando:**\n- `echo "..."`: el payload del JWT, ya extraído\n- `| base64 -d`: decodifica el Base64 y muestra el JSON en texto plano\n\n**Resultado esperado (esto es exactamente lo que verás):**\n\n```json\n{"sub":"1234567890","role":"user"}\n```\n\n**Implicaciones de seguridad:**\n- El payload es legible por cualquiera que tenga el token — Base64 es una codificación reversible, no un cifrado.\n- Si el backend no verifica la firma, modificar "role" a "admin" y reconstruir el token podría funcionar.\n- NUNCA almacenar secretos en el payload de un JWT.\n\nCopia la **respuesta generada** (el JSON de arriba) y úsala en el quiz.',
   'echo "eyJzdWIiOiIxMjM0NTY3ODkwIiwicm9sZSI6InVzZXIifQ==" | base64 -d',
   '¡Muy bien! Has decodificado el payload JWT y puedes ver los claims. Copia esta respuesta para el quiz.',
   TRUE

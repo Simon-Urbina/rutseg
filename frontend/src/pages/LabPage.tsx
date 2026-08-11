@@ -192,6 +192,7 @@ function TerminalPanel({
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const [done, setDone] = useState(activity.isCompleted)
+  const [justCompleted, setJustCompleted] = useState(false)
   const [clock, setClock] = useState(new Date())
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -205,6 +206,14 @@ function TerminalPanel({
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [history])
+
+  // El comando correcto ya quedó validado y registrado — cierra solo, sin pedir
+  // que el usuario copie/pegue/confirme nada más.
+  useEffect(() => {
+    if (!justCompleted) return
+    const t = setTimeout(onClose, 1700)
+    return () => clearTimeout(t)
+  }, [justCompleted, onClose])
 
   const run = async () => {
     const cmd = input.trim()
@@ -220,6 +229,7 @@ function TerminalPanel({
         const outLines: HLine[] = res.generatedResponse.split('\n').map(t => ({ type: 'output' as const, text: t }))
         setHistory(h => [...h, { type: 'blank', text: '' }, ...outLines, { type: 'blank', text: '' }, { type: 'success', text: `✓  ${res.feedback}` }])
         setDone(true)
+        setJustCompleted(true)
         onComplete(questionId, res.generatedResponse)
       } else {
         setHistory(h => [...h,
@@ -375,16 +385,16 @@ function TerminalPanel({
               style={{ borderTop: '1px solid rgba(0,200,100,0.06)' }}
             >
               <span className="font-mono text-[11px]" style={{ color: '#4ade80' }}>
-                ↑ Copia la respuesta de arriba, cierra y pégala en el campo
+                {justCompleted ? '✓ Actividad completada — cerrando…' : '✓ Actividad completada'}
               </span>
               <button
                 onClick={onClose}
-                className="font-mono text-[11px] px-3 py-1 rounded transition-colors shrink-0"
+                className="font-mono text-[11px] px-3 py-1.5 rounded transition-colors shrink-0"
                 style={{ color: '#3A5AB8', border: '1px solid rgba(26,63,150,0.2)' }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#2596be')}
                 onMouseLeave={e => (e.currentTarget.style.color = '#3A5AB8')}
               >
-                cerrar
+                cerrar ahora
               </button>
             </div>
           )}
@@ -572,16 +582,14 @@ function ResultModal({
 // ─── Question item ────────────────────────────────────────────────────────────
 
 function QuestionItem({
-  q, index, isOpen, isDark, state, onToggle, onSelectOption, onOpenTerminal, onConfirmActivity,
+  q, index, isOpen, isDark, state, onToggle, onSelectOption, onOpenTerminal,
 }: {
   q: Question; index: number; isOpen: boolean; isDark: boolean
   state: QuestionState | undefined
   onToggle: () => void
   onSelectOption: (questionId: string, optionId: string) => void
   onOpenTerminal: (activity: Activity) => void
-  onConfirmActivity: (questionId: string, userInput: string) => void
 }) {
-  const [actInput, setActInput] = useState('')
   const isAnswered = q.questionType === 'multiple_choice'
     ? state?.checked
     : !!state?.responseText
@@ -738,7 +746,7 @@ function QuestionItem({
                 </p>
               </div>
 
-              {/* Open terminal button (always visible until confirmed) */}
+              {/* Open terminal button — hidden once the activity is answered */}
               {!state?.responseText && (
                 <button
                   onClick={() => onOpenTerminal(q.activity!)}
@@ -750,73 +758,30 @@ function QuestionItem({
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
                   </svg>
-                  {state?.generatedResponse ? 'Re-abrir terminal' : 'Abrir terminal'}
+                  Abrir terminal
                 </button>
               )}
 
-              {/* Paste input — shown once terminal has run and produced a response */}
-              {state?.generatedResponse && !state?.responseText && (
-                <div className="space-y-2">
-                  <p className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
-                    // pega la respuesta del terminal
-                  </p>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={actInput}
-                      onChange={e => setActInput(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') { onConfirmActivity(q.id, actInput); setActInput('') } }}
-                      placeholder="Pega aquí la respuesta obtenida…"
-                      className="tech-input flex-1 px-4 py-2.5 font-mono text-[13px]"
-                      style={{
-                        background: isDark ? 'rgba(26,63,150,0.08)' : 'rgba(26,63,150,0.05)',
-                        color: isDark ? '#C8D5EE' : '#0A1545',
-                      }}
-                      autoFocus
-                    />
-                    <button
-                      onClick={() => { onConfirmActivity(q.id, actInput); setActInput('') }}
-                      disabled={!actInput.trim()}
-                      className="px-4 py-2.5 rounded-xl font-mono text-[13px] transition-all disabled:opacity-40"
-                      style={{ background: 'rgba(26,63,150,0.15)', border: '1px solid rgba(26,63,150,0.3)', color: isDark ? '#7B9FE8' : '#1A3F96' }}
-                    >
-                      Confirmar
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Confirmed response */}
+              {/* Respuesta registrada automáticamente al ejecutar el comando correcto en la terminal */}
               {state?.responseText && (
                 <div className="space-y-2.5">
                   <span
                     className="font-mono text-[11px] tracking-[0.15em] uppercase"
-                    style={{ color: state.isCorrect ? correctColor : wrongColor }}
+                    style={{ color: correctColor }}
                   >
-                    {state.isCorrect ? '✓ Respuesta correcta' : '✗ Respuesta incorrecta'}
+                    ✓ Actividad completada
                   </span>
                   <div
                     className="font-mono text-[12px] px-4 py-3 rounded-lg overflow-x-auto"
                     style={{
-                      background: state.isCorrect ? 'rgba(74,222,128,0.05)' : 'rgba(248,113,113,0.05)',
-                      border: `1px solid ${state.isCorrect ? 'rgba(74,222,128,0.18)' : 'rgba(248,113,113,0.18)'}`,
-                      color: state.isCorrect ? correctColor : wrongColor,
+                      background: 'rgba(74,222,128,0.05)',
+                      border: '1px solid rgba(74,222,128,0.18)',
+                      color: correctColor,
                       whiteSpace: 'pre-wrap', wordBreak: 'break-all',
                     }}
                   >
                     {state.responseText}
                   </div>
-                  {!state.isCorrect && (
-                    <button
-                      onClick={() => onOpenTerminal(q.activity!)}
-                      className="font-mono text-[11px] transition-colors"
-                      style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}
-                      onMouseEnter={e => (e.currentTarget.style.color = '#2596be')}
-                      onMouseLeave={e => (e.currentTarget.style.color = isDark ? '#3A5AB8' : '#4A70CC')}
-                    >
-                      → Re-abrir terminal e intentar de nuevo
-                    </button>
-                  )}
                 </div>
               )}
             </div>
@@ -939,25 +904,16 @@ export default function LabPage() {
     }
   }
 
-  // Terminal ran the correct command — store expected answer, let user copy it manually
+  // Terminal ran the correct command — el backend ya validó la respuesta, así que la
+  // actividad queda resuelta de inmediato, sin pedir copiar/pegar/confirmar aparte.
   const handleActivityComplete = (questionId: string, generatedResponse: string) => {
-    setQuestionStates(prev => ({ ...prev, [questionId]: { ...prev[questionId], generatedResponse } }))
-    // Terminal stays open so user can copy the output; they close it themselves
-  }
-
-  // User confirmed their pasted/typed response
-  const handleConfirmActivity = (questionId: string, userInput: string) => {
-    if (!data || !userInput.trim()) return
-    const expected = questionStates[questionId]?.generatedResponse ?? ''
-    const isCorrect = userInput.trim() === expected.trim()
+    if (!data) return
     setQuestionStates(prev => ({
       ...prev,
-      [questionId]: { ...prev[questionId], responseText: userInput, isCorrect },
+      [questionId]: { ...prev[questionId], generatedResponse, responseText: generatedResponse, isCorrect: true },
     }))
-    if (isCorrect) {
-      const idx = data.questions.findIndex(q => q.id === questionId)
-      advanceAfter(idx, 1200)
-    }
+    const idx = data.questions.findIndex(q => q.id === questionId)
+    advanceAfter(idx, 1200)
   }
 
   // Submit all answers
@@ -1201,7 +1157,6 @@ export default function LabPage() {
               })}
               onSelectOption={handleSelectOption}
               onOpenTerminal={activity => setTerminalActivity({ ...activity, questionId: q.id })}
-              onConfirmActivity={handleConfirmActivity}
             />
           ))}
         </section>

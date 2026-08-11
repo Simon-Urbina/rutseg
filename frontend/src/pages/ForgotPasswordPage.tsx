@@ -46,7 +46,7 @@ export default function ForgotPasswordPage() {
         <p className="font-mono text-[10px] tracking-[0.22em] uppercase mb-4" style={{ color: textSub }}>
           // restablecer contraseña
         </p>
-        <h2 className="font-display" style={{ fontSize: '2.25rem', lineHeight: 1.1, color: textMain }}>
+        <h2 className="font-display" style={{ fontSize: 'clamp(1.6rem, 7vw, 2.25rem)', lineHeight: 1.15, color: textMain }}>
           ¿Olvidaste tu contraseña?
         </h2>
         <p className="text-[15px] mt-3" style={{ color: textSub }}>

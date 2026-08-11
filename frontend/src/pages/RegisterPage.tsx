@@ -173,7 +173,7 @@ export default function RegisterPage() {
           </p>
           <h2
             className="font-display"
-            style={{ fontSize: '2.25rem', lineHeight: 1.1, color: isDark ? '#C8D5EE' : '#0A1545' }}
+            style={{ fontSize: 'clamp(1.7rem, 7vw, 2.25rem)', lineHeight: 1.1, color: isDark ? '#C8D5EE' : '#0A1545' }}
           >
             Código enviado
           </h2>
@@ -203,7 +203,7 @@ export default function RegisterPage() {
               onFocus={() => setCodeFocused(true)}
               onBlur={() => setCodeFocused(false)}
               placeholder="000000"
-              className="input-terminal w-full text-center text-[28px] tracking-[0.5em] px-5 py-4"
+              className="input-terminal w-full text-center text-[22px] sm:text-[28px] tracking-[0.35em] sm:tracking-[0.5em] px-3 sm:px-5 py-4"
               style={{
                 color: isDark ? '#C8D5EE' : '#0A1545',
                 border: `1px solid ${codeFocused ? '#F5C500' : isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.35)'}`,

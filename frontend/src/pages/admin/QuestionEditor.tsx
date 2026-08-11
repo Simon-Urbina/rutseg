@@ -290,7 +290,7 @@ function OptionsEditor({
             value={option.optionText}
             onChange={e => handleTextChange(option.id, e.target.value)}
             onBlur={() => handleTextBlur(option)}
-            className="tech-input flex-1 px-4 py-2 text-[14px]"
+            className="tech-input flex-1 min-w-0 px-4 py-2 text-[14px]"
             style={{ background: isDark ? 'rgba(6,13,31,0.5)' : '#ffffff', color: isDark ? '#C8D5EE' : '#0A1545' }}
           />
           <button
