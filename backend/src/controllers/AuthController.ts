@@ -29,7 +29,7 @@ export class AuthController {
     const code = generateCode()
     pendingRegistrations.set(prepared.email, {
       ...prepared,
-      privacyPolicyVersion: privacyPolicyVersion ?? '1.0',
+      privacyPolicyVersion: privacyPolicyVersion ?? '1.1',
       code,
       expiresAt: Date.now() + 900_000, // 15 minutos
     })
@@ -95,7 +95,7 @@ export class AuthController {
       providerUserId: identity.providerUserId,
       email: identity.email,
       name: identity.name,
-      privacyPolicyVersion: privacyPolicyVersion ?? '1.0',
+      privacyPolicyVersion: privacyPolicyVersion ?? '1.1',
     })
     return c.json({ token, user: { id: user.id, username: user.username, email: user.email, role: user.role } })
   }

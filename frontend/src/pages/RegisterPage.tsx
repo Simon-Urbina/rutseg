@@ -101,7 +101,7 @@ export default function RegisterPage() {
     try {
       const res = await api.post<{ message: string; email: string }>('/api/auth/register', {
         ...form,
-        privacyPolicyVersion: '1.0',
+        privacyPolicyVersion: '1.1',
       })
       setPendingEmail(res.email)
       setStep('verify')
@@ -390,7 +390,7 @@ export default function RegisterPage() {
         </button>
       </form>
 
-      <SocialAuthButtons disabled={!privacyAccepted} />
+      <SocialAuthButtons />
     </AuthLayout>
   )
 }

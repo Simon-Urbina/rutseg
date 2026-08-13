@@ -16,8 +16,12 @@ const SECTIONS = [
           <strong>Universidad Santo Tomás — Tunja, Colombia</strong>.
         </p>
         <p className="mt-4">
-          Al registrarte o usar RutSeg, aceptas estos términos en su totalidad. Si no estás
-          de acuerdo con alguno de ellos, debes abstenerte de usar la plataforma.
+          Al registrarte o usar RutSeg, aceptas estos términos en su totalidad. Esto aplica
+          sin importar el método que uses para crear tu cuenta o iniciar sesión: el formulario
+          propio (usuario, correo y contraseña) o un proveedor externo como Google — hacer clic
+          en "Continuar con Google" equivale a aceptar estos Términos de Uso y la Política de
+          Privacidad. Si no estás de acuerdo con alguno de ellos, debes abstenerte de usar la
+          plataforma.
         </p>
       </>
     ),
@@ -237,7 +241,7 @@ export default function TermsOfUsePage() {
             className="font-mono text-[11px] mt-6"
             style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}
           >
-            Última actualización: mayo 2026
+            Última actualización: agosto 2026
           </p>
         </div>
       </div>

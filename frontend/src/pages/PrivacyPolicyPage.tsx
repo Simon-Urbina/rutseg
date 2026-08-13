@@ -43,7 +43,11 @@ const SECTIONS = [
           {[
             {
               cat: 'Datos de cuenta',
-              items: ['Nombre de usuario (username)', 'Dirección de correo electrónico', 'Contraseña (almacenada exclusivamente como hash; nunca en texto plano)'],
+              items: ['Nombre de usuario (username)', 'Dirección de correo electrónico', 'Contraseña (almacenada exclusivamente como hash; nunca en texto plano) — solo si te registras con el formulario propio'],
+            },
+            {
+              cat: 'Datos de cuenta vía Google',
+              items: ['Si inicias sesión o te registras con "Continuar con Google", recibimos tu nombre y tu correo verificado directamente de Google (Google Identity Services) para crear o vincular tu cuenta', 'Nunca recibimos ni almacenamos tu contraseña de Google — la autenticación la resuelve Google, RutSeg solo verifica un token firmado'],
             },
             {
               cat: 'Datos de perfil',
@@ -139,6 +143,12 @@ const SECTIONS = [
               desc: 'Usado exclusivamente para enviar correos de verificación de cuenta y restablecimiento de contraseña. No se almacena ningún dato de usuario en los servidores de Google.',
               url: 'https://policies.google.com/privacy',
             },
+            {
+              name: 'Google Identity Services',
+              role: 'Inicio de sesión con Google',
+              desc: 'Si eliges "Continuar con Google", RutSeg verifica el token que emite Google y obtiene tu nombre y correo verificado para crear o vincular tu cuenta. Al hacer clic en este botón aceptas esta Política de Privacidad y los Términos de Uso de RutSeg.',
+              url: 'https://policies.google.com/privacy',
+            },
           ].map(({ name, role, desc, url: providerUrl }) => (
             <div key={name} className="rounded-xl p-5" style={{ background: 'rgba(26,63,150,0.05)', border: '1px solid rgba(26,63,150,0.12)' }}>
               <div className="flex items-start justify-between gap-4 flex-wrap mb-2">
@@ -166,7 +176,8 @@ const SECTIONS = [
               Los servidores de Supabase (AWS us-east-1), Railway y Vercel se encuentran en Estados Unidos,
               país que no cuenta con declaración de adecuación por parte de Colombia. La transferencia
               internacional de tus datos se realiza sobre la base de la <strong>autorización expresa</strong> que
-              otorgas al aceptar esta política durante el registro, conforme al artículo 26 de la Ley 1581 de 2012.
+              otorgas al aceptar esta política durante el registro —ya sea completando el formulario propio
+              o haciendo clic en "Continuar con Google"—, conforme al artículo 26 de la Ley 1581 de 2012.
             </p>
           </div>
           <div className="rounded-xl px-5 py-4" style={{ background: 'rgba(26,63,150,0.06)', border: '1px solid rgba(26,63,150,0.14)' }}>
@@ -401,8 +412,8 @@ export default function PrivacyPolicyPage() {
           </p>
           <div className="flex flex-wrap gap-6 animate-fade-up-4">
             {[
-              { label: 'Última actualización', value: '16 de mayo de 2026' },
-              { label: 'Versión', value: '1.0' },
+              { label: 'Última actualización', value: '12 de agosto de 2026' },
+              { label: 'Versión', value: '1.1' },
               { label: 'Jurisdicción', value: 'Colombia — Ley 1581 de 2012' },
             ].map(({ label, value }) => (
               <div key={label}>

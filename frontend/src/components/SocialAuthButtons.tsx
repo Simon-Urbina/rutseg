@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import { api } from '../lib/api'
@@ -31,13 +31,13 @@ function loadGoogleScript(): Promise<void> {
 }
 
 /** Botón de "Continuar con Google" — sirve tanto para iniciar sesión como para crear cuenta
- * la primera vez (find-or-create en el backend). `disabled` se usa en Register para exigir
- * el checkbox de privacidad antes de habilitarlo.
+ * la primera vez (find-or-create en el backend). Siempre está activo: el consentimiento se
+ * cubre con el texto debajo del botón ("al continuar, aceptas..."), no con un checkbox previo.
  *
  * Nota: Microsoft se quitó temporalmente (registro de la app en Azure sin terminar) — el
  * backend ya soporta el provider 'microsoft' (ver oauthProviders.ts / user_oauth_accounts),
  * solo falta reintroducir el botón aquí cuando esté lista la app de Azure. */
-export default function SocialAuthButtons({ disabled }: { disabled?: boolean }) {
+export default function SocialAuthButtons() {
   const { login } = useAuth()
   const { theme } = useTheme()
   const navigate = useNavigate()
@@ -51,7 +51,7 @@ export default function SocialAuthButtons({ disabled }: { disabled?: boolean }) 
   }
 
   useEffect(() => {
-    if (!GOOGLE_CLIENT_ID || disabled) return
+    if (!GOOGLE_CLIENT_ID) return
     let cancelled = false
 
     loadGoogleScript()
@@ -65,7 +65,7 @@ export default function SocialAuthButtons({ disabled }: { disabled?: boolean }) 
             try {
               const res = await api.post<AuthResponse>('/api/auth/google', {
                 idToken: response.credential,
-                privacyPolicyVersion: '1.0',
+                privacyPolicyVersion: '1.1',
               })
               finishAuth(res)
             } catch (err: any) {
@@ -91,7 +91,7 @@ export default function SocialAuthButtons({ disabled }: { disabled?: boolean }) 
       .catch(() => setError('No se pudo cargar el botón de Google.'))
 
     return () => { cancelled = true }
-  }, [isDark, disabled])
+  }, [isDark])
 
   if (!GOOGLE_CLIENT_ID) return null
 
@@ -108,12 +108,19 @@ export default function SocialAuthButtons({ disabled }: { disabled?: boolean }) 
         <div className="flex-1 h-px" style={{ background: lineColor }} />
       </div>
 
-      <div className="flex flex-col gap-3" style={{ opacity: disabled ? 0.5 : 1, pointerEvents: disabled ? 'none' : 'auto' }}>
+      <div className="flex flex-col gap-3">
         <div ref={googleButtonRef} className="flex justify-center" />
       </div>
 
       <p className="text-[12px] mt-3 text-center leading-relaxed" style={{ color: labelColor }}>
-        Al continuar, aceptas la Política de Privacidad de RutSeg.
+        Al continuar con Google, aceptas nuestra{' '}
+        <Link to="/privacy-policy" target="_blank" className="font-semibold hover:underline" style={{ color: labelColor }}>
+          Política de Privacidad
+        </Link>{' '}
+        y nuestros{' '}
+        <Link to="/terms-of-use" target="_blank" className="font-semibold hover:underline" style={{ color: labelColor }}>
+          Términos de Uso
+        </Link>.
       </p>
 
       {error && (

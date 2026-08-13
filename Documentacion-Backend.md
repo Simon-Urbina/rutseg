@@ -683,6 +683,7 @@ Todos los endpoints comienzan con el prefijo `/api`.
 | POST | `/verify-email` | ❌ | Paso 2 del registro: verifica el código y crea el usuario |
 | POST | `/resend-verification` | ❌ | Reenviar el código de verificación al mismo email |
 | POST | `/login` | ❌ | Iniciar sesión, recibe token JWT |
+| POST | `/google` | ❌ | Iniciar sesión o registrarse con Google (find-or-create). Verifica el `idToken` de Google Identity Services y vincula o crea el usuario |
 | POST | `/logout` | ✅ | Cierra sesión (el token es stateless, solo es simbólico) |
 | POST | `/forgot-password` | ❌ | Solicitar enlace de restablecimiento de contraseña |
 | POST | `/reset-password` | ❌ | Restablecer contraseña con el token recibido por email |
@@ -709,6 +710,31 @@ Todos los endpoints comienzan con el prefijo `/api`.
   "user": { "id": "uuid", "username": "simon", "email": "...", "role": "user" }
 }
 ```
+
+**Google (`POST /api/auth/google`) — body esperado:**
+```json
+{ "idToken": "<id_token emitido por Google Identity Services>", "privacyPolicyVersion": "1.1" }
+```
+
+`AuthController.google` verifica la firma/emisor/audiencia del `idToken` con `verifyGoogleIdToken()`
+(`src/utils/oauthProviders.ts`, usa las JWKS públicas de Google) y llama a
+`AuthService.findOrCreateOAuthUser()`, que aplica esta lógica de vinculación (ver también la tabla
+`user_oauth_accounts` en `database/schema.sql`):
+
+1. Si el `providerUserId` de Google ya está vinculado a un usuario, se usa ese usuario.
+2. Si no, pero ya existe una cuenta con el mismo email (verificado por Google), se vincula el
+   proveedor a esa cuenta existente.
+3. Si no existe ninguna cuenta, se crea una nueva sin `passwordHash` (el login por contraseña
+   queda deshabilitado para ese usuario hasta que la establezca).
+
+La respuesta tiene el mismo formato que `login`/`verify-email` (`token` + `user`). El frontend no
+exige ningún checkbox previo para este flujo — el consentimiento de la Política de Privacidad y los
+Términos de Uso se cubre con el texto que se muestra junto al botón "Continuar con Google"
+(`frontend/src/components/SocialAuthButtons.tsx`).
+
+> Nota: el provider `'microsoft'` ya está soportado en `AuthService`/`user_oauth_accounts`, pero el
+> endpoint `POST /microsoft` y el botón correspondiente en el frontend aún no se reintrodujeron
+> (registro de la app en Azure sin terminar).
 
 ### 8.2 Usuarios (`/api/users`)
 

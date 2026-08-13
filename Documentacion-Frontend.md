@@ -87,6 +87,7 @@ frontend/
 │   │   ├── CourseCard.tsx       ← Tarjeta de curso en la lista del dashboard
 │   │   ├── Ranking.tsx          ← Tabla de posiciones paginada
 │   │   ├── AuthLayout.tsx       ← Layout centrado para páginas de autenticación
+│   │   ├── SocialAuthButtons.tsx ← Botón "Continuar con Google" (Login y Register)
 │   │   ├── EnrollConfirmModal.tsx ← Modal de confirmación de matrícula
 │   │   ├── ProfileEditModal.tsx   ← Modal para editar perfil
 │   │   ├── CookieBanner.tsx       ← Banner de consentimiento de cookies (GDPR)
@@ -268,6 +269,21 @@ Al verificar correctamente, se llama a `login(token, user)` del contexto y se na
 Layout centrado utilizado por las páginas de autenticación (Login, Register, ForgotPassword, ResetPassword). Mantiene la consistencia visual sin el Header/Footer principal.
 
 El panel izquierdo (visible solo en pantallas `lg+`) muestra estadísticas reales de la plataforma (cursos, labs, puntos totales) obtenidas desde `/api/stats` al montar el componente. Mientras carga, muestra `—` como placeholder.
+
+### `SocialAuthButtons`
+
+Botón "Continuar con Google", compartido por `LoginPage` y `RegisterPage`. Carga el script de
+**Google Identity Services** (`accounts.google.com/gsi/client`), inicializa el cliente con
+`VITE_GOOGLE_CLIENT_ID` y renderiza el botón oficial de Google (`google.accounts.id.renderButton`).
+Al recibir el `credential` del callback, hace `POST /api/auth/google` con `{ idToken, privacyPolicyVersion }`
+y llama a `login()` del `AuthContext`, igual que un login por formulario.
+
+El botón está **siempre activo** (no depende de ningún checkbox previo): debajo se muestra un texto
+fijo indicando que continuar implica aceptar la Política de Privacidad y los Términos de Uso, con
+enlaces a ambas páginas. Esto es intencional — ver la nota sobre Ley 1581 de 2012 en
+[`Documentacion-Backend.md` §8.1](./Documentacion-Backend.md#81-autenticación-apiauth).
+
+Si `VITE_GOOGLE_CLIENT_ID` no está definida, el componente no renderiza nada (`return null`).
 
 ### `EnrollConfirmModal`
 
