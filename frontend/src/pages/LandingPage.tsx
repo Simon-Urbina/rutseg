@@ -98,17 +98,6 @@ export default function LandingPage() {
 
             {/* Columna Izquierda: Mensaje Principal */}
             <div className="lg:col-span-7 space-y-6">
-              <div
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-[0.18em] uppercase border"
-                style={{
-                  color: isDark ? '#7B9FE8' : '#1A3F96',
-                  background: isDark ? 'rgba(26,63,150,0.12)' : 'rgba(26,63,150,0.06)',
-                  borderColor: isDark ? 'rgba(26,63,150,0.25)' : 'rgba(26,63,150,0.20)',
-                }}
-              >
-                <span className="w-2 h-2 rounded-full" style={{ background: '#2596be' }} />
-                Plataforma Institucional de Laboratorios Prácticos
-              </div>
 
               <h1
                 className="font-display font-bold tracking-tight text-4xl sm:text-5xl lg:text-6xl leading-[1.08]"
