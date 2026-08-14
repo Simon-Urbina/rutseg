@@ -267,13 +267,18 @@ export default function CoursePage() {
 
           {/* Certificado */}
           {course.isEnrolled && total > 0 && completed === total && (
-            <button
-              onClick={handleDownloadCertificate}
-              disabled={downloadingCert}
-              className="btn-gold mt-6 text-[14px] disabled:opacity-60 disabled:cursor-wait animate-fade-up-3"
-            >
-              {downloadingCert ? 'Generando…' : 'Descargar certificado'}
-            </button>
+            <div className="mt-6 animate-fade-up-3">
+              <button
+                onClick={handleDownloadCertificate}
+                disabled={downloadingCert}
+                className="btn-gold text-[14px] disabled:opacity-60 disabled:cursor-wait"
+              >
+                {downloadingCert ? 'Generando…' : 'Descargar certificado'}
+              </button>
+              <p className="mt-2.5 text-[12px] font-light" style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}>
+                Pon tu nombre completo real en tu perfil para un certificado más profesional.
+              </p>
+            </div>
           )}
         </div>
       </section>

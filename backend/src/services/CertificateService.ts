@@ -104,22 +104,25 @@ export class CertificateService {
       doc.font('Helvetica-Bold').fontSize(22).fillColor(COLORS.darkBlue)
         .text(user.username, 0, bodyY + 24, { align: 'center' })
 
+      doc.font('Helvetica').fontSize(10).fillColor(COLORS.faint)
+        .text(user.email, 0, bodyY + 50, { align: 'center' })
+
       doc.font('Helvetica').fontSize(14).fillColor(COLORS.ink)
-        .text('completó el curso', 0, bodyY + 58, { align: 'center' })
+        .text('completó el curso', 0, bodyY + 70, { align: 'center' })
 
       doc.font('Helvetica-Bold').fontSize(20).fillColor(COLORS.cyan)
-        .text(`"${course.title}"`, 100, bodyY + 82, { align: 'center', width: pageWidth - 200 })
+        .text(`"${course.title}"`, 100, bodyY + 94, { align: 'center', width: pageWidth - 200 })
 
       doc.font('Helvetica').fontSize(12).fillColor(COLORS.muted)
         .text(
           'en RutSeg, plataforma de laboratorios prácticos en ciberseguridad del Semillero de\n' +
           'Investigación en Ciberseguridad y Desarrollo de Software — Universidad Santo Tomás, Tunja.',
-          80, bodyY + 118, { align: 'center', width: pageWidth - 160, lineGap: 4 },
+          80, bodyY + 130, { align: 'center', width: pageWidth - 160, lineGap: 4 },
         )
 
       const dateStr = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })
       doc.font('Helvetica').fontSize(11).fillColor(COLORS.ink)
-        .text(`Fecha de finalización: ${dateStr}`, 0, bodyY + 176, { align: 'center' })
+        .text(`Fecha de finalización: ${dateStr}`, 0, bodyY + 188, { align: 'center' })
 
       // Disclaimer — obligatorio, ver §5 del plan (no es una credencial de competencia)
       doc.font('Helvetica-Oblique').fontSize(9).fillColor(COLORS.faint)
