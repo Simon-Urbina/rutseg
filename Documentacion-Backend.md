@@ -20,6 +20,7 @@
 11. [Variables de Entorno](#11-variables-de-entorno)
 12. [Despliegue](#12-despliegue)
 13. [Glosario de Términos](#13-glosario-de-términos)
+14. [Futuras Actualizaciones (Roadmap)](#14-futuras-actualizaciones-roadmap)
 
 > **Nota:** La sección 8 incluye los endpoints del foro (8.8) y los de administración se renumeraron a 8.9.
 
@@ -1286,3 +1287,46 @@ Vercel genera automáticamente una URL de producción estable (`rutseg.vercel.ap
 **ValidationError** — Subclase de `AppError` (HTTP 400) que acepta un array de mensajes de validación en español. Se lanza cuando uno o más campos no pasan las reglas de formato definidas en los modelos. Los mensajes individuales se unen con `' | '` en el mensaje final.
 
 **NotFoundError / ForbiddenError / ConflictError / UnauthorizedError / BadRequestError** — Subclases de `AppError` que representan situaciones específicas de negocio. No contienen códigos HTTP; el manejador global de `index.ts` es el único que los asigna al responder al cliente.
+
+---
+
+## 14. Futuras Actualizaciones (Roadmap)
+
+> Ideas evaluadas pero **no implementadas ni agendadas**. Se documentan aquí como backlog de posibles
+> mejoras para no perderlas, no como compromisos de desarrollo.
+
+### 14.1 Audio de laboratorios (texto a voz)
+
+**Idea:** al publicar un laboratorio, generar automáticamente un audio del contenido (markdown) y de
+sus 5 preguntas usando la API de texto a voz de **ElevenLabs**, y guardarlo para que el usuario pueda
+escucharlo en vez de leerlo. Pensado para accesibilidad (dislexia, baja visión, TDAH) y para quienes
+prefieren consumir el contenido en audio.
+
+**Consideraciones técnicas antes de construirlo:**
+- **Almacenamiento:** hoy el backend guarda binarios (avatares) directamente como `bytea` en Postgres
+  (`UserDAO.updateAvatar`, ver §5 y §8.2). Ese patrón no escala para audio — un lab con 5 preguntas
+  puede generar varios minutos de audio. Haría falta un bucket de almacenamiento de objetos dedicado
+  (Supabase Storage, Cloudflare R2, S3) y guardar solo la URL resultante en `labs`/`questions`, no el
+  binario.
+- **Procesamiento asíncrono:** la generación con ElevenLabs no es instantánea. El audio debería
+  generarse en background al publicar el lab (o vía cola/job), mostrando un estado
+  "generando audio…" en `AdminLabEditorPage` y con reintentos si la API falla.
+- **Costo:** ElevenLabs cobra por carácter generado — con contenido dinámico (labs nuevos
+  constantemente) es un costo recurrente a monitorear, no un costo único.
+- **Alcance del guion:** decidir si el audio lee también las respuestas correctas (riesgo de filtrar
+  la respuesta si no se controla el guion) o solo enunciado y opciones.
+
+### 14.2 Otras ideas relacionadas (accesibilidad / engagement)
+
+- **TTS en las respuestas de Uchi (`ChatWidget`):** ya existe streaming SSE de texto (§13 de
+  `Documentacion-Frontend.md`); agregar voz a las respuestas del chatbot serviría a la misma
+  audiencia que 14.1 reutilizando infraestructura de chat ya construida.
+- **Lectura en voz del feedback de `ResultModal`:** mensajes cortos y estáticos ("¡Bien hecho! +50
+  pts") — mucho más barato de generar/cachear que leer labs completos, y podría usarse como piloto
+  antes de invertir en 14.1.
+- **Traducción de labs al inglés:** amplía la audiencia potencial, pero duplica el esfuerzo de
+  mantenimiento de contenido en cada edición de lab.
+- **Certificado/resumen de progreso descargable (PDF):** al completar un curso, generar un PDF con
+  labs completados y puntos. No es accesibilidad, pero reutiliza el mismo patrón de "generación
+  async + almacenamiento de archivo" que 14.1 — si se construye esa infraestructura de storage para
+  audio, este feature se vuelve mucho más barato de agregar después.
