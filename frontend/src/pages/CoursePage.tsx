@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
+import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import { api } from '../lib/api'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -78,11 +82,39 @@ export default function CoursePage() {
   const navigate   = useNavigate()
   const { theme }  = useTheme()
   const isDark     = theme === 'dark'
+  const { token }  = useAuth()
+  const { addToast } = useToast()
 
   const [course,  setCourse]  = useState<CourseDetail | null>(null)
   const [modules, setModules] = useState<ModuleWithLabs[]>([])
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState<string | null>(null)
+  const [downloadingCert, setDownloadingCert] = useState(false)
+
+  async function handleDownloadCertificate() {
+    if (!slug || downloadingCert) return
+    setDownloadingCert(true)
+    try {
+      const res = await fetch(`${BASE_URL}/api/courses/${slug}/certificate`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => null)
+        throw new Error(data?.error ?? 'No se pudo generar el certificado.')
+      }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `rutseg-${slug}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (e: unknown) {
+      addToast((e as Error).message, 'error')
+    } finally {
+      setDownloadingCert(false)
+    }
+  }
 
   useEffect(() => {
     if (!slug) return
@@ -231,6 +263,17 @@ export default function CoursePage() {
                 />
               </div>
             </div>
+          )}
+
+          {/* Certificado */}
+          {course.isEnrolled && total > 0 && completed === total && (
+            <button
+              onClick={handleDownloadCertificate}
+              disabled={downloadingCert}
+              className="btn-gold mt-6 text-[14px] disabled:opacity-60 disabled:cursor-wait animate-fade-up-3"
+            >
+              {downloadingCert ? 'Generando…' : 'Descargar certificado'}
+            </button>
           )}
         </div>
       </section>

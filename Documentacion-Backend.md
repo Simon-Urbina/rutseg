@@ -757,8 +757,11 @@ Términos de Uso se cubre con el texto que se muestra junto al botón "Continuar
 | GET | `/:slug/modules` | ❌ | Ver módulos del curso |
 | GET | `/:slug/modules/:moduleSlug/labs` | ❌ | Ver laboratorios del módulo |
 | GET | `/:slug/modules/:moduleSlug/labs/:labSlug` | ✅ | Ver laboratorio completo con preguntas y progreso |
+| GET | `/:slug/certificate` | ✅ | Descargar el certificado de finalización en PDF (ver §8.10) |
 
-> **Nota sobre el último endpoint:** Requiere que el usuario esté matriculado en el curso padre. Si no lo está, recibe HTTP 403. Los administradores no necesitan matrícula.
+> **Nota sobre `labs/:labSlug`:** Requiere que el usuario esté matriculado en el curso padre. Si no lo está, recibe HTTP 403. Los administradores no necesitan matrícula.
+>
+> **Nota sobre `/certificate`:** Requiere que el usuario esté matriculado y haya completado el 100% de los laboratorios publicados del curso (ver §9.5). Si no cumple alguna condición, responde HTTP 403.
 
 **Respuesta de GET `/api/courses`:**
 ```json
@@ -928,6 +931,22 @@ Todos estos endpoints requieren token de administrador.
 | POST | `/users/:id/password` | Establece una nueva contraseña sin pedir la actual |
 | DELETE | `/users/:id` | Borra un usuario (soft-delete; bloquea el auto-borrado) |
 
+### 8.10 Certificados (`/api/certificates`)
+
+| Método | Ruta | Auth | Descripción |
+|---|---|---|---|
+| GET | `/verify?username=&courseSlug=&code=` | ❌ | Verificación pública de un certificado |
+
+Endpoint público a propósito — cualquiera debe poder verificar un certificado sin iniciar sesión. La
+descarga del PDF vive en `/api/courses/:slug/certificate` (ver §8.3), no aquí — ver lógica completa
+en §9.5.
+
+**Respuesta de GET `/api/certificates/verify`:**
+```json
+{ "valid": true, "courseTitle": "Introducción a Linux", "username": "simon" }
+```
+Si el código, usuario o curso no son válidos, o el curso ya no está completo: `{ "valid": false }`.
+
 ---
 
 ## 9. Lógica de Negocio Clave
@@ -1024,6 +1043,42 @@ CourseService.getLaboratory():
 ```
 
 Los administradores saltan este control (para poder revisar el contenido sin matricularse).
+
+### 9.5 Certificados de Finalización
+
+Cuando un usuario completa el 100% de los laboratorios publicados de un curso, puede descargar un
+certificado en PDF (`GET /api/courses/:slug/certificate`) generado con `pdfkit` + `svg-to-pdfkit`
+(`CertificateService`, ver `backend/src/services/CertificateService.ts`).
+
+**Decisión de producto:** el certificado acredita **finalización de contenido**, no competencia
+profesional — el PDF incluye un disclaimer explícito con ese texto.
+
+```
+CertificateService.getCompletionStatus(userId, courseSlug):
+  1. CourseDAO.findBySlugWithStats(slug, userId) → NotFoundError si el curso no existe
+  2. Si !isEnrolled → ForbiddenError
+  3. isCompleted = labCount > 0 && completedLabsCount === labCount
+  4. Si !isCompleted → ForbiddenError
+  5. Devuelve { course, isCompleted, completedLabsCount, labCount }
+```
+
+**No se cachea** un estado de "curso completado" — se recalcula en cada request reutilizando la
+misma query que alimenta la barra de progreso de `CoursePage`. Ventaja: si se agrega un laboratorio
+nuevo a un curso después de que un usuario lo completó, automáticamente deja de calificar para el
+certificado hasta completar también el lab nuevo.
+
+**Código de verificación:** `generateCertificateCode(userId, courseId)` (en
+`backend/src/utils/certificate.ts`) — mismo patrón HMAC-SHA256 que `generateActivityResponse()`
+(ver §9.1): determinista, sin tabla nueva, se recalcula tanto al generar el PDF como al verificarlo.
+
+**Verificación pública:** `GET /api/certificates/verify?username=&courseSlug=&code=` (sin auth)
+recalcula el código esperado y la completitud actual del curso; nunca lanza error — un
+código/usuario/curso inválido simplemente responde `{ valid: false }`, sin filtrar si el username o
+el curso existen.
+
+**Nota de diseño:** la fecha impresa en el PDF es la fecha de **descarga**, no la fecha real en que
+se completó el último laboratorio — no se cachea `completed_at` a nivel de curso (ver limitación en
+`docs/Plan-Certificados-PDF.md` §7).
 
 ---
 

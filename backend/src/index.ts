@@ -10,6 +10,7 @@ import rankingRoutes from './routes/ranking.js'
 import adminRoutes from './routes/admin.js'
 import statsRoutes from './routes/stats.js'
 import forumRoutes from './routes/forum.js'
+import certificateRoutes from './routes/certificates.js'
 
 const app = new Hono()
 
@@ -39,6 +40,7 @@ app.route('/api/ranking', rankingRoutes)
 app.route('/api/admin', adminRoutes)
 app.route('/api/stats', statsRoutes)
 app.route('/api/forum', forumRoutes)
+app.route('/api/certificates', certificateRoutes)
 
 app.get('/health', (c) => c.json({ status: 'ok' }))
 

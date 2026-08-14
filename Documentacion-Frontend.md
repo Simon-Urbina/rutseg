@@ -99,9 +99,10 @@ frontend/
 │       ├── ForgotPasswordPage.tsx ← Solicitar restablecimiento de contraseña
 │       ├── ResetPasswordPage.tsx  ← Formulario de nueva contraseña con token
 │       ├── DashboardPage.tsx    ← Panel principal del usuario autenticado
-│       ├── CoursePage.tsx       ← Detalle de un curso con sus módulos y labs
+│       ├── CoursePage.tsx       ← Detalle de un curso con sus módulos, labs y botón de descarga de certificado
 │       ├── LabPage.tsx          ← Laboratorio con contenido Markdown, actividades, quiz y sonidos de resultado
 │       ├── PublicProfilePage.tsx ← Perfil público de cualquier usuario (/u/:username)
+│       ├── VerifyCertificatePage.tsx ← Verificación pública de un certificado PDF (/verify/:username/:courseSlug/:code)
 │       ├── AboutPage.tsx        ← Sobre el proyecto, su autor y la iniciativa académica
 │       ├── ForumPage.tsx        ← Foro comunitario con comentarios y respuestas paginados
 │       ├── PrivacyPolicyPage.tsx ← Política de privacidad de la plataforma
@@ -141,6 +142,7 @@ Las rutas se definen en `src/App.tsx` usando React Router DOM. Hay tres tipos:
 | `/privacy-policy` | `PrivacyPolicyPage` | Política de privacidad de la plataforma |
 | `/terms-of-use` | `TermsOfUsePage` | Términos de uso de la plataforma |
 | `/u/:username` | `PublicProfilePage` | Perfil público de un usuario |
+| `/verify/:username/:courseSlug/:code` | `VerifyCertificatePage` | Verificación pública de un certificado PDF |
 | `/forgot-password` | `ForgotPasswordPage` | Formulario para pedir reset de contraseña |
 | `/reset-password` | `ResetPasswordPage` | Formulario para establecer nueva contraseña |
 

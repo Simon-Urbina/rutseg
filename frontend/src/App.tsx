@@ -13,6 +13,7 @@ import DashboardPage from './pages/DashboardPage'
 import CoursePage from './pages/CoursePage'
 import LabPage from './pages/LabPage'
 import PublicProfilePage from './pages/PublicProfilePage'
+import VerifyCertificatePage from './pages/VerifyCertificatePage'
 import AboutPage from './pages/AboutPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfUsePage from './pages/TermsOfUsePage'
@@ -103,6 +104,9 @@ function AppShell() {
 
         {/* Public user profiles */}
         <Route path="/u/:username" element={<PublicProfilePage />} />
+
+        {/* Verificación pública de certificados */}
+        <Route path="/verify/:username/:courseSlug/:code" element={<VerifyCertificatePage />} />
 
         {/* About page */}
         <Route path="/about" element={<AboutPage />} />

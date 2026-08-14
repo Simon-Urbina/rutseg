@@ -1,5 +1,6 @@
 import type { Context } from 'hono'
 import { CourseService } from '../services/CourseService.js'
+import { CertificateService } from '../services/CertificateService.js'
 import type { TokenPayload } from '../types.js'
 
 export class CourseController {
@@ -40,5 +41,15 @@ export class CourseController {
     return c.json(
       await CourseService.getLaboratory(slug, moduleSlug, labSlug, user.id, user.role),
     )
+  }
+
+  static async getCertificate(c: Context) {
+    const user = c.get('user') as TokenPayload
+    const { course } = await CertificateService.getCompletionStatus(user.id, c.req.param('slug')!)
+    const pdfBuffer = await CertificateService.generatePdf(user, course)
+    c.header('Content-Type', 'application/pdf')
+    c.header('Content-Disposition', `attachment; filename="rutseg-${course.slug}.pdf"`)
+    // c.body() espera Uint8Array<ArrayBuffer>; Buffer es Uint8Array<ArrayBufferLike>, no asignable directamente.
+    return c.body(new Uint8Array(pdfBuffer))
   }
 }
