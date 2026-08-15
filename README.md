@@ -55,7 +55,8 @@ cybersec-labs/
                                  # AboutPage, ForumPage, VerifyCertificatePage,
                                  # PrivacyPolicyPage, TermsOfUsePage, NotFoundPage
             └── admin/           # Panel de administración (solo rol admin): cursos/módulos/labs/
-                                 # preguntas y gestión de usuarios — ver Documentacion-Frontend.md §5
+                                 # preguntas, gestión de usuarios y estadísticas — ver
+                                 # docs/Documentacion/Documentacion-Frontend.md §5
 ```
 
 ---
@@ -113,7 +114,7 @@ CATALOG_REFRESH_SECONDS=3600
 > `RUTSEG_API_URL` y `CATALOG_REFRESH_SECONDS` son opcionales (con esos valores por defecto) —
 > se usan para refrescar en background el catálogo de cursos que el chatbot conoce, llamando a
 > `GET /api/courses` (público) cada `CATALOG_REFRESH_SECONDS` segundos. Ver
-> `Documentacion-Frontend.md` §13.
+> `docs/Documentacion/Documentacion-Frontend.md` §13.
 
 **`frontend/.env`**
 ```env
@@ -162,6 +163,7 @@ uvicorn main:app --reload --port 8002   # → http://localhost:8002
 | Paquete | Versión | Uso |
 |---------|---------|-----|
 | `hono` | ^4.12.5 | Framework web |
+| `hono-rate-limiter` | ^0.5.3 | Límite de peticiones por IP (general y estricto en `/api/auth/*`) |
 | `postgres` | ^3.4.8 | Driver PostgreSQL (SQL crudo) |
 | `jsonwebtoken` | ^9.0.3 | Generación y verificación de JWT (sesión propia de RutSeg) |
 | `jose` | ^6.2.8 | Verifica la firma de los `id_token` de Google en el login social |
@@ -191,6 +193,7 @@ uvicorn main:app --reload --port 8002   # → http://localhost:8002
 | `@vercel/speed-insights` | ^2.0.0 | Speed Insights de Vercel |
 | `use-sound` | ^5.0.0 | Reproducción de efectos de sonido con React hooks |
 | `@types/howler` | ^2.2.12 | Tipos TypeScript para Howler.js (peer dep de use-sound) |
+| `recharts` | ^3.10.1 | Gráficas del panel de estadísticas admin (`/admin/analytics`) |
 | `typescript` | ~5.9.3 | Compilador TypeScript |
 | `eslint` | ^9.39.1 | Linter |
 | `typescript-eslint` | ^8.48.0 | Reglas ESLint para TS |
@@ -318,6 +321,7 @@ Base URL: `http://localhost:3000`
 | PUT | `/api/admin/users/:id` | Editar username/email/bio/rol (un admin no puede quitarse el rol a sí mismo) |
 | POST | `/api/admin/users/:id/password` | Establece una nueva contraseña sin pedir la actual |
 | DELETE | `/api/admin/users/:id` | Borra un usuario (soft-delete; un admin no puede auto-eliminarse) |
+| GET | `/api/admin/analytics?range=7d\|1m\|1y\|5y` | KPIs y 11 gráficas del panel de estadísticas (usuarios, puntos, cursos, actividad) |
 
 ### Health check
 
@@ -436,6 +440,29 @@ VITE_GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com
 > **Login social:** en Google Cloud Console (Credentials → tu OAuth Client) agrega `https://rutseg.vercel.app` y `http://localhost:5173` en "Authorized JavaScript origins". Login con Microsoft pendiente de agregar (ver nota en la sección de variables de entorno del backend).
 
 El archivo `frontend/vercel.json` configura el enrutamiento SPA — todas las rutas se redirigen a `index.html` para que React Router funcione correctamente al acceder directamente a una URL (ej: `/reset-password`, `/dashboard`).
+
+---
+
+## Documentación adicional
+
+Todo vive en `docs/Documentacion/`:
+
+| Documento | Contenido |
+|---|---|
+| [`Documentacion-Backend.md`](docs/Documentacion/Documentacion-Backend.md) | Arquitectura en capas, modelos, base de datos, auth, endpoints, roadmap |
+| [`Documentacion-Frontend.md`](docs/Documentacion/Documentacion-Frontend.md) | Estructura de páginas, componentes, panel admin, catálogo del chatbot |
+| [`Documentacion-Seguridad.md`](docs/Documentacion/Documentacion-Seguridad.md) | Auditoría de seguridad — ver pendientes abajo |
+| [`Documentacion-Errores-Historicos.md`](docs/Documentacion/Documentacion-Errores-Historicos.md) | Historial de bugs reales encontrados y corregidos desde el primer commit, con causa raíz y evidencia de cada uno |
+
+### Seguridad — pendientes conocidos
+
+Según la última auditoría (`Documentacion-Seguridad.md`, actualizada 2026-08-15):
+
+- ✅ **Rate limiting del backend** — implementado (`hono-rate-limiter`, 300 peticiones/15min en toda la API, 10/15min en `/api/auth/*`). Pendiente extenderlo al chatbot (`/chat/stream`) y agregar un límite de tamaño de body.
+- 🔴 **Row Level Security (RLS) de Supabase no verificable desde el código** — requiere confirmarse manualmente en el panel de Supabase, no solo en `schema.sql`.
+- 🟡 **Sin registro de intentos de ataque** (auth fallida repetida, 403 en rutas admin, etc.) — no hay logging dedicado a detectar abuso.
+
+El resto de la auditoría (RBAC, protección de rutas, SQL parametrizado, manejo de errores, aislamiento del chatbot) está correcto. Ver el documento completo para detalle y el checklist priorizado.
 
 ---
 
