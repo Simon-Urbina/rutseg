@@ -29,6 +29,7 @@ import AdminModuleDetailPage from './pages/admin/AdminModuleDetailPage'
 import AdminLabEditorPage from './pages/admin/AdminLabEditorPage'
 import AdminUsersPage from './pages/admin/AdminUsersPage'
 import AdminUserDetailPage from './pages/admin/AdminUserDetailPage'
+import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -101,6 +102,7 @@ function AppShell() {
         <Route path="/admin/courses/:courseSlug/:moduleSlug/:labSlug" element={<AdminRoute><AdminLabEditorPage /></AdminRoute>} />
         <Route path="/admin/users" element={<AdminRoute><AdminUsersPage /></AdminRoute>} />
         <Route path="/admin/users/:id" element={<AdminRoute><AdminUserDetailPage /></AdminRoute>} />
+        <Route path="/admin/analytics" element={<AdminRoute><AdminAnalyticsPage /></AdminRoute>} />
 
         {/* Public user profiles */}
         <Route path="/u/:username" element={<PublicProfilePage />} />
