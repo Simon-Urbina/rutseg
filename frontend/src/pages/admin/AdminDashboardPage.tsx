@@ -22,6 +22,17 @@ function IconUsers() {
   )
 }
 
+function IconChart() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 3v18h18" />
+      <rect x="7" y="13" width="3" height="5" />
+      <rect x="12" y="9" width="3" height="9" />
+      <rect x="17" y="5" width="3" height="13" />
+    </svg>
+  )
+}
+
 const CARDS = [
   {
     to: '/admin/courses',
@@ -34,6 +45,12 @@ const CARDS = [
     title: 'Usuarios',
     description: 'Datos de cuenta, rol y contraseña de los usuarios registrados.',
     icon: <IconUsers />,
+  },
+  {
+    to: '/admin/analytics',
+    title: 'Estadísticas',
+    description: 'Gráficas y KPIs sobre usuarios, puntos, cursos y actividad de la plataforma.',
+    icon: <IconChart />,
   },
 ]
 
@@ -64,12 +81,12 @@ export default function AdminDashboardPage() {
         ¿Qué quieres administrar?
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {CARDS.map(card => (
           <button
             key={card.to}
             onClick={() => navigate(card.to)}
-            className="hud-panel flex flex-col items-start gap-4 p-8 text-left"
+            className="hud-panel flex flex-col items-start gap-3 p-8 text-left"
             style={{
               background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
               '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
@@ -77,20 +94,20 @@ export default function AdminDashboardPage() {
               '--hud-focus': '#2596be',
             } as React.CSSProperties}
           >
-            <div
-              className="flex items-center justify-center w-12 h-12 rounded-xl"
-              style={{ background: isDark ? 'rgba(37,150,190,0.12)' : 'rgba(26,63,150,0.08)', color: isDark ? '#7B9FE8' : '#1A3F96' }}
-            >
-              {card.icon}
-            </div>
-            <div>
+            <div className="flex items-center gap-3">
+              <div
+                className="flex items-center justify-center w-12 h-12 rounded-xl shrink-0"
+                style={{ background: isDark ? 'rgba(37,150,190,0.12)' : 'rgba(26,63,150,0.08)', color: isDark ? '#7B9FE8' : '#1A3F96' }}
+              >
+                {card.icon}
+              </div>
               <h2 className="font-display" style={{ fontSize: '1.3rem', color: isDark ? '#C8D5EE' : '#0A1545' }}>
                 {card.title}
               </h2>
-              <p className="text-[14px] mt-1" style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}>
-                {card.description}
-              </p>
             </div>
+            <p className="text-[14px]" style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}>
+              {card.description}
+            </p>
           </button>
         ))}
       </div>
