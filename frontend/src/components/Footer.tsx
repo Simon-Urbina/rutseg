@@ -188,7 +188,7 @@ export default function Footer() {
               border: '1px solid rgba(37,150,190,0.20)',
             }}
           >
-            V.UCHIE-1.0 ACADEMIC
+            V.UCHIE-1.1
           </span>
         </div>
       </div>
