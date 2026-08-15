@@ -1,7 +1,9 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+import asyncio
 import json
 import logging
 import time
@@ -9,11 +11,24 @@ import time
 from config import client, MODEL
 from prompts import build_system_prompt
 from retriever import retriever
+from catalog import start_refresh_loop, get_refresh_status
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Uchi – RutSeg AI Assistant")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # El catálogo de cursos se refresca en background (ver catalog.py) para que Uchi
+    # no dependa de editar knowledge.json/prompts.py a mano cada vez que se publica
+    # un curso nuevo. El primer fetch ocurre aquí mismo al arrancar; si falla, el
+    # servidor sigue arrancando igual con el catálogo de respaldo.
+    task = asyncio.create_task(start_refresh_loop())
+    yield
+    task.cancel()
+
+
+app = FastAPI(title="Uchi – RutSeg AI Assistant", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -82,4 +97,4 @@ async def chat_stream(req: ChatRequest):
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "model": MODEL}
+    return {"status": "ok", "model": MODEL, "catalog": get_refresh_status()}

@@ -765,7 +765,8 @@ ChatWidget (React)
 chatbot/main.py  (FastAPI)
     │
     ├── retriever.py  ← TF-IDF sobre knowledge.json (RAG)
-    ├── prompts.py    ← Sistema de prompts con contexto de página + FAQs
+    ├── prompts.py    ← Sistema de prompts con contexto de página + FAQs + catálogo dinámico
+    ├── catalog.py    ← Refresca el catálogo de cursos en background (ver más abajo)
     └── config.py     ← Cliente Groq (openai.AsyncOpenAI apuntando a api.groq.com)
 ```
 
@@ -783,11 +784,47 @@ chatbot/main.py  (FastAPI)
 
 En lugar de incluir toda la base de conocimiento en el system prompt (que aumentaría el tamaño de cada petición), solo se inyectan los 3 FAQs más relevantes para la pregunta actual.
 
-- **Base de conocimiento**: `chatbot/knowledge.json` — 20 pares pregunta/respuesta sobre la plataforma (qué es CyberSec Labs, sistema de puntos, ranking, laboratorios, etc.).
+- **Base de conocimiento**: `chatbot/knowledge.json` — 56 pares pregunta/respuesta sobre la plataforma (registro, puntos, ranking, laboratorios, certificados, login con Google, filtros del Dashboard, etc.).
 - **Vectorización**: `TfidfVectorizer(ngram_range=(1,2), sublinear_tf=True)` de scikit-learn.
 - **Similitud**: coseno entre el vector de la consulta y la matriz del corpus.
-- **Umbral**: solo se incluyen FAQs con `score >= 0.10`. Si la pregunta es de ciberseguridad general (XSS, SQL injection, etc.), normalmente no supera el umbral y el modelo responde desde su conocimiento base.
+- **Umbral**: solo se incluyen FAQs con `score >= 0.12` (`retriever.py:MIN_SCORE`), máximo 4 por consulta (`TOP_K`). Si la pregunta es de ciberseguridad general (XSS, SQL injection, etc.), normalmente no supera el umbral y el modelo responde desde su conocimiento base.
 - **Normalización Unicode**: tanto el corpus como la consulta se normalizan antes de indexar/buscar (`"qué" == "que"`, `"cómo" == "como"`), usando `unicodedata.normalize("NFD")` más eliminación de diacríticos.
+
+### Catálogo de cursos dinámico (`catalog.py`)
+
+`knowledge.json` es contenido **curado a mano** (cómo funciona la plataforma, políticas, etc.) — no
+tiene sentido regenerarlo solo. Pero el párrafo "Catálogo actual" y la lista de rutas de curso del
+system prompt (`prompts.py`) sí cambian cada vez que se publica un curso nuevo, y antes estaban
+hardcodeados como texto fijo — si un admin publicaba un curso, Uchi seguía sin saber que existía
+hasta que alguien editara `prompts.py` a mano.
+
+`catalog.py` resuelve esto llamando al propio endpoint público `GET /api/courses` del backend
+(el mismo que usa `DashboardPage`, sin autenticación) en vez de a la base de datos directamente —
+el chatbot sigue sin tener ninguna credencial ni conexión a Postgres (ver
+`Documentacion-Seguridad.md` §11).
+
+```
+FastAPI lifespan (arranque)
+  └─ asyncio.create_task(start_refresh_loop())
+       └─ while True:
+            refresh_catalog()          # GET {RUTSEG_API_URL}/api/courses
+              ├─ reconstruye el párrafo "Catálogo actual: N cursos…"
+              └─ reconstruye la lista "- /courses/:slug — Título" de RUTAS DE LA PLATAFORMA
+            await asyncio.sleep(CATALOG_REFRESH_SECONDS)   # default 3600s (1 hora)
+```
+
+- El primer refresh ocurre al arrancar el proceso (no espera la primera hora).
+- Si el backend no responde (caído, URL mal configurada), se loggea una advertencia y **se
+  conserva el último catálogo bueno conocido** — nunca deja a Uchi sin catálogo. Antes del primer
+  refresh exitoso de la vida del proceso, usa un catálogo de respaldo estático embebido en
+  `catalog.py` (los 6 cursos que existían al momento de construir esta función).
+- `prompts.py` ya no tiene el catálogo ni las rutas de curso como texto fijo — `BASE_PROMPT` tiene
+  los marcadores `{{CATALOGO_ACTUAL}}` y `{{RUTAS_DE_CURSOS}}`, que `build_system_prompt()`
+  sustituye en cada request llamando a `catalog.get_catalog_text()` /
+  `catalog.get_course_routes_text()` (lectura de una variable en memoria, no hace una petición HTTP
+  por cada mensaje del chat).
+- `GET /health` expone `catalog.lastRefreshedAt` y `catalog.courseCount` para verificar rápido, sin
+  revisar logs, que el refresco sigue funcionando en producción.
 
 ### Proveedor LLM
 

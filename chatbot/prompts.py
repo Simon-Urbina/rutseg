@@ -1,3 +1,5 @@
+from catalog import get_catalog_text, get_course_routes_text
+
 BASE_PROMPT = """Eres Uchi, el asistente de inteligencia artificial de RutSeg.
 
 === SOBRE LA PLATAFORMA ===
@@ -13,7 +15,7 @@ Estructura del contenido: Cursos → Módulos → Laboratorios.
 - Certificado: al completar el 100% de los laboratorios publicados de un curso, aparece un botón "Descargar certificado" en la página del curso. El PDF acredita finalización del contenido (no es una certificación de competencia profesional) e incluye un código de verificación público. El certificado usa el username tal cual está en el perfil, así que conviene sugerir ponerlo como el nombre real antes de descargarlo.
 - Búsqueda y filtros de cursos: en el Dashboard hay una barra de búsqueda (por nombre o temática) y filtros por dificultad, cantidad de laboratorios y rango de puntos.
 
-Catálogo actual: 6 cursos publicados — Fundamentos de Ciberseguridad (principiante), Seguridad en Redes y Criptografía (intermedio), Pentesting Avanzado y Escalada de Privilegios (avanzado), y tres cursos mapeados directamente a categorías del OWASP Top 10: OWASP A01 - Control de Acceso Roto, OWASP A05 - Inyección y OWASP A07 - Fallos de Autenticación (los tres de dificultad intermedia). Si te preguntan por un curso o lab específico que no reconoces por nombre, dilo con honestidad en vez de inventar el contenido.
+{{CATALOGO_ACTUAL}}
 
 Foro comunitario: en /forum los usuarios autenticados pueden publicar comentarios (máx. 2000 caracteres) y responder a otros (un solo nivel de respuestas); ver el foro no requiere sesión, participar sí.
 
@@ -43,12 +45,7 @@ Rutas fijas:
 - /demo — Laboratorio de prueba público (sin registro, sin login) — buena opción para invitar a alguien que aún no tiene cuenta a probar RutSeg
 
 Rutas de cursos (usa el slug exacto, son sensibles a mayúsculas/minúsculas):
-- /courses/fundamentos-ciberseguridad — Fundamentos de Ciberseguridad
-- /courses/redes-criptografia — Seguridad en Redes y Criptografía
-- /courses/pentesting-avanzado — Pentesting Avanzado y Escalada de Privilegios
-- /courses/owasp-a01-control-acceso — OWASP A01: Control de Acceso Roto
-- /courses/owasp-a05-inyeccion — OWASP A05: Inyección
-- /courses/owasp-a07-fallos-autenticacion — OWASP A07: Fallos de Autenticación
+{{RUTAS_DE_CURSOS}}
 
 No conoces las rutas exactas de módulos o laboratorios individuales (/courses/:slug/:moduleSlug/:labSlug) salvo que el contexto actual te las dé explícitamente. Si te piden ir a un lab puntual que no está en tu contexto, enlaza al curso que lo contiene en vez de inventar la URL del lab.
 
@@ -73,7 +70,9 @@ Ayudas con tres cosas:
 def build_system_prompt(context: dict, relevant_faqs: list[dict] | None = None) -> str:
     page = context.get("page", "other")
     username = context.get("username", "")
-    parts = [BASE_PROMPT]
+    base = BASE_PROMPT.replace("{{CATALOGO_ACTUAL}}", get_catalog_text())
+    base = base.replace("{{RUTAS_DE_CURSOS}}", get_course_routes_text())
+    parts = [base]
 
     # Contexto de página
     if page == "lab":

@@ -106,7 +106,14 @@ VITE_GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com
 **`chatbot/.env`**
 ```env
 GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+RUTSEG_API_URL=http://localhost:3000
+CATALOG_REFRESH_SECONDS=3600
 ```
+
+> `RUTSEG_API_URL` y `CATALOG_REFRESH_SECONDS` son opcionales (con esos valores por defecto) —
+> se usan para refrescar en background el catálogo de cursos que el chatbot conoce, llamando a
+> `GET /api/courses` (público) cada `CATALOG_REFRESH_SECONDS` segundos. Ver
+> `Documentacion-Frontend.md` §13.
 
 **`frontend/.env`**
 ```env
@@ -385,7 +392,15 @@ Configuración en `backend/railway.json`.
 Variables de entorno requeridas:
 ```
 GROQ_API_KEY
+RUTSEG_API_URL=https://tu-backend.up.railway.app
 ```
+
+> **Importante:** en Railway, `RUTSEG_API_URL` **debe** apuntar al dominio público real del
+> servicio backend — el valor por defecto (`http://localhost:3000`) solo funciona en desarrollo
+> local, donde ambos procesos corren en la misma máquina. Si se deja el default en producción, el
+> chatbot nunca logra refrescar el catálogo de cursos (falla en silencio cada hora y sigue usando
+> el catálogo de respaldo desactualizado) — no rompe el chat, pero Uchi no se entera de cursos
+> nuevos. `CATALOG_REFRESH_SECONDS` es opcional (default 3600 = 1 hora).
 
 Configuración en `chatbot/railway.json`. Railway detecta Python por `requirements.txt` e inicia con `uvicorn main:app --host 0.0.0.0 --port $PORT`.
 
