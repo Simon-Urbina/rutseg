@@ -185,11 +185,16 @@ export function RankedHorizontalBarChart({
             tick={{ fill: isDark ? AXIS_COLOR_DARK : AXIS_COLOR_LIGHT, fontSize: 11 }}
             axisLine={false}
             tickLine={false}
-            width={140}
+            width={150}
+            tickFormatter={(label: string) => (label.length > 20 ? `${label.slice(0, 19)}…` : label)}
           />
           <Tooltip
             {...tooltipStyle(isDark)}
-            formatter={(value) => (valueFormatter && typeof value === 'number' ? valueFormatter(value) : value)}
+            formatter={(value, _name, item: { payload?: Record<string, string | number> }) => {
+              const formatted = valueFormatter && typeof value === 'number' ? valueFormatter(value) : value
+              const enrolledCount = item?.payload?.enrolledCount
+              return typeof enrolledCount === 'number' ? `${formatted} (${enrolledCount} inscritos)` : formatted
+            }}
           />
           <Bar dataKey={yKey} fill={color} radius={[0, 6, 6, 0]} animationDuration={700} animationEasing="ease-out" />
         </BarChart>

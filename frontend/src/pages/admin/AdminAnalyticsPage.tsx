@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTheme } from '../../context/ThemeContext'
 import { adminApi, type AdminAnalytics, type AnalyticsRange } from '../../lib/adminApi'
 import { ErrorBanner } from './AdminFormControls'
@@ -73,13 +73,18 @@ export default function AdminAnalyticsPage() {
   // 7d/1m se agrupan por día, 1y/5y se agrupan por mes.
   const bucketUnit: 'day' | 'month' = range === '1y' || range === '5y' ? 'month' : 'day'
 
+  // Evita que una respuesta de un rango anterior, que llega tarde, sobrescriba
+  // los datos de un rango más reciente si el usuario cambia de rango rápido.
+  const requestSeq = useRef(0)
+
   useEffect(() => {
+    const seq = ++requestSeq.current
     setLoading(true)
     setError('')
     adminApi.getAnalytics(range)
-      .then(setData)
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false))
+      .then(res => { if (seq === requestSeq.current) setData(res) })
+      .catch(err => { if (seq === requestSeq.current) setError(err.message) })
+      .finally(() => { if (seq === requestSeq.current) setLoading(false) })
   }, [range])
 
   return (
@@ -106,8 +111,9 @@ export default function AdminAnalyticsPage() {
           </div>
 
           <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
-            <h2 className="font-mono text-[11px] tracking-[0.18em] uppercase" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
+            <h2 className="font-mono text-[11px] tracking-[0.18em] uppercase flex items-center gap-2" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
               // actividad en el tiempo
+              {loading && <span className="normal-case tracking-normal opacity-70">· actualizando…</span>}
             </h2>
             <div className="flex gap-2">
               {RANGE_OPTIONS.map(opt => (
@@ -122,7 +128,7 @@ export default function AdminAnalyticsPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 transition-opacity" style={{ opacity: loading ? 0.6 : 1 }}>
             <TimeSeriesAreaChart isDark={isDark} title="Registros de usuarios nuevos" data={asBucketData(data.timeSeries.newUsers)} dataKey="count" color={VALIDATED_CHART_PALETTE.cian} bucketUnit={bucketUnit} />
             <TimeSeriesAreaChart isDark={isDark} title="Laboratorios completados" data={asBucketData(data.timeSeries.labsCompleted)} dataKey="count" color={VALIDATED_CHART_PALETTE.azul} bucketUnit={bucketUnit} />
             <TimeSeriesAreaChart isDark={isDark} title="Puntos otorgados" data={asBucketData(data.timeSeries.pointsAwarded)} dataKey="points" color={VALIDATED_CHART_PALETTE.oro} bucketUnit={bucketUnit} />

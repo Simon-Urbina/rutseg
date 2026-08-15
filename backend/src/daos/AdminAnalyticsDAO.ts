@@ -70,42 +70,86 @@ export class AdminAnalyticsDAO {
 
   static async getNewUsersByBucket(since: Date, bucketUnit: BucketUnit): Promise<TimeBucketRow[]> {
     return sql<TimeBucketRow[]>`
-      SELECT date_trunc(${bucketUnit}, created_at) AS bucket, COUNT(*)::int AS count
-      FROM users
-      WHERE created_at >= ${since} AND deleted_at IS NULL
-      GROUP BY bucket
-      ORDER BY bucket
+      WITH spine AS (
+        SELECT generate_series(
+          date_trunc(${bucketUnit}, ${since}::timestamptz),
+          date_trunc(${bucketUnit}, now()),
+          ('1 ' || ${bucketUnit})::interval
+        ) AS bucket
+      )
+      SELECT spine.bucket, COALESCE(t.count, 0)::int AS count
+      FROM spine
+      LEFT JOIN (
+        SELECT date_trunc(${bucketUnit}, created_at) AS bucket, COUNT(*)::int AS count
+        FROM users
+        WHERE created_at >= ${since} AND deleted_at IS NULL
+        GROUP BY bucket
+      ) t ON t.bucket = spine.bucket
+      ORDER BY spine.bucket
     `
   }
 
   static async getLabsCompletedByBucket(since: Date, bucketUnit: BucketUnit): Promise<TimeBucketRow[]> {
     return sql<TimeBucketRow[]>`
-      SELECT date_trunc(${bucketUnit}, completed_at) AS bucket, COUNT(*)::int AS count
-      FROM user_laboratory_progress
-      WHERE status = 'completed' AND completed_at >= ${since}
-      GROUP BY bucket
-      ORDER BY bucket
+      WITH spine AS (
+        SELECT generate_series(
+          date_trunc(${bucketUnit}, ${since}::timestamptz),
+          date_trunc(${bucketUnit}, now()),
+          ('1 ' || ${bucketUnit})::interval
+        ) AS bucket
+      )
+      SELECT spine.bucket, COALESCE(t.count, 0)::int AS count
+      FROM spine
+      LEFT JOIN (
+        SELECT date_trunc(${bucketUnit}, completed_at) AS bucket, COUNT(*)::int AS count
+        FROM user_laboratory_progress
+        WHERE status = 'completed' AND completed_at >= ${since}
+        GROUP BY bucket
+      ) t ON t.bucket = spine.bucket
+      ORDER BY spine.bucket
     `
   }
 
   static async getPointsAwardedByBucket(since: Date, bucketUnit: BucketUnit): Promise<PointsTimeBucketRow[]> {
     return sql<PointsTimeBucketRow[]>`
-      SELECT date_trunc(${bucketUnit}, ulp.completed_at) AS bucket, COALESCE(SUM(l.points), 0)::int AS points
-      FROM user_laboratory_progress ulp
-      JOIN laboratories l ON l.id = ulp.laboratory_id
-      WHERE ulp.status = 'completed' AND ulp.completed_at >= ${since}
-      GROUP BY bucket
-      ORDER BY bucket
+      WITH spine AS (
+        SELECT generate_series(
+          date_trunc(${bucketUnit}, ${since}::timestamptz),
+          date_trunc(${bucketUnit}, now()),
+          ('1 ' || ${bucketUnit})::interval
+        ) AS bucket
+      )
+      SELECT spine.bucket, COALESCE(t.points, 0)::int AS points
+      FROM spine
+      LEFT JOIN (
+        SELECT date_trunc(${bucketUnit}, ulp.completed_at) AS bucket, COALESCE(SUM(l.points), 0)::int AS points
+        FROM user_laboratory_progress ulp
+        JOIN laboratories l ON l.id = ulp.laboratory_id
+        WHERE ulp.status = 'completed' AND ulp.completed_at >= ${since}
+        GROUP BY bucket
+      ) t ON t.bucket = spine.bucket
+      ORDER BY spine.bucket
     `
   }
 
   static async getForumCommentsByBucket(since: Date, bucketUnit: BucketUnit): Promise<TimeBucketRow[]> {
     return sql<TimeBucketRow[]>`
-      SELECT date_trunc(${bucketUnit}, created_at) AS bucket, COUNT(*)::int AS count
-      FROM forum_comments
-      WHERE created_at >= ${since} AND deleted_at IS NULL
-      GROUP BY bucket
-      ORDER BY bucket
+      WITH spine AS (
+        SELECT generate_series(
+          date_trunc(${bucketUnit}, ${since}::timestamptz),
+          date_trunc(${bucketUnit}, now()),
+          ('1 ' || ${bucketUnit})::interval
+        ) AS bucket
+      )
+      SELECT spine.bucket, COALESCE(t.count, 0)::int AS count
+      FROM spine
+      LEFT JOIN (
+        SELECT date_trunc(${bucketUnit}, created_at) AS bucket, COUNT(*)::int AS count
+        FROM forum_comments
+        WHERE created_at >= ${since} AND deleted_at IS NULL
+        GROUP BY bucket
+      ) t ON t.bucket = spine.bucket
+      ORDER BY spine.bucket
     `
   }
 
@@ -136,15 +180,21 @@ export class AdminAnalyticsDAO {
       SELECT c.difficulty, COUNT(*)::int AS count
       FROM course_enrollments ce
       JOIN courses c ON c.id = ce.course_id
+      WHERE c.is_published
       GROUP BY c.difficulty
     `
   }
 
   static async getUsersByAuthMethod(): Promise<AuthMethodCountRow[]> {
     return sql<AuthMethodCountRow[]>`
-      SELECT COALESCE(uoa.provider, 'password') AS method, COUNT(*)::int AS count
+      WITH primary_oauth AS (
+        SELECT DISTINCT ON (user_id) user_id, provider
+        FROM user_oauth_accounts
+        ORDER BY user_id, created_at ASC
+      )
+      SELECT COALESCE(po.provider, 'password') AS method, COUNT(*)::int AS count
       FROM users u
-      LEFT JOIN user_oauth_accounts uoa ON uoa.user_id = u.id
+      LEFT JOIN primary_oauth po ON po.user_id = u.id
       WHERE u.deleted_at IS NULL
       GROUP BY method
     `
@@ -163,7 +213,7 @@ export class AdminAnalyticsDAO {
 
   static async getQuizScoreDistribution(): Promise<QuizScoreRow[]> {
     return sql<QuizScoreRow[]>`
-      SELECT score_percent::int, COUNT(*)::int AS count
+      SELECT score_percent::int AS score_percent, COUNT(*)::int AS count
       FROM submissions
       GROUP BY score_percent
       ORDER BY score_percent
