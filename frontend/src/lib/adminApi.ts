@@ -110,6 +110,75 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
+export type AnalyticsRange = '7d' | '1m' | '1y' | '5y'
+
+export interface AnalyticsKpis {
+  totalUsers: number
+  newUsersInRange: number
+  totalPointsAwarded: number
+  labsCompletedInRange: number
+}
+
+export interface AnalyticsTimeBucket {
+  bucket: string
+  count: number
+}
+
+export interface AnalyticsPointsBucket {
+  bucket: string
+  points: number
+}
+
+export interface AnalyticsCategoryCount {
+  range: string
+  count: number
+}
+
+export interface AnalyticsDifficultyCount {
+  difficulty: 'principiante' | 'intermedio' | 'avanzado'
+  count: number
+}
+
+export interface AnalyticsAuthMethodCount {
+  method: string
+  count: number
+}
+
+export interface AnalyticsCourseEnrollment {
+  courseId: string
+  title: string
+  enrollments: number
+}
+
+export interface AnalyticsQuizScore {
+  scorePercent: number
+  count: number
+}
+
+export interface AnalyticsCourseCompletion {
+  courseId: string
+  title: string
+  enrolledCount: number
+  ratePercent: number
+}
+
+export interface AdminAnalytics {
+  kpis: AnalyticsKpis
+  timeSeries: {
+    newUsers: AnalyticsTimeBucket[]
+    labsCompleted: AnalyticsTimeBucket[]
+    pointsAwarded: AnalyticsPointsBucket[]
+    forumComments: AnalyticsTimeBucket[]
+  }
+  pointsDistribution: AnalyticsCategoryCount[]
+  coursesByDifficulty: AnalyticsDifficultyCount[]
+  enrollmentsByDifficulty: AnalyticsDifficultyCount[]
+  usersByAuthMethod: AnalyticsAuthMethodCount[]
+  enrollmentsByCourse: AnalyticsCourseEnrollment[]
+  quizScoreDistribution: AnalyticsQuizScore[]
+  completionRateByCourse: AnalyticsCourseCompletion[]
+}
+
 export const adminApi = {
   // Listado — reutiliza los GET públicos, ya devuelven contenido no publicado a un admin
   listCourses: () => api.get<AdminCourse[]>('/api/courses'),
@@ -178,4 +247,7 @@ export const adminApi = {
   setUserPassword: (id: string, newPassword: string) =>
     api.post<{ message: string }>(`/api/admin/users/${id}/password`, { newPassword }),
   deleteUser: (id: string) => api.delete<{ success: boolean }>(`/api/admin/users/${id}`),
+
+  // Analíticas
+  getAnalytics: (range: AnalyticsRange) => api.get<AdminAnalytics>(`/api/admin/analytics?range=${range}`),
 }
