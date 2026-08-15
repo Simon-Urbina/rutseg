@@ -69,6 +69,10 @@ export default function AdminAnalyticsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  // Debe coincidir con la regla de `resolveRange` en AdminAnalyticsService.ts:
+  // 7d/1m se agrupan por día, 1y/5y se agrupan por mes.
+  const bucketUnit: 'day' | 'month' = range === '1y' || range === '5y' ? 'month' : 'day'
+
   useEffect(() => {
     setLoading(true)
     setError('')
@@ -119,10 +123,10 @@ export default function AdminAnalyticsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            <TimeSeriesAreaChart isDark={isDark} title="Registros de usuarios nuevos" data={asBucketData(data.timeSeries.newUsers)} dataKey="count" color={VALIDATED_CHART_PALETTE.cian} />
-            <TimeSeriesAreaChart isDark={isDark} title="Laboratorios completados" data={asBucketData(data.timeSeries.labsCompleted)} dataKey="count" color={VALIDATED_CHART_PALETTE.azul} />
-            <TimeSeriesAreaChart isDark={isDark} title="Puntos otorgados" data={asBucketData(data.timeSeries.pointsAwarded)} dataKey="points" color={VALIDATED_CHART_PALETTE.oro} />
-            <TimeSeriesAreaChart isDark={isDark} title="Comentarios del foro" data={asBucketData(data.timeSeries.forumComments)} dataKey="count" color={VALIDATED_CHART_PALETTE.morado} />
+            <TimeSeriesAreaChart isDark={isDark} title="Registros de usuarios nuevos" data={asBucketData(data.timeSeries.newUsers)} dataKey="count" color={VALIDATED_CHART_PALETTE.cian} bucketUnit={bucketUnit} />
+            <TimeSeriesAreaChart isDark={isDark} title="Laboratorios completados" data={asBucketData(data.timeSeries.labsCompleted)} dataKey="count" color={VALIDATED_CHART_PALETTE.azul} bucketUnit={bucketUnit} />
+            <TimeSeriesAreaChart isDark={isDark} title="Puntos otorgados" data={asBucketData(data.timeSeries.pointsAwarded)} dataKey="points" color={VALIDATED_CHART_PALETTE.oro} bucketUnit={bucketUnit} />
+            <TimeSeriesAreaChart isDark={isDark} title="Comentarios del foro" data={asBucketData(data.timeSeries.forumComments)} dataKey="count" color={VALIDATED_CHART_PALETTE.morado} bucketUnit={bucketUnit} />
           </div>
 
           <h2 className="font-mono text-[11px] tracking-[0.18em] uppercase mb-6" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>

@@ -85,24 +85,29 @@ function ChartCard({ isDark, title, children }: { isDark: boolean; title: string
 }
 
 export function TimeSeriesAreaChart({
-  isDark, title, data, dataKey, color,
+  isDark, title, data, dataKey, color, bucketUnit,
 }: {
   isDark: boolean
   title: string
   data: { bucket: string; [key: string]: number | string }[]
   dataKey: string
   color: string
+  bucketUnit: 'day' | 'month'
 }) {
+  const dateFormatOptions: Intl.DateTimeFormatOptions = bucketUnit === 'month'
+    ? { month: 'short', year: 'numeric', timeZone: 'UTC' }
+    : { day: '2-digit', month: 'short', timeZone: 'UTC' }
   const formatted = data.map(d => ({
     ...d,
-    bucket: new Date(d.bucket as string).toLocaleDateString('es-CO', { day: '2-digit', month: 'short' }),
+    bucket: new Date(d.bucket as string).toLocaleDateString('es-CO', dateFormatOptions),
   }))
+  const gradientId = `gradient-${dataKey}-${color.replace('#', '')}`
   return (
     <ChartCard isDark={isDark} title={title}>
       <ResponsiveContainer width="100%" height={220}>
         <AreaChart data={formatted} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
           <defs>
-            <linearGradient id={`gradient-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={color} stopOpacity={0.4} />
               <stop offset="95%" stopColor={color} stopOpacity={0} />
             </linearGradient>
@@ -115,7 +120,7 @@ export function TimeSeriesAreaChart({
             type="monotone"
             dataKey={dataKey}
             stroke={color}
-            fill={`url(#gradient-${dataKey})`}
+            fill={`url(#${gradientId})`}
             strokeWidth={2}
             animationDuration={700}
             animationEasing="ease-out"
