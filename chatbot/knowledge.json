@@ -190,5 +190,37 @@
   {
     "q": "¿Qué es el foro de RutSeg y cómo participo?",
     "a": "En /forum los usuarios pueden discutir temas de la comunidad. Ver el foro no requiere sesión, pero para publicar un comentario o responder necesitas estar registrado. Cada comentario tiene un máximo de 2000 caracteres, y las respuestas van a un solo nivel (no hay respuestas anidadas dentro de respuestas)."
+  },
+  {
+    "q": "¿Cómo obtengo o descargo el certificado de un curso?",
+    "a": "Cuando completas el 100% de los laboratorios publicados de un curso, aparece un botón 'Descargar certificado' en la página de ese curso (justo debajo de tu barra de progreso). Al hacer clic descargas un PDF con el logo y los colores de RutSeg, tu nombre de usuario, el curso completado y la fecha."
+  },
+  {
+    "q": "¿Qué acredita el certificado de RutSeg? ¿Es una certificación profesional?",
+    "a": "No. El certificado acredita que completaste el contenido del curso (todos sus laboratorios), no una evaluación de competencia ni una certificación profesional — el propio PDF lo aclara con un texto al pie. Es una constancia de finalización, similar a un certificado de curso online."
+  },
+  {
+    "q": "¿Cómo se verifica si un certificado de RutSeg es válido?",
+    "a": "Cada certificado incluye un código de verificación único y un enlace en la parte inferior del PDF (rutseg.vercel.app/verify/usuario/curso/código). Cualquiera puede abrir ese enlace, sin necesidad de iniciar sesión, para confirmar que el certificado es auténtico y sigue siendo válido."
+  },
+  {
+    "q": "¿Por qué mi certificado muestra mi nombre de usuario y no mi nombre completo?",
+    "a": "El certificado toma el username tal cual está en tu perfil, porque RutSeg no tiene un campo separado de 'nombre completo'. Si quieres un certificado con apariencia más profesional, edita tu perfil (clic en tu avatar en el header) y cambia tu username a tu nombre real antes de descargarlo."
+  },
+  {
+    "q": "¿Puedo descargar el certificado de un curso que aún no he terminado?",
+    "a": "No. El botón de descarga solo aparece cuando has completado el 100% de los laboratorios publicados del curso. Si intentas acceder al endpoint sin haber terminado, la plataforma lo rechaza."
+  },
+  {
+    "q": "¿Puedo iniciar sesión o registrarme con Google?",
+    "a": "Sí. En /login y /register hay un botón 'Continuar con Google'. Sirve tanto para crear una cuenta nueva la primera vez como para iniciar sesión después — no necesitas hacer un registro por separado."
+  },
+  {
+    "q": "¿Cómo busco o filtro cursos en el Dashboard?",
+    "a": "En el Dashboard hay una barra de búsqueda por nombre o temática del curso, y un botón de filtros junto a ella con tres categorías: dificultad (principiante, intermedio, avanzado), cantidad de laboratorios (1-3, 4-6, 7+) y rango de puntos totales del curso (hasta 300, 300-700, más de 700)."
+  },
+  {
+    "q": "¿Hay algún laboratorio de prueba sin necesidad de registrarme?",
+    "a": "Sí. En /demo hay un mini-laboratorio público sobre conceptos básicos de ciberseguridad (phishing, contraseñas seguras, HTTPS, verificación en dos pasos) que no requiere cuenta ni inicio de sesión. Es una buena forma de probar el estilo de RutSeg antes de registrarte."
   }
 ]
