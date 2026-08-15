@@ -137,6 +137,22 @@ cd frontend
 bun dev          # → http://localhost:5173
 ```
 
+**Chatbot (opcional, solo si vas a trabajar en Uchi):** usa un entorno virtual propio de Python,
+separado de cualquier otro proyecto en la máquina — evita choques de versiones entre paquetes de
+distintos proyectos (`fastapi`/`starlette` son especialmente sensibles a esto).
+
+```bash
+cd chatbot
+python -m venv .venv
+
+# Activar el entorno
+.venv\Scripts\activate      # Windows
+source .venv/bin/activate   # macOS/Linux
+
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8002   # → http://localhost:8002
+```
+
 ---
 
 ## Paquetes instalados
