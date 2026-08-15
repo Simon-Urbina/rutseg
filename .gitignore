@@ -33,6 +33,7 @@ backend/.env.*
 
 # Brainstorming / design docs (plugin output)
 docs/superpowers/
+.superpowers/
 
 # Editor directories and files
 .vscode/*
