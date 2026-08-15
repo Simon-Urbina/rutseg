@@ -36,6 +36,7 @@ El backend de RutSeg es una **API REST** (Interfaz de Programación basada en HT
 - Otorgar puntos automáticamente al completar un laboratorio.
 - Exponer rutas exclusivas para administradores que permiten crear y editar contenido.
 - Gestionar el foro comunitario: comentarios raíz y respuestas de un solo nivel.
+- Generar y verificar certificados de finalización de curso en PDF.
 
 > **Iniciativa académica:** RutSeg nació como proyecto del **Semillero de Investigación en Ciberseguridad y Desarrollo de Software** de la Universidad Santo Tomás — Tunja, bajo la iniciativa y dirección del docente **Harrizon Alexander Soler Galindo**.
 
@@ -78,21 +79,24 @@ backend/
 │   │   ├── ranking.ts           ← Ruta de tabla de posiciones
 │   │   ├── stats.ts             ← Ruta de estadísticas públicas
 │   │   ├── admin.ts             ← Rutas exclusivas del administrador
-│   │   └── forum.ts             ← Rutas del foro comunitario
+│   │   ├── forum.ts             ← Rutas del foro comunitario
+│   │   └── certificates.ts      ← Ruta pública de verificación de certificados
 │   ├── controllers/
 │   │   ├── AuthController.ts    ← Extrae datos del request y llama al Service correcto
 │   │   ├── UserController.ts
-│   │   ├── CourseController.ts
+│   │   ├── CourseController.ts  ← Incluye getCertificate() (descarga del PDF)
 │   │   ├── ActivityController.ts
 │   │   ├── SubmissionController.ts
-│   │   └── ForumController.ts   ← Controlador del foro
+│   │   ├── ForumController.ts   ← Controlador del foro
+│   │   └── CertificateController.ts ← Verificación pública de certificados
 │   ├── services/
 │   │   ├── AuthService.ts       ← Contiene la lógica de negocio de autenticación
 │   │   ├── UserService.ts
 │   │   ├── CourseService.ts
 │   │   ├── ActivityService.ts
 │   │   ├── SubmissionService.ts
-│   │   └── ForumService.ts      ← Lógica del foro (paginación, validaciones, soft-delete)
+│   │   ├── ForumService.ts      ← Lógica del foro (paginación, validaciones, soft-delete)
+│   │   └── CertificateService.ts ← Completitud, generación de PDF y verificación (ver §9.5)
 │   ├── daos/
 │   │   ├── UserDAO.ts           ← Consultas SQL relacionadas con usuarios
 │   │   ├── CourseDAO.ts
@@ -122,10 +126,14 @@ backend/
 │   │   ├── UserLaboratoryProgress.ts
 │   │   ├── ForumComment.ts      ← Modelo del foro: validate(), isDeleted, toPublic()
 │   │   └── index.ts             ← Re-exporta todos los modelos
-│   └── utils/
-│       ├── errors.ts            ← Jerarquía de errores de dominio (AppError y subclases, sin acoplamiento HTTP)
-│       ├── response.ts          ← Generador de respuestas para actividades
-│       └── email.ts             ← Envío de correos vía Gmail REST API (verificación y reset)
+│   ├── utils/
+│   │   ├── errors.ts            ← Jerarquía de errores de dominio (AppError y subclases, sin acoplamiento HTTP)
+│   │   ├── response.ts          ← Generador de respuestas para actividades
+│   │   ├── email.ts             ← Envío de correos vía Gmail REST API (verificación y reset)
+│   │   └── certificate.ts       ← generateCertificateCode() — HMAC determinista (ver §9.1 y §9.5)
+│   ├── assets/
+│   │   └── logo.svg             ← Copia local del logo, usada por CertificateService al generar el PDF
+│   └── svg-to-pdfkit.d.ts       ← Declaración de tipos ambiente (svg-to-pdfkit no publica sus propios .d.ts)
 ├── database/
 │   ├── schema.sql               ← Script SQL que crea todas las tablas
 │   └── seed.sql                 ← Datos de ejemplo para pruebas
@@ -1052,6 +1060,11 @@ certificado en PDF (`GET /api/courses/:slug/certificate`) generado con `pdfkit` 
 
 **Decisión de producto:** el certificado acredita **finalización de contenido**, no competencia
 profesional — el PDF incluye un disclaimer explícito con ese texto.
+
+El PDF muestra el `username` (tal cual está en el perfil) y el email del usuario debajo, seguidos del
+curso completado. Como no existe un campo de "nombre completo" en `users` (ver §5.2), el frontend
+sugiere junto al botón de descarga que el usuario use su nombre real como username antes de generar
+el certificado (`CoursePage.tsx`, ver `Documentacion-Frontend.md` §4).
 
 ```
 CertificateService.getCompletionStatus(userId, courseSlug):

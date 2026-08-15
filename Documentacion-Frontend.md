@@ -35,6 +35,7 @@ El frontend de Cybersec Labs es una **SPA** (*Single Page Application*) construi
 - Adaptarse al tema claro u oscuro según la preferencia guardada en `localStorage`.
 - Mostrar un asistente de IA ("Uchi") disponible en todas las páginas autenticadas.
 - Proveer un foro comunitario donde los usuarios autenticados pueden publicar comentarios y respuestas.
+- Permitir descargar el certificado de finalización de un curso y verificarlo públicamente.
 
 > **Iniciativa académica:** RutSeg nació como proyecto del **Semillero de Investigación en Ciberseguridad y Desarrollo de Software** de la Universidad Santo Tomás — Tunja, bajo la iniciativa y dirección del docente **Harrizon Alexander Soler Galindo**.
 
@@ -505,6 +506,8 @@ try {
 ```
 
 > **Nota sobre imágenes (avatar):** La subida de foto de perfil usa `fetch` directamente (no `api.ts`) porque se envía como `FormData` con `Content-Type: multipart/form-data`, no como JSON.
+
+> **Nota sobre el certificado (PDF):** `CoursePage.handleDownloadCertificate()` también usa `fetch` directamente en vez de `api.ts`, porque la respuesta de `GET /api/courses/:slug/certificate` es un blob binario, no JSON — `api.ts` siempre asume `res.json()`. El PDF se convierte en un `Blob`, se crea una URL temporal con `URL.createObjectURL()` y se dispara la descarga con un `<a download>` sintético.
 
 > **Nota sobre el chatbot:** La comunicación con el microservicio Python de Uchi **no** pasa por `api.ts`. `ChatWidget` llama directamente a `VITE_CHATBOT_URL/chat/stream` usando `fetch` con streaming SSE. Ver [Sección 13](#13-microservicio-chatbot-uchi).
 

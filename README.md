@@ -1,6 +1,6 @@
 # RutSeg — Laboratorios de Ciberseguridad
 
-Plataforma de aprendizaje en ciberseguridad donde los usuarios se inscriben en cursos, trabajan laboratorios prácticos, completan actividades interactivas y responden quizzes. Los usuarios acumulan puntos al completar laboratorios. Incluye un panel de administración para gestionar cursos/módulos/labs/preguntas y usuarios.
+Plataforma de aprendizaje en ciberseguridad donde los usuarios se inscriben en cursos, trabajan laboratorios prácticos, completan actividades interactivas y responden quizzes. Los usuarios acumulan puntos al completar laboratorios y pueden descargar un certificado en PDF al completar un curso al 100%. Incluye un panel de administración para gestionar cursos/módulos/labs/preguntas y usuarios.
 
 ## Stack tecnológico
 
@@ -35,7 +35,8 @@ cybersec-labs/
 │       ├── services/            # Lógica de negocio
 │       ├── controllers/         # Manejo request/response
 │       ├── routes/              # Definición de rutas Hono
-│       └── utils/               # errors.ts, response.ts, email.ts
+│       ├── assets/logo.svg      # Copia local del logo, usada por CertificateService (PDF)
+│       └── utils/               # errors.ts, response.ts, email.ts, certificate.ts
 ├── chatbot/
 │   ├── main.py                  # FastAPI — endpoint /chat/stream (SSE)
 │   ├── config.py                # Cliente Groq (openai-compatible)
@@ -51,7 +52,8 @@ cybersec-labs/
         ├── components/          # Header, Footer, CourseCard, Ranking, ChatWidget, modals…
         └── pages/               # Landing, Login, Register, ForgotPassword, ResetPassword,
                                  # Dashboard, CoursePage, LabPage, PublicProfilePage,
-                                 # AboutPage, ForumPage, PrivacyPolicyPage, TermsOfUsePage, NotFoundPage
+                                 # AboutPage, ForumPage, VerifyCertificatePage,
+                                 # PrivacyPolicyPage, TermsOfUsePage, NotFoundPage
             └── admin/           # Panel de administración (solo rol admin): cursos/módulos/labs/
                                  # preguntas y gestión de usuarios — ver Documentacion-Frontend.md §5
 ```
@@ -141,9 +143,12 @@ bun dev          # → http://localhost:5173
 | `jsonwebtoken` | ^9.0.3 | Generación y verificación de JWT (sesión propia de RutSeg) |
 | `jose` | ^6.2.8 | Verifica la firma de los `id_token` de Google en el login social |
 | `drizzle-orm` | ^0.45.1 | ORM (instalado, las queries usan `postgres` directamente) |
+| `pdfkit` | ^0.19.1 | Genera el PDF del certificado de finalización |
+| `svg-to-pdfkit` | ^0.1.8 | Dibuja el logo (SVG) vectorialmente dentro del PDF del certificado |
 | `@types/bun` | ^1.3.10 | Tipos de Bun |
 | `@types/jsonwebtoken` | ^9.0.9 | Tipos de jsonwebtoken |
 | `@types/node` | ^24.10.1 | Tipos de Node |
+| `@types/pdfkit` | ^0.17.6 | Tipos de pdfkit |
 | `typescript` | ~5.9.3 | Compilador TypeScript |
 
 > El hashing de contraseñas usa `Bun.password.hash` / `Bun.password.verify` (API nativa de Bun, sin paquete adicional).
@@ -232,6 +237,7 @@ Base URL: `http://localhost:3000`
 | GET | `/api/courses/:slug/modules` | — | Módulos del curso |
 | GET | `/api/courses/:slug/modules/:moduleSlug/labs` | — | Laboratorios del módulo |
 | GET | `/api/courses/:slug/modules/:moduleSlug/labs/:labSlug` | Bearer | Detalle de un laboratorio |
+| GET | `/api/courses/:slug/certificate` | Bearer | Descargar certificado de finalización en PDF (requiere 100% del curso completado) |
 
 ### Actividades y envíos
 
@@ -255,6 +261,12 @@ Base URL: `http://localhost:3000`
 | POST | `/api/forum` | Bearer | Crear comentario raíz |
 | POST | `/api/forum/:id/replies` | Bearer | Responder a un comentario |
 | DELETE | `/api/forum/:id` | Bearer | Eliminar comentario propio (o cualquiera si `admin`) |
+
+### Certificados (`/api/certificates`)
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| GET | `/api/certificates/verify?username=&courseSlug=&code=` | — | Verificación pública de un certificado (sin sesión) |
 
 ### Administración (`/api/admin`) — solo rol `admin`
 
