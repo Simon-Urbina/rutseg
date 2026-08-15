@@ -458,7 +458,7 @@ Todo vive en `docs/Documentacion/`:
 
 Según la última auditoría (`Documentacion-Seguridad.md`, actualizada 2026-08-15):
 
-- ✅ **Rate limiting del backend** — implementado (`hono-rate-limiter`, 300 peticiones/15min en toda la API, 10/15min en `/api/auth/*`). Pendiente extenderlo al chatbot (`/chat/stream`) y agregar un límite de tamaño de body.
+- ✅ **Rate limiting** — implementado en backend (`hono-rate-limiter`) y chatbot (`slowapi`). En `/api/auth/*` el límite es **por cuenta** (IP + email), no solo por IP, para que un grupo grande de personas en la misma red (ej. una demo en vivo) no se bloquee entre sí, mientras cada cuenta sigue protegida contra fuerza bruta. Pendiente: límite de tamaño de body.
 - 🔴 **Row Level Security (RLS) de Supabase no verificable desde el código** — requiere confirmarse manualmente en el panel de Supabase, no solo en `schema.sql`.
 - 🟡 **Sin registro de intentos de ataque** (auth fallida repetida, 403 en rutas admin, etc.) — no hay logging dedicado a detectar abuso.
 

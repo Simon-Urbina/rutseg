@@ -1,8 +1,11 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 import asyncio
 import json
 import logging
@@ -17,6 +20,24 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def get_client_ip(request: Request) -> str:
+    # Railway proxea este servicio igual que el backend — la IP del socket
+    # crudo (request.client.host, lo que usa get_remote_address por defecto)
+    # sería siempre la del proxy de Railway, no la del cliente real.
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return get_remote_address(request)
+
+
+# Límite generoso a propósito: pensado para que una demo en vivo frente a un
+# grupo grande (ej. una charla/congreso) donde muchas personas comparten la
+# misma red — y por lo tanto la misma IP pública tras el NAT del router — no
+# se vea bloqueada entre sí. Sigue acotando un abuso automatizado real (un
+# script pegándole al endpoint sin parar agotaría 300 peticiones en minutos).
+limiter = Limiter(key_func=get_client_ip)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # El catálogo de cursos se refresca en background (ver catalog.py) para que Uchi
@@ -29,6 +50,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Uchi – RutSeg AI Assistant", lifespan=lifespan)
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -72,7 +96,8 @@ async def stream_response(messages: list[dict]):
 
 
 @app.post("/chat/stream")
-async def chat_stream(req: ChatRequest):
+@limiter.limit("300/10minutes")
+async def chat_stream(request: Request, req: ChatRequest):
     history = req.messages[-MAX_HISTORY:]
 
     # Recuperar FAQs relevantes usando la última pregunta del usuario

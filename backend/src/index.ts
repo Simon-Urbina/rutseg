@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { apiRateLimiter, authRateLimiter } from './middleware/rateLimit.js'
+import { apiRateLimiter, authIpLimiter, authAccountLimiter } from './middleware/rateLimit.js'
 import { AppError, NotFoundError, UnauthorizedError, ForbiddenError, ConflictError, ValidationError } from './utils/errors.js'
 import authRoutes from './routes/auth.js'
 import userRoutes from './routes/users.js'
@@ -33,7 +33,8 @@ app.use(
 )
 
 app.use('/api/*', apiRateLimiter)
-app.use('/api/auth/*', authRateLimiter)
+app.use('/api/auth/*', authIpLimiter)
+app.use('/api/auth/*', authAccountLimiter)
 
 app.route('/api/auth', authRoutes)
 app.route('/api/users', userRoutes)

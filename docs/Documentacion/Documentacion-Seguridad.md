@@ -34,7 +34,7 @@
 
 | # | Pregunta | Veredicto | Severidad |
 |---|---|---|---|
-| 1 | Rate limiting | Implementado en backend (300/15min general, 10/15min en `/api/auth/*`); pendiente en chatbot y límite de tamaño de body | 🟡 MEDIO |
+| 1 | Rate limiting | Implementado en backend (por cuenta en auth) y chatbot; pendiente límite de tamaño de body | 🟢 OK (menor) |
 | 2 | Llaves fuera del código | Correcto, con una excepción | 🟡 MEDIO |
 | 3 | Reglas de acceso por rol | Correcto | 🟢 OK |
 | 4 | Puntos protegidos | Correcto | 🟢 OK |
@@ -46,50 +46,84 @@
 | 10 | Chatbot sin acceso a la BD | Correcto | 🟢 OK |
 
 **Lectura rápida:** la arquitectura del backend (capas, validación, SQL parametrizado, RBAC) está
-sólida. El rate limiting del backend ya está resuelto (2026-08-15, §2) — queda por extenderlo al
-chatbot. El hueco real que sigue abierto es **la imposibilidad de confirmar desde el código que Row
-Level Security (RLS) está activo en Supabase**, que requiere una acción manual en el panel de
-Supabase, no un cambio de código. El resto de preguntas ya están cubiertas por decisiones de diseño
+sólida. El rate limiting ya está resuelto en backend y chatbot (2026-08-15, §2), con un diseño
+pensado explícitamente para no bloquear a un grupo grande de personas usando la misma red (ej. una
+demo en vivo) mientras sigue protegiendo cada cuenta contra fuerza bruta. El hueco real que sigue
+abierto es **la imposibilidad de confirmar desde el código que Row Level Security (RLS) está activo
+en Supabase**, que requiere una acción manual en el panel de Supabase, no un cambio de código. El
+resto de preguntas ya están cubiertas por decisiones de diseño
 existentes.
 
 ---
 
 ## 2. Límite de Peticiones (Rate Limiting)
 
-**Veredicto: implementado en el backend (2026-08-15) — pendiente en el chatbot y el límite de
-tamaño de body.**
+**Veredicto: implementado en backend y chatbot (2026-08-15) — pendiente solo el límite de tamaño
+de body.**
 
-`backend/src/middleware/rateLimit.ts` agrega `hono-rate-limiter` con dos niveles, montados en
-`backend/src/index.ts` antes de registrar las rutas:
+### 2.1 Backend (`backend/src/middleware/rateLimit.ts`, `hono-rate-limiter`)
 
-| Middleware | Alcance | Límite | Ventana |
-|---|---|---|---|
-| `apiRateLimiter` | `/api/*` (toda la API) | 300 peticiones | 15 minutos |
-| `authRateLimiter` | `/api/auth/*` (login, registro, verificación, reset de contraseña, Google) | 10 peticiones | 15 minutos |
+La primera versión (misma fecha, mismo día) usaba un único límite por IP en `/api/auth/*` — se
+corrigió horas después al notar que **muchas personas en la misma red comparten una sola IP
+pública tras el NAT del router** (el caso real que motivó el cambio: presentar la plataforma en
+vivo frente a un grupo grande, donde todos los asistentes están en el mismo wifi). Un límite por
+IP demasiado estricto ahí bloquearía a los asistentes entre sí, no a un atacante. Diseño final, tres
+middlewares montados en `backend/src/index.ts` antes de las rutas:
 
-Ambos identifican al cliente por IP (`X-Forwarded-For`, que Railway sí establece correctamente
+| Middleware | Alcance | Clave | Límite | Ventana |
+|---|---|---|---|---|
+| `apiRateLimiter` | `/api/*` (toda la API) | IP | 2000 peticiones | 15 minutos |
+| `authIpLimiter` | `/api/auth/*` | IP | 600 peticiones | 15 minutos |
+| `authAccountLimiter` | `/api/auth/*` **con `email` en el body** (login, registro, verificación, reenvío, olvidé-mi-contraseña) | IP + email | 20 peticiones | 15 minutos |
+
+`authAccountLimiter` es el que da la protección real contra fuerza bruta — al incluir el email en
+la clave, el límite es **por cuenta**, no por IP: 400 personas registrándose desde la misma IP de
+un congreso consumen 400 contadores independientes (uno por email), mientras que 20+ intentos
+seguidos contra **la misma** cuenta sí se bloquean, sin importar cuántas otras personas compartan
+esa IP. Las rutas sin `email` en el body (`/api/auth/google`, `/api/auth/logout`,
+`/api/auth/reset-password`, que valida un token largo en vez de un email) se saltan
+`authAccountLimiter` por completo (`skip`) y solo quedan cubiertas por el techo genérico de
+`authIpLimiter`.
+
+Todos identifican al cliente por IP vía `X-Forwarded-For` (Railway sí lo establece correctamente
 como proxy delante del backend — verificado con los headers `x-railway-edge` en producción; cae a
 la IP del socket crudo solo en desarrollo local, donde no hay proxy). Al superar el límite, la API
 responde `429 Too Many Requests` con headers estándar `RateLimit-*`/`Retry-After`, y el header CORS
 se preserva correctamente en esa respuesta (Hono conserva los headers seteados antes de `next()`
-incluso en respuestas de error). Verificado en desarrollo: 10 intentos de login pasan, el 11.º en
-adelante recibe `429` de inmediato.
+incluso en respuestas de error).
+
+**Verificado en desarrollo** (dos escenarios, misma IP simulada vía `X-Forwarded-For`):
+- 15 cuentas **distintas** haciendo login con la misma IP → las 15 pasan (401 por password
+  incorrecta, no 429) — el escenario de "muchas personas, una sola IP" no se bloquea entre sí.
+- 25 intentos contra **la misma** cuenta, misma IP → los primeros 20 pasan (401), el 21.º en
+  adelante recibe `429` — la protección contra fuerza bruta real sigue intacta.
+- 25 peticiones a `/api/auth/google` (sin `email` en el body) desde la misma IP → ninguna golpea
+  el límite de cuenta (confirma que `skip` funciona), solo el techo de 600 de `authIpLimiter`
+  aplicaría en un abuso real.
 
 **Limitación conocida:** el store es en memoria (`MemoryStore`, el que trae `hono-rate-limiter` por
 defecto) — los contadores se reinician si el proceso de Railway se reinicia (deploy, crash). Es el
 mismo tipo de limitación que ya existe en `pendingRegistrations`/`resetTokens` (ver
 `Documentacion-Errores-Historicos.md` §2.2). Aceptable a esta escala (una sola instancia); si el
-backend llegara a correr en más de una instancia, los límites por IP se dividirían entre instancias
-en vez de compartirse — en ese caso hay que migrar a `RedisStore` (ya soportado por la misma
-librería, ver `node_modules/hono-rate-limiter`).
+backend llegara a correr en más de una instancia, los límites se dividirían entre instancias en vez
+de compartirse — en ese caso hay que migrar a `RedisStore` (ya soportado por la misma librería, ver
+`node_modules/hono-rate-limiter`).
 
-**Pendiente (no cubierto por este cambio):**
-1. `chatbot/main.py` sigue sin límite de peticiones en `POST /chat/stream` (`allow_origins=["*"]`,
-   ver §11) — cualquiera puede agotar la cuota de la API key de Groq llamando el endpoint
-   directamente. Recomendado: `slowapi` (el equivalente de `express-rate-limit` para FastAPI).
-2. No hay límite de tamaño de body configurado en Hono ni en FastAPI (ej. 1MB para JSON) — ya
-   existe el límite de 5MB específico para avatares en `User.validateProfileImage`, pero no un
-   límite genérico de body a nivel de framework.
+### 2.2 Chatbot (`chatbot/main.py`, `slowapi`)
+
+`POST /chat/stream` ahora usa `@limiter.limit("300/10minutes")` por IP (mismo criterio de
+`X-Forwarded-For` que el backend, vía un `get_client_ip` propio — `slowapi.util.get_remote_address`
+por defecto usa la IP del socket crudo, que en Railway sería la del proxy). Sin concepto de "cuenta"
+en este endpoint (no requiere autenticación), así que el límite es solo por IP, pero deliberadamente
+generoso por la misma razón que el backend: soportar una demo en vivo frente a un grupo grande sin
+bloquearlos, mientras sigue acotando un script que le pegue al endpoint sin parar (agotaría 300
+peticiones en minutos, protegiendo la cuota de la API key de Groq). Verificado con un servidor de
+prueba aislado (mismo patrón, límite bajo para probar rápido): las peticiones dentro del límite
+pasan, las que lo exceden reciben `429`, y el header CORS se preserva en esa respuesta.
+
+**Pendiente (no cubierto por este cambio):** no hay límite de tamaño de body configurado en Hono ni
+en FastAPI (ej. 1MB para JSON) — ya existe el límite de 5MB específico para avatares en
+`User.validateProfileImage`, pero no un límite genérico de body a nivel de framework.
 
 ---
 
@@ -418,11 +452,12 @@ app.add_middleware(
 
 `allow_origins=["*"]` permite que **cualquier sitio web**, no solo `rutseg.vercel.app`, llame a
 `POST /chat/stream` desde el navegador de un visitante. No es un riesgo para la base de datos (§11
-arriba), pero sí es la puerta de entrada para el problema de rate limiting de §2: alguien podría
-incrustar una llamada a este endpoint en una página completamente ajena a RutSeg y usar la cuota de
-Groq pagada por el proyecto. Comparar con el backend Hono (`backend/src/index.ts:20-31`), que sí
-restringe `origin` a una lista blanca (`FRONTEND_URL` + subdominios `*.vercel.app` de RutSeg) —
-correcto ahí, pendiente en el chatbot.
+arriba); el rate limiting de §2.2 ya acota cuánto puede consumirse desde una sola IP, pero no
+impide que un tercero incruste una llamada a este endpoint en una página ajena a RutSeg y consuma
+la cuota de Groq desde su propia IP (menos grave que sin límite, pero sigue siendo tráfico ajeno
+gastando presupuesto del proyecto). Comparar con el backend Hono (`backend/src/index.ts:20-31`),
+que sí restringe `origin` a una lista blanca (`FRONTEND_URL` + subdominios `*.vercel.app` de
+RutSeg) — correcto ahí, pendiente en el chatbot.
 
 **Recomendación:** restringir `allow_origins` en el chatbot a los mismos orígenes que ya usa el
 backend (`FRONTEND_URL` y los previews de Vercel de RutSeg), en vez de `"*"`.
@@ -532,12 +567,12 @@ Ordenado de mayor a menor impacto/urgencia:
 
 - [ ] **[ALTO]** Verificar en el dashboard de Supabase que RLS está `ENABLED` en las 13 tablas de
       `schema.sql`, o desactivar el Data API si no se usa (§7).
-- [x] **[ALTO]** ~~Agregar rate limiting al backend, con límites más estrictos en `/api/auth/*`~~ —
-      hecho 2026-08-15, `backend/src/middleware/rateLimit.ts` (§2).
+- [x] **[ALTO]** ~~Agregar rate limiting al backend, con límite por cuenta (no solo por IP) en
+      `/api/auth/*`~~ — hecho 2026-08-15, `backend/src/middleware/rateLimit.ts` (§2.1).
 - [ ] **[MEDIO]** Restringir `allow_origins` del chatbot a los dominios reales de RutSeg, no `"*"`
       (§11.1).
-- [ ] **[MEDIO]** Agregar rate limiting básico al chatbot (`/chat/stream`) para no depender solo del
-      CORS restrictivo (§2).
+- [x] **[MEDIO]** ~~Agregar rate limiting básico al chatbot (`/chat/stream`)~~ — hecho 2026-08-15,
+      `chatbot/main.py` con `slowapi` (§2.2).
 - [ ] **[MEDIO]** Hacer que `generateActivityResponse()` y `generateCertificateCode()` lancen error
       si `JWT_SECRET` falta, en vez de usar `'fallback-secret'` (§3.2).
 - [ ] **[MEDIO]** Agregar logging de intentos de login fallidos y de `403` en rutas admin (§10).
