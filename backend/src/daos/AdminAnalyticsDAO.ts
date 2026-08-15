@@ -190,9 +190,14 @@ export class AdminAnalyticsDAO {
       WITH primary_oauth AS (
         SELECT DISTINCT ON (user_id) user_id, provider
         FROM user_oauth_accounts
-        ORDER BY user_id, created_at ASC
+        ORDER BY user_id, created_at ASC, provider ASC
       )
-      SELECT COALESCE(po.provider, 'password') AS method, COUNT(*)::int AS count
+      SELECT
+        CASE
+          WHEN u.password_hash IS NOT NULL THEN 'password'
+          ELSE COALESCE(po.provider, 'password')
+        END AS method,
+        COUNT(*)::int AS count
       FROM users u
       LEFT JOIN primary_oauth po ON po.user_id = u.id
       WHERE u.deleted_at IS NULL
@@ -212,11 +217,14 @@ export class AdminAnalyticsDAO {
   }
 
   static async getQuizScoreDistribution(): Promise<QuizScoreRow[]> {
+    // GROUP BY 1 agrupa por la columna de SALIDA (score_percent::int), no por
+    // la NUMERIC(5,2) de entrada — GROUP BY score_percent (por nombre) se
+    // resolvería contra la columna de entrada, no contra el cast.
     return sql<QuizScoreRow[]>`
       SELECT score_percent::int AS score_percent, COUNT(*)::int AS count
       FROM submissions
-      GROUP BY score_percent
-      ORDER BY score_percent
+      GROUP BY 1
+      ORDER BY 1
     `
   }
 

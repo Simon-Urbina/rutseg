@@ -186,7 +186,10 @@ export function RankedHorizontalBarChart({
             axisLine={false}
             tickLine={false}
             width={150}
-            tickFormatter={(label: string) => (label.length > 20 ? `${label.slice(0, 19)}…` : label)}
+            tickFormatter={(label: unknown) => {
+              const text = String(label)
+              return text.length > 20 ? `${text.slice(0, 20)}…` : text
+            }}
           />
           <Tooltip
             {...tooltipStyle(isDark)}
