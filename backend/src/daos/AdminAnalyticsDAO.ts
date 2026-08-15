@@ -183,6 +183,7 @@ export class AdminAnalyticsDAO {
         FROM user_laboratory_progress ulp
         JOIN laboratories l ON l.id = ulp.laboratory_id AND l.is_published
         JOIN course_modules cm ON cm.id = l.module_id
+        JOIN course_enrollments ce ON ce.course_id = cm.course_id AND ce.user_id = ulp.user_id
         WHERE ulp.status = 'completed'
         GROUP BY cm.course_id, ulp.user_id
       ),
