@@ -7,6 +7,7 @@ import { LaboratoryQuestionDAO } from '../daos/LaboratoryQuestionDAO.js'
 import { LaboratoryQuestionOptionDAO } from '../daos/LaboratoryQuestionOptionDAO.js'
 import { QuestionActivityDAO } from '../daos/QuestionActivityDAO.js'
 import { UserDAO } from '../daos/UserDAO.js'
+import { AdminAnalyticsController } from '../controllers/AdminAnalyticsController.js'
 import {
   Course,
   CourseModule,
@@ -393,5 +394,7 @@ router.delete('/users/:id', async (c) => {
   await UserDAO.softDelete(id)
   return c.json({ success: true })
 })
+
+router.get('/analytics', AdminAnalyticsController.get)
 
 export default router
