@@ -25,6 +25,13 @@ export class UserController {
     return c.json({ message: 'Contraseña actualizada.' })
   }
 
+  static async linkGoogle(c: Context) {
+    const user = c.get('user') as TokenPayload
+    const { idToken } = await c.req.json()
+    if (!idToken) return c.json({ error: 'idToken es requerido.' }, 400)
+    return c.json(await UserService.linkGoogleAccount(user.id, idToken))
+  }
+
   static async updateAvatar(c: Context) {
     const user = c.get('user') as TokenPayload
     const body = await c.req.parseBody()

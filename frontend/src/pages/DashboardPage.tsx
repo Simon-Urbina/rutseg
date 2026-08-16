@@ -10,6 +10,9 @@ import EnrollConfirmModal from '../components/EnrollConfirmModal'
 import Footer from '../components/Footer'
 import { CourseFilterPanel } from '../components/CourseFilters'
 import { emptyCourseFilters, courseMatchesFilters, hasActiveCourseFilters, type CourseFilterState } from '../lib/courseFilters'
+import { ContinuousPagination } from '../components/ContinuousPagination'
+
+const COURSES_PAGE_SIZE = 6
 
 interface FullProfile {
   id: string
@@ -22,6 +25,8 @@ interface FullProfile {
   completedLabs: number
   role: 'user' | 'admin'
   createdAt: string
+  hasPassword: boolean
+  linkedProviders: string[]
 }
 
 export default function DashboardPage() {
@@ -42,6 +47,7 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<CourseFilterState>(emptyCourseFilters())
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [availablePage, setAvailablePage] = useState(1)
 
   useEffect(() => {
     setLoadingProfile(true)
@@ -65,6 +71,19 @@ export default function DashboardPage() {
     .filter(c => courseMatchesFilters(c, filters))
   const enrolledCourses = filteredCourses.filter(c => c.isEnrolled)
   const availableCourses = filteredCourses.filter(c => !c.isEnrolled)
+
+  // /api/courses no está paginado en el backend (catálogo chico) — se pagina
+  // del lado del cliente sobre el resultado ya filtrado.
+  const availableTotalPages = Math.max(1, Math.ceil(availableCourses.length / COURSES_PAGE_SIZE))
+  const safeAvailablePage = Math.min(availablePage, availableTotalPages)
+  const pageAvailableCourses = availableCourses.slice(
+    (safeAvailablePage - 1) * COURSES_PAGE_SIZE,
+    safeAvailablePage * COURSES_PAGE_SIZE,
+  )
+
+  useEffect(() => {
+    setAvailablePage(1)
+  }, [searchQuery, filters])
 
   const stats = [
     {
@@ -324,11 +343,22 @@ export default function DashboardPage() {
             )}
 
             {!coursesError && availableCourses.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {availableCourses.map(course => (
-                  <CourseCard key={course.id} course={course} onEnroll={c => setPendingEnroll(c)} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {pageAvailableCourses.map(course => (
+                    <CourseCard key={course.id} course={course} onEnroll={c => setPendingEnroll(c)} />
+                  ))}
+                </div>
+                {availableTotalPages > 1 && (
+                  <div className="flex justify-center mt-8">
+                    <ContinuousPagination
+                      currentPage={safeAvailablePage}
+                      totalPages={availableTotalPages}
+                      onPageChange={setAvailablePage}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </section>
 

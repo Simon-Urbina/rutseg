@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTheme } from '../context/ThemeContext'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
-
-type Tab = 'profile' | 'password'
+import GoogleLinkButton from './GoogleLinkButton'
 
 interface FullProfile {
   id: string
@@ -16,10 +15,12 @@ interface FullProfile {
   completedLabs: number
   role: 'user' | 'admin'
   createdAt: string
+  hasPassword: boolean
+  linkedProviders: string[]
 }
 
 function Field({
-  label, type, value, onChange, placeholder, isDark, autoFocus = false,
+  label, type, value, onChange, placeholder, isDark, autoFocus = false, hint,
 }: {
   label: string
   type: string
@@ -28,6 +29,7 @@ function Field({
   placeholder?: string
   isDark: boolean
   autoFocus?: boolean
+  hint?: string
 }) {
   const [focused, setFocused] = useState(false)
   return (
@@ -65,6 +67,11 @@ function Field({
           }}
         />
       </div>
+      {hint && (
+        <p className="text-[12px] font-light leading-relaxed" style={{ color: isDark ? '#7B9FE8' : '#4A70CC' }}>
+          {hint}
+        </p>
+      )}
     </div>
   )
 }
@@ -111,6 +118,22 @@ function TextareaField({
   )
 }
 
+function SectionHeading({ isDark, kicker, title }: { isDark: boolean; kicker: string; title: string }) {
+  return (
+    <div>
+      <p
+        className="font-mono text-[10px] tracking-[0.22em] uppercase mb-1.5 font-semibold"
+        style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
+      >
+        {kicker}
+      </p>
+      <h4 className="font-display" style={{ fontSize: '1.15rem', color: isDark ? '#C8D5EE' : '#0A1545' }}>
+        {title}
+      </h4>
+    </div>
+  )
+}
+
 interface Props {
   open: boolean
   onClose: () => void
@@ -123,24 +146,26 @@ export default function ProfileEditModal({ open, onClose, initialProfile, onUpda
   const { updateUser } = useAuth()
   const isDark = theme === 'dark'
 
-  const [tab, setTab] = useState<Tab>('profile')
-
   const [username, setUsername] = useState(initialProfile.username)
   const [email, setEmail] = useState(initialProfile.email)
   const [bio, setBio] = useState(initialProfile.bio ?? '')
+  const [profileError, setProfileError] = useState('')
+  const [profileSuccess, setProfileSuccess] = useState('')
+  const [profileLoading, setProfileLoading] = useState(false)
 
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState('')
+  const [passwordLoading, setPasswordLoading] = useState(false)
 
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  const [loading, setLoading] = useState(false)
   const [avatarLoading, setAvatarLoading] = useState(false)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
     initialProfile.profileImage ? `data:image/jpeg;base64,${initialProfile.profileImage}` : null
   )
   const [avatarImgError, setAvatarImgError] = useState(false)
+  const [avatarError, setAvatarError] = useState('')
 
   useEffect(() => {
     if (open) {
@@ -150,9 +175,9 @@ export default function ProfileEditModal({ open, onClose, initialProfile, onUpda
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
-      setError('')
-      setSuccess('')
-      setTab('profile')
+      setProfileError(''); setProfileSuccess('')
+      setPasswordError(''); setPasswordSuccess('')
+      setAvatarError('')
       setAvatarPreview(initialProfile.profileImage ? `data:image/jpeg;base64,${initialProfile.profileImage}` : null)
       setAvatarImgError(false)
     }
@@ -162,18 +187,18 @@ export default function ProfileEditModal({ open, onClose, initialProfile, onUpda
     const file = e.target.files?.[0]
     if (!file) return
     if (!['image/jpeg', 'image/jpg'].includes(file.type)) {
-      setError('Solo se aceptan imágenes JPG/JPEG.')
+      setAvatarError('Solo se aceptan imágenes JPG/JPEG.')
       return
     }
     if (file.size > 5 * 1024 * 1024) {
-      setError('La imagen no puede superar los 5 MB.')
+      setAvatarError('La imagen no puede superar los 5 MB.')
       return
     }
 
     const preview = URL.createObjectURL(file)
     setAvatarPreview(preview)
     setAvatarImgError(false)
-    setError('')
+    setAvatarError('')
     setAvatarLoading(true)
 
     try {
@@ -193,9 +218,8 @@ export default function ProfileEditModal({ open, onClose, initialProfile, onUpda
         headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       })).json()
       onUpdated(updated)
-      setSuccess('Foto de perfil actualizada.')
     } catch (err: any) {
-      setError(err.message)
+      setAvatarError(err.message)
       setAvatarPreview(initialProfile.profileImage ? `data:image/jpeg;base64,${initialProfile.profileImage}` : null)
     } finally {
       setAvatarLoading(false)
@@ -219,12 +243,12 @@ export default function ProfileEditModal({ open, onClose, initialProfile, onUpda
 
   const submitProfile = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError(''); setSuccess('')
+    setProfileError(''); setProfileSuccess('')
     if (!profileChanged) {
-      setError('No hay cambios para guardar.')
+      setProfileError('No hay cambios para guardar.')
       return
     }
-    setLoading(true)
+    setProfileLoading(true)
     try {
       const patch: Record<string, string | null> = {}
       if (username.trim() !== initialProfile.username) patch.username = username.trim()
@@ -234,36 +258,39 @@ export default function ProfileEditModal({ open, onClose, initialProfile, onUpda
       const next = await api.put<FullProfile>('/api/users/me', patch)
       updateUser({ username: next.username, email: next.email })
       onUpdated(next)
-      setSuccess('Perfil actualizado.')
+      setProfileSuccess('Perfil actualizado.')
     } catch (err: any) {
-      setError(err.message)
+      setProfileError(err.message)
     } finally {
-      setLoading(false)
+      setProfileLoading(false)
     }
   }
 
   const submitPassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError(''); setSuccess('')
+    setPasswordError(''); setPasswordSuccess('')
     if (newPassword !== confirmPassword) {
-      setError('Las contraseñas nuevas no coinciden.')
+      setPasswordError('Las contraseñas nuevas no coinciden.')
       return
     }
     if (newPassword.length < 8) {
-      setError('La nueva contraseña debe tener al menos 8 caracteres.')
+      setPasswordError('La nueva contraseña debe tener al menos 8 caracteres.')
       return
     }
-    setLoading(true)
+    setPasswordLoading(true)
     try {
-      await api.post('/api/users/me/password', { currentPassword, newPassword })
+      await api.post('/api/users/me/password', initialProfile.hasPassword ? { currentPassword, newPassword } : { newPassword })
       setCurrentPassword(''); setNewPassword(''); setConfirmPassword('')
-      setSuccess('Contraseña actualizada.')
+      setPasswordSuccess(initialProfile.hasPassword ? 'Contraseña actualizada.' : 'Contraseña creada — ya puedes iniciar sesión con ella además de con Google.')
+      if (!initialProfile.hasPassword) onUpdated({ ...initialProfile, hasPassword: true })
     } catch (err: any) {
-      setError(err.message)
+      setPasswordError(err.message)
     } finally {
-      setLoading(false)
+      setPasswordLoading(false)
     }
   }
+
+  const googleLinked = initialProfile.linkedProviders.includes('google')
 
   return (
     <div
@@ -277,7 +304,7 @@ export default function ProfileEditModal({ open, onClose, initialProfile, onUpda
     >
       <div
         onClick={e => e.stopPropagation()}
-        className="hud-panel hud-static relative w-full max-w-[520px]"
+        className="hud-panel hud-static relative w-full max-w-[560px]"
         style={{
           background: isDark ? 'rgba(9,21,32,0.84)' : 'rgba(248,250,255,0.92)',
           backdropFilter: 'blur(24px)',
@@ -324,158 +351,205 @@ export default function ProfileEditModal({ open, onClose, initialProfile, onUpda
           </button>
         </div>
 
-        {/* Tabs */}
-        <div
-          className="flex shrink-0 px-7"
-          style={{ borderBottom: `1px solid ${isDark ? 'rgba(26,63,150,0.10)' : 'rgba(26,63,150,0.08)'}` }}
-        >
-          {[
-            { id: 'profile', label: 'Perfil' },
-            { id: 'password', label: 'Contraseña' },
-          ].map(t => {
-            const active = tab === t.id
-            return (
-              <button
-                key={t.id}
-                onClick={() => { setTab(t.id as Tab); setError(''); setSuccess('') }}
-                className="relative px-1 py-3.5 mr-7 text-[13px] font-medium transition-colors"
-                style={{
-                  color: active ? '#1A3F96' : (isDark ? '#3A5AB8' : '#4A70CC'),
-                }}
-              >
-                {t.label}
-                {active && (
-                  <span
-                    className="absolute bottom-0 left-0 right-0"
-                    style={{ height: '1.5px', background: '#1A3F96' }}
-                  />
-                )}
-              </button>
-            )
-          })}
-        </div>
+        {/* Body — todo en una sola vista, sin pestañas */}
+        <div className="px-7 py-7 overflow-y-auto space-y-9" style={{ flex: 1 }}>
 
-        {/* Body */}
-        <div className="px-7 py-7 overflow-y-auto" style={{ flex: 1 }}>
-          {tab === 'profile' && (
-            <form onSubmit={submitProfile} className="space-y-7">
-              {/* Avatar upload */}
-              <div className="flex items-center gap-5">
-                <label className="relative cursor-pointer group shrink-0" title="Cambiar foto de perfil">
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/jpg"
-                    className="sr-only"
-                    onChange={handleAvatarChange}
-                    disabled={avatarLoading}
-                  />
+          {/* ── Perfil ── */}
+          <form onSubmit={submitProfile} className="space-y-6">
+            <SectionHeading isDark={isDark} kicker="// identidad" title="Perfil" />
+
+            <div className="flex items-center gap-5">
+              <label className="relative cursor-pointer group shrink-0" title="Cambiar foto de perfil">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg"
+                  className="sr-only"
+                  onChange={handleAvatarChange}
+                  disabled={avatarLoading}
+                />
+                <div
+                  style={{
+                    width: 72, height: 72,
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                    background: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.08)',
+                    border: `2px solid ${isDark ? 'rgba(26,63,150,0.40)' : 'rgba(26,63,150,0.25)'}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    position: 'relative',
+                  }}
+                >
+                  {(avatarPreview && !avatarImgError) ? (
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar"
+                      onError={() => setAvatarImgError(true)}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
+                      stroke={isDark ? '#7B9FE8' : '#1A3F96'} strokeWidth="1.5"
+                      strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="8" r="4" />
+                      <path d="M4 20c0-4.418 3.582-8 8-8s8 3.582 8 8" />
+                    </svg>
+                  )}
                   <div
-                    style={{
-                      width: 72, height: 72,
-                      borderRadius: '50%',
-                      overflow: 'hidden',
-                      background: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.08)',
-                      border: `2px solid ${isDark ? 'rgba(26,63,150,0.40)' : 'rgba(26,63,150,0.25)'}`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      position: 'relative',
-                    }}
+                    className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ background: 'rgba(6,13,31,0.55)', borderRadius: '50%' }}
                   >
-                    {(avatarPreview && !avatarImgError) ? (
-                      <img
-                        src={avatarPreview}
-                        alt="Avatar"
-                        onError={() => setAvatarImgError(true)}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
+                    {avatarLoading ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
-                      <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
-                        stroke={isDark ? '#7B9FE8' : '#1A3F96'} strokeWidth="1.5"
-                        strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="8" r="4" />
-                        <path d="M4 20c0-4.418 3.582-8 8-8s8 3.582 8 8" />
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EEF3FC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
                       </svg>
                     )}
-                    {/* Overlay on hover */}
-                    <div
-                      className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      style={{ background: 'rgba(6,13,31,0.55)', borderRadius: '50%' }}
-                    >
-                      {avatarLoading ? (
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EEF3FC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                          <polyline points="17 8 12 3 7 8"/>
-                          <line x1="12" y1="3" x2="12" y2="15"/>
-                        </svg>
-                      )}
-                    </div>
                   </div>
-                </label>
+                </div>
+              </label>
+              <div>
+                <p className="text-[13px] font-medium" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
+                  Foto de perfil
+                </p>
+                <p className="font-mono text-[10px] mt-1" style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}>
+                  JPG · máx 5 MB
+                </p>
+              </div>
+            </div>
+            {avatarError && <ErrorBox isDark={isDark} message={avatarError} />}
+
+            <Field
+              label="Username"
+              type="text"
+              value={username}
+              onChange={setUsername}
+              isDark={isDark}
+              hint="Pon tu nombre completo real aquí para que tu certificado de finalización se vea más profesional."
+            />
+            <Field label="Email" type="email" value={email} onChange={setEmail} isDark={isDark} />
+            <TextareaField
+              label="Bio"
+              value={bio}
+              onChange={setBio}
+              placeholder="¿Qué te define como hacker?"
+              isDark={isDark}
+              hint={`${bio.length}/500 caracteres`}
+            />
+
+            {profileError && <ErrorBox isDark={isDark} message={profileError} />}
+            {profileSuccess && <SuccessBox isDark={isDark} message={profileSuccess} />}
+
+            <button
+              type="submit"
+              disabled={profileLoading || !profileChanged}
+              className="btn-neon w-full py-3.5 rounded-xl text-[15px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {profileLoading ? (
+                <span className="font-mono text-xs tracking-[0.15em] cursor-blink">Guardando</span>
+              ) : (
+                'Guardar cambios'
+              )}
+            </button>
+          </form>
+
+          <Divider isDark={isDark} />
+
+          {/* ── Contraseña ── */}
+          <form onSubmit={submitPassword} className="space-y-6">
+            <SectionHeading isDark={isDark} kicker="// seguridad" title="Contraseña" />
+
+            {!initialProfile.hasPassword && (
+              <p className="text-[13px] font-light leading-relaxed" style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}>
+                Tu cuenta inicia sesión con Google. Puedes agregar una contraseña como método de respaldo — no hace falta la actual porque todavía no tienes una.
+              </p>
+            )}
+
+            {initialProfile.hasPassword && (
+              <Field label="Contraseña actual" type="password" value={currentPassword} onChange={setCurrentPassword} isDark={isDark} />
+            )}
+            <Field label="Nueva contraseña" type="password" value={newPassword} onChange={setNewPassword} placeholder="mín. 8 caracteres" isDark={isDark} />
+            <Field label="Confirmar nueva contraseña" type="password" value={confirmPassword} onChange={setConfirmPassword} isDark={isDark} />
+
+            {passwordError && <ErrorBox isDark={isDark} message={passwordError} />}
+            {passwordSuccess && <SuccessBox isDark={isDark} message={passwordSuccess} />}
+
+            <button
+              type="submit"
+              disabled={
+                passwordLoading || !newPassword || !confirmPassword ||
+                (initialProfile.hasPassword && !currentPassword)
+              }
+              className="btn-gold w-full py-3.5 rounded-xl text-[15px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {passwordLoading ? (
+                <span className="font-mono text-xs tracking-[0.15em] cursor-blink">
+                  {initialProfile.hasPassword ? 'Actualizando' : 'Creando'}
+                </span>
+              ) : (
+                initialProfile.hasPassword ? 'Cambiar contraseña' : 'Establecer contraseña'
+              )}
+            </button>
+          </form>
+
+          <Divider isDark={isDark} />
+
+          {/* ── Cuentas vinculadas ── */}
+          <div className="space-y-4">
+            <SectionHeading isDark={isDark} kicker="// acceso" title="Cuentas vinculadas" />
+
+            <div
+              className="flex items-center justify-between gap-4 p-4 rounded-xl"
+              style={{
+                background: isDark ? 'rgba(6,13,31,0.4)' : 'rgba(26,63,150,0.04)',
+                border: `1px solid ${isDark ? 'rgba(26,63,150,0.20)' : 'rgba(26,63,150,0.15)'}`,
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <GoogleGlyph />
                 <div>
-                  <p className="text-[13px] font-medium" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
-                    Foto de perfil
+                  <p className="text-[14px] font-medium" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
+                    Google
                   </p>
-                  <p className="font-mono text-[10px] mt-1" style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}>
-                    JPG · máx 5 MB
+                  <p className="font-mono text-[11px]" style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}>
+                    {googleLinked ? 'Conectada' : 'No conectada'}
                   </p>
                 </div>
               </div>
-
-              <Field label="Username" type="text" value={username} onChange={setUsername} isDark={isDark} autoFocus />
-              <Field label="Email" type="email" value={email} onChange={setEmail} isDark={isDark} />
-              <TextareaField
-                label="Bio"
-                value={bio}
-                onChange={setBio}
-                placeholder="¿Qué te define como hacker?"
-                isDark={isDark}
-                hint={`${bio.length}/500 caracteres`}
-              />
-
-              {error && <ErrorBox isDark={isDark} message={error} />}
-              {success && <SuccessBox isDark={isDark} message={success} />}
-
-              <button
-                type="submit"
-                disabled={loading || !profileChanged}
-                className="btn-neon w-full py-3.5 rounded-xl text-[15px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <span className="font-mono text-xs tracking-[0.15em] cursor-blink">Guardando</span>
-                ) : (
-                  'Guardar cambios'
-                )}
-              </button>
-            </form>
-          )}
-
-          {tab === 'password' && (
-            <form onSubmit={submitPassword} className="space-y-7">
-              <Field label="Contraseña actual" type="password" value={currentPassword} onChange={setCurrentPassword} isDark={isDark} autoFocus />
-              <Field label="Nueva contraseña" type="password" value={newPassword} onChange={setNewPassword} placeholder="mín. 8 caracteres" isDark={isDark} />
-              <Field label="Confirmar nueva contraseña" type="password" value={confirmPassword} onChange={setConfirmPassword} isDark={isDark} />
-
-              {error && <ErrorBox isDark={isDark} message={error} />}
-              {success && <SuccessBox isDark={isDark} message={success} />}
-
-              <button
-                type="submit"
-                disabled={loading || !currentPassword || !newPassword || !confirmPassword}
-                className="btn-gold w-full py-3.5 rounded-xl text-[15px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <span className="font-mono text-xs tracking-[0.15em] cursor-blink">Actualizando</span>
-                ) : (
-                  'Cambiar contraseña'
-                )}
-              </button>
-            </form>
-          )}
+              {googleLinked ? (
+                <span
+                  className="font-mono text-[10px] tracking-[0.14em] uppercase px-2.5 py-1 rounded shrink-0"
+                  style={{ color: '#52ad70', background: 'rgba(82,173,112,0.10)', border: '1px solid rgba(82,173,112,0.30)' }}
+                >
+                  ✓ Vinculada
+                </span>
+              ) : (
+                <div className="shrink-0">
+                  <GoogleLinkButton<FullProfile> isDark={isDark} onLinked={onUpdated} />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
+}
+
+function GoogleGlyph() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.47a5.53 5.53 0 0 1-2.4 3.63v3h3.88c2.27-2.09 3.57-5.17 3.57-8.82z"/>
+      <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.91l-3.88-3c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.27v3.1A12 12 0 0 0 12 24z"/>
+      <path fill="#FBBC05" d="M5.27 14.28A7.2 7.2 0 0 1 4.89 12c0-.79.14-1.56.38-2.28v-3.1H1.27A12 12 0 0 0 0 12c0 1.94.46 3.77 1.27 5.38l4-3.1z"/>
+      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.27 6.62l4 3.1C6.22 6.86 8.87 4.75 12 4.75z"/>
+    </svg>
+  )
+}
+
+function Divider({ isDark }: { isDark: boolean }) {
+  return <div style={{ height: 1, background: isDark ? 'rgba(26,63,150,0.14)' : 'rgba(26,63,150,0.10)' }} />
 }
 
 function ErrorBox({ isDark, message }: { isDark: boolean; message: string }) {

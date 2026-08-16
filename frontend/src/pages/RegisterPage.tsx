@@ -11,10 +11,10 @@ import AuthLayout from '../components/AuthLayout'
 import SocialAuthButtons from '../components/SocialAuthButtons'
 
 function InputField({
-  label, type, value, onChange, placeholder, isDark,
+  label, type, value, onChange, placeholder, isDark, hint,
 }: {
   label: string; type: string; value: string;
-  onChange: (v: string) => void; placeholder: string; isDark: boolean
+  onChange: (v: string) => void; placeholder: string; isDark: boolean; hint?: string
 }) {
   const [focused, setFocused] = useState(false)
   const [show, setShow] = useState(false)
@@ -70,6 +70,11 @@ function InputField({
           </button>
         )}
       </div>
+      {hint && (
+        <p className="text-[12px] font-light leading-relaxed" style={{ color: isDark ? '#7B9FE8' : '#4A70CC' }}>
+          {hint}
+        </p>
+      )}
     </div>
   )
 }
@@ -309,6 +314,7 @@ export default function RegisterPage() {
           onChange={v => setForm(f => ({ ...f, username: v }))}
           placeholder="h4ck3r_alias"
           isDark={isDark}
+          hint="Pon tu nombre completo real aquí para que tu certificado de finalización se vea más profesional."
         />
         <InputField
           label="Email" type="email"

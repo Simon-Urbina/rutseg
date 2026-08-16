@@ -3,31 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import { api } from '../lib/api'
-
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined
+import { GOOGLE_CLIENT_ID, loadGoogleScript } from '../lib/googleIdentity'
 
 interface AuthResponse {
   token: string
   user: { id: string; username: string; email: string; role: 'user' | 'admin' }
-}
-
-function loadGoogleScript(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if ((window as any).google?.accounts?.id) return resolve()
-    const existing = document.getElementById('google-identity-script')
-    if (existing) {
-      existing.addEventListener('load', () => resolve())
-      return
-    }
-    const script = document.createElement('script')
-    script.id = 'google-identity-script'
-    script.src = 'https://accounts.google.com/gsi/client'
-    script.async = true
-    script.defer = true
-    script.onload = () => resolve()
-    script.onerror = () => reject(new Error('No se pudo cargar Google Identity Services.'))
-    document.head.appendChild(script)
-  })
 }
 
 /** Botón de "Continuar con Google" — sirve tanto para iniciar sesión como para crear cuenta

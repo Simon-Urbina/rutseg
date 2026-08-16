@@ -1,5 +1,7 @@
 import { UserDAO } from '../daos/UserDAO.js'
 import { CourseEnrollmentDAO } from '../daos/CourseEnrollmentDAO.js'
+import { UserOAuthDAO } from '../daos/UserOAuthDAO.js'
+import { verifyGoogleIdToken } from '../utils/oauthProviders.js'
 import { NotFoundError, ConflictError, UnauthorizedError, BadRequestError, ValidationError } from '../utils/errors.js'
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024
@@ -31,9 +33,10 @@ export class UserService {
   static async getMyProfile(userId: string) {
     const user = await UserDAO.findById(userId)
     if (!user) throw new NotFoundError('Usuario no encontrado.')
-    const [completedLabs, rank] = await Promise.all([
+    const [completedLabs, rank, linkedProviders] = await Promise.all([
       UserDAO.countCompletedLabs(userId),
       UserDAO.getRank(userId),
+      UserOAuthDAO.findProvidersByUserId(userId),
     ])
     return {
       id: user.id,
@@ -46,6 +49,8 @@ export class UserService {
       createdAt: user.createdAt,
       completedLabs,
       rank,
+      hasPassword: user.passwordHash !== null,
+      linkedProviders,
     }
   }
 
@@ -95,9 +100,14 @@ export class UserService {
     return UserService.getMyProfile(userId)
   }
 
+  /**
+   * Cambia la contraseña, o la establece por primera vez si la cuenta (creada
+   * vía Google/Microsoft) todavía no tiene una — en ese caso no se exige
+   * `currentPassword` porque no existe ninguna que verificar.
+   */
   static async changePassword(
     userId: string,
-    data: { currentPassword: string; newPassword: string },
+    data: { currentPassword?: string; newPassword: string },
   ): Promise<void> {
     if (!data.newPassword || data.newPassword.length < 8)
       throw new ValidationError(['La nueva contraseña debe tener al menos 8 caracteres.'])
@@ -105,14 +115,29 @@ export class UserService {
     const user = await UserDAO.findById(userId)
     if (!user) throw new NotFoundError('Usuario no encontrado.')
 
-    if (!user.passwordHash)
-      throw new UnauthorizedError('Tu cuenta inicia sesión con Google o Microsoft y no tiene contraseña propia.')
-
-    const ok = await Bun.password.verify(data.currentPassword, user.passwordHash)
-    if (!ok) throw new UnauthorizedError('La contraseña actual es incorrecta.')
+    if (user.passwordHash) {
+      const ok = data.currentPassword && await Bun.password.verify(data.currentPassword, user.passwordHash)
+      if (!ok) throw new UnauthorizedError('La contraseña actual es incorrecta.')
+    }
 
     const newHash = await Bun.password.hash(data.newPassword)
     await UserDAO.updatePassword(userId, newHash)
+  }
+
+  /**
+   * Vincula una cuenta de Google al usuario autenticado. Idempotente si ya
+   * estaba vinculada esa misma identidad; rechaza si esa identidad de Google
+   * ya pertenece a otra cuenta de RutSeg.
+   */
+  static async linkGoogleAccount(userId: string, idToken: string) {
+    const identity = await verifyGoogleIdToken(idToken)
+
+    const takenByOther = await UserOAuthDAO.isLinkedToAnotherUser('google', identity.providerUserId, userId)
+    if (takenByOther)
+      throw new ConflictError('Esta cuenta de Google ya está vinculada a otro usuario de RutSeg.')
+
+    await UserOAuthDAO.link(userId, 'google', identity.providerUserId)
+    return UserService.getMyProfile(userId)
   }
 
   static async updateAvatar(
