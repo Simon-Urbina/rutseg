@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { useAuth } from '../context/AuthContext'
@@ -6,6 +6,7 @@ import { api } from '../lib/api'
 import Header from '../components/Header'
 import Ranking from '../components/Ranking'
 import Footer from '../components/Footer'
+import HeroSpotlight from '../components/HeroSpotlight'
 import { FeatureCarousel, type FeatureCarouselCard } from '../components/FeatureCarousel'
 
 const FEATURES: FeatureCarouselCard[] = [
@@ -131,11 +132,20 @@ export default function LandingPage() {
   const isDark = theme === 'dark'
 
   const [stats, setStats] = useState<{ courseCount: number; labCount: number; totalPoints: number; userCount: number } | null>(null)
-  
+
   useEffect(() => {
     api.get<{ courseCount: number; labCount: number; totalPoints: number; userCount: number }>('/api/stats')
       .then(setStats).catch(() => {})
   }, [])
+
+  const spotRef = useRef<HTMLDivElement>(null)
+  const handleHeroPointerMove = (e: PointerEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+    spotRef.current?.style.setProperty('--x', `${x}%`)
+    spotRef.current?.style.setProperty('--y', `${y}%`)
+  }
 
   return (
     <div style={{ background: isDark ? '#060D1F' : '#EEF3FC', color: isDark ? '#EEF3FC' : '#0A1545' }}>
@@ -143,6 +153,7 @@ export default function LandingPage() {
 
       {/* ─── HERO SECTION INSTITUCIONAL ─── */}
       <section
+        onPointerMove={handleHeroPointerMove}
         className="relative border-b overflow-hidden"
         style={{
           borderColor: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.12)',
@@ -151,135 +162,78 @@ export default function LandingPage() {
             : 'linear-gradient(180deg, #E8EEFA 0%, #EEF3FC 100%)',
         }}
       >
-        <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-12 pb-20 lg:pt-20 lg:pb-28">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <HeroSpotlight ref={spotRef} isDark={isDark} />
 
-            {/* Columna Izquierda: Mensaje Principal */}
-            <div className="lg:col-span-7 space-y-6">
+        <div className="relative max-w-3xl mx-auto px-6 lg:px-10 pt-24 pb-24 lg:pt-32 lg:pb-32 flex flex-col items-center text-center">
 
-              <h1
-                className="font-display font-bold tracking-tight text-4xl sm:text-5xl lg:text-6xl leading-[1.08]"
-                style={{ color: isDark ? '#EEF3FC' : '#0A1545' }}
-              >
-                Tu ruta segura hacia el{' '}
-                <span
-                  style={{
-                    color: '#1A3F96',
-                    backgroundImage: isDark
-                      ? 'linear-gradient(135deg, #7B9FE8 0%, #2451C8 60%, #2596be 100%)'
-                      : 'linear-gradient(135deg, #1A3F96 0%, #2451C8 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
+          <h1
+            className="font-display font-bold tracking-tight text-4xl sm:text-5xl lg:text-6xl leading-[1.08]"
+            style={{ color: isDark ? '#EEF3FC' : '#0A1545' }}
+          >
+            Tu ruta segura hacia el{' '}
+            <span
+              style={{
+                color: '#1A3F96',
+                backgroundImage: isDark
+                  ? 'linear-gradient(135deg, #7B9FE8 0%, #2451C8 60%, #2596be 100%)'
+                  : 'linear-gradient(135deg, #1A3F96 0%, #2451C8 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              hacking real
+            </span>
+            .
+          </h1>
+
+          <p
+            className="text-base sm:text-lg font-light max-w-2xl leading-relaxed mt-6"
+            style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}
+          >
+            RutSeg es la plataforma de entrenamiento práctico en ciberseguridad.
+            Aprende con escenarios reales, a tu propio ritmo, sin presentaciones teóricas y con validación automática.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-8">
+            {token ? (
+              <Link to="/dashboard" className="btn-neon text-[15px]">
+                Ir al dashboard →
+              </Link>
+            ) : (
+              <>
+                <Link to="/register" className="btn-neon text-[15px]">
+                  Empezar gratis →
+                </Link>
+                <Link to="/login" className="btn-ghost-light text-[15px]">
+                  Ya tengo cuenta
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* Métricas Numéricas */}
+          <div
+            className="grid grid-cols-2 sm:grid-cols-4 gap-8 pt-10 mt-10 border-t w-full max-w-2xl"
+            style={{ borderColor: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.12)' }}
+          >
+            {[
+              { label: 'CURSOS', val: stats ? String(stats.courseCount) : '—', color: isDark ? '#EEF3FC' : '#0A1545' },
+              { label: 'LABORATORIOS', val: stats ? String(stats.labCount) : '—', color: isDark ? '#7B9FE8' : '#1A3F96' },
+              { label: 'PUNTOS DISPONIBLES', val: stats ? `${stats.totalPoints.toLocaleString('es-CO')}` : '—', color: isDark ? '#F5C500' : '#998000' },
+              { label: 'USUARIOS', val: stats ? String(stats.userCount) : '—', color: '#2596be' },
+            ].map(({ label, val, color }) => (
+              <div key={label} className="text-center">
+                <p className="num-display text-2xl sm:text-3xl leading-none font-bold" style={{ color }}>
+                  {val}
+                </p>
+                <p
+                  className="font-mono text-[10px] tracking-[0.2em] uppercase mt-2 font-medium"
+                  style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
                 >
-                  hacking real
-                </span>
-                .
-              </h1>
-
-              <p
-                className="text-base sm:text-lg font-light max-w-2xl leading-relaxed"
-                style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}
-              >
-                RutSeg es la plataforma de entrenamiento práctico en ciberseguridad.
-                Aprende con escenarios reales, a tu propio ritmo, sin presentaciones teóricas y con validación automática.
-              </p>
-
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                {token ? (
-                  <Link to="/dashboard" className="btn-neon text-[15px]">
-                    Ir al dashboard →
-                  </Link>
-                ) : (
-                  <>
-                    <Link to="/register" className="btn-neon text-[15px]">
-                      Empezar gratis →
-                    </Link>
-                    <Link to="/login" className="btn-ghost-light text-[15px]">
-                      Ya tengo cuenta
-                    </Link>
-                  </>
-                )}
+                  {label}
+                </p>
               </div>
-
-              {/* Métricas Numéricas */}
-              <div
-                className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t"
-                style={{ borderColor: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.12)' }}
-              >
-                {[
-                  { label: 'CURSOS', val: stats ? String(stats.courseCount) : '—', color: isDark ? '#EEF3FC' : '#0A1545' },
-                  { label: 'LABORATORIOS', val: stats ? String(stats.labCount) : '—', color: isDark ? '#7B9FE8' : '#1A3F96' },
-                  { label: 'PUNTOS DISPONIBLES', val: stats ? `${stats.totalPoints.toLocaleString('es-CO')}` : '—', color: isDark ? '#F5C500' : '#998000' },
-                  { label: 'USUARIOS', val: stats ? String(stats.userCount) : '—', color: '#2596be' },
-                ].map(({ label, val, color }) => (
-                  <div key={label}>
-                    <p className="num-display text-2xl sm:text-3xl leading-none font-bold" style={{ color }}>
-                      {val}
-                    </p>
-                    <p
-                      className="font-mono text-[10px] tracking-[0.2em] uppercase mt-2 font-medium"
-                      style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}
-                    >
-                      {label}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Columna Derecha: Terminal Profesional de Laboratorio */}
-            <div className="lg:col-span-5">
-              <div className="tech-terminal">
-                <div className="tech-terminal-header">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-rose-500/80" />
-                    <span className="w-3 h-3 rounded-full bg-amber-500/80" />
-                    <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
-                  </div>
-                  <span className="font-mono text-xs text-slate-300 tracking-wider">
-                    operador@rutseg-lab:~#
-                  </span>
-                  <span className="font-mono text-[10px] text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20">
-                    CONEXIÓN SEGURA
-                  </span>
-                </div>
-
-                <div className="p-5 font-mono text-xs text-slate-200 space-y-3 min-h-[300px] leading-relaxed">
-                  <div className="text-slate-400">// Entorno virtual de pruebas RutSeg</div>
-                  <div className="flex items-center gap-2 text-teal-400">
-                    <span>$</span>
-                    <span>rutseg lab start --id sql-injection-01</span>
-                  </div>
-                  <div className="text-slate-300 pl-3 border-l-2 border-teal-500/40 space-y-1">
-                    <div>[+] Inicializando contenedor aislado... [OK]</div>
-                    <div>[+] IP asignada: 10.10.14.88</div>
-                    <div>[+] Objetivo: Vulnerabilidad SQL Injection</div>
-                  </div>
-                  <div className="flex items-center gap-2 text-indigo-300">
-                    <span>$</span>
-                    <span>curl -s "http://10.10.14.88/login?user=admin'--"</span>
-                  </div>
-                  <div className="p-3 rounded bg-white/5 border border-white/10 text-emerald-400 text-[11px]">
-                    <div>[+] Respuesta 200 OK — Sesión de Administrador Obtenida</div>
-                    <div className="font-bold text-amber-300 mt-1">FLAG CAPTURADA: RUTSEG{`{sql_injection_master_2026}`}</div>
-                  </div>
-                  <div className="flex items-center gap-2 text-teal-400 cursor-blink">
-                    <span>$</span>
-                    <span className="text-slate-400">rutseg submit --flag RUTSEG{`{...}`}</span>
-                  </div>
-                </div>
-
-                <div className="bg-black/40 px-4 py-2.5 border-t border-white/10 flex items-center justify-between font-mono text-[11px] text-slate-400">
-                  <span className="flex items-center gap-2 text-emerald-400">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    ESTADO: ACTIVO
-                  </span>
-                  <span>HANDS-ON LAB</span>
-                </div>
-              </div>
-            </div>
-
+            ))}
           </div>
         </div>
       </section>

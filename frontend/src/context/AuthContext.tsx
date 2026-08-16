@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { api } from '../lib/api'
 
 interface AuthUser {
   id: string
@@ -10,17 +11,21 @@ interface AuthUser {
 interface AuthContextType {
   user: AuthUser | null
   token: string | null
+  avatarImage: string | null
   login: (token: string, user: AuthUser) => void
   logout: () => void
   updateUser: (patch: Partial<AuthUser>) => void
+  setAvatarImage: (image: string | null) => void
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
+  avatarImage: null,
   login: () => {},
   logout: () => {},
   updateUser: () => {},
+  setAvatarImage: () => {},
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -29,6 +34,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const stored = localStorage.getItem('user')
     return stored ? JSON.parse(stored) : null
   })
+  // No se persiste en localStorage a propósito: es una imagen base64 y podría
+  // acercarse rápido a la cuota de almacenamiento del origen. Se resuelve una
+  // vez por sesión (o al hacer login) contra /api/users/me.
+  const [avatarImage, setAvatarImage] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!token) {
+      setAvatarImage(null)
+      return
+    }
+    let cancelled = false
+    api.get<{ profileImage: string | null }>('/api/users/me')
+      .then(({ profileImage }) => {
+        if (!cancelled) setAvatarImage(profileImage ? `data:image/jpeg;base64,${profileImage}` : null)
+      })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [token])
 
   const login = (newToken: string, newUser: AuthUser) => {
     localStorage.setItem('token', newToken)
@@ -42,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('user')
     setToken(null)
     setUser(null)
+    setAvatarImage(null)
   }
 
   const updateUser = (patch: Partial<AuthUser>) => {
@@ -54,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, token, avatarImage, login, logout, updateUser, setAvatarImage }}>
       {children}
     </AuthContext.Provider>
   )

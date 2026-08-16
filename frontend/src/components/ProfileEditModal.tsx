@@ -145,7 +145,7 @@ interface Props {
 
 export default function ProfileEditModal({ open, onClose, initialProfile, onUpdated }: Props) {
   const { theme } = useTheme()
-  const { updateUser } = useAuth()
+  const { updateUser, setAvatarImage: setHeaderAvatar } = useAuth()
   const isDark = theme === 'dark'
 
   const [username, setUsername] = useState(initialProfile.username)
@@ -220,6 +220,7 @@ export default function ProfileEditModal({ open, onClose, initialProfile, onUpda
         headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       })).json()
       onUpdated(updated)
+      setHeaderAvatar(updated.profileImage ? `data:image/jpeg;base64,${updated.profileImage}` : null)
     } catch (err: any) {
       setAvatarError(err.message)
       setAvatarPreview(initialProfile.profileImage ? `data:image/jpeg;base64,${initialProfile.profileImage}` : null)
