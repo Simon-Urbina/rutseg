@@ -5,6 +5,7 @@ import { adminApi, type AdminUser } from '../../lib/adminApi'
 import { ErrorBanner } from './AdminFormControls'
 import { IconChevronRight } from './AdminIcons'
 import { PageShell, Breadcrumb } from './AdminCourseDetailPage'
+import { ContinuousPagination } from '../../components/ContinuousPagination'
 
 const PAGE_SIZE = 20
 
@@ -99,24 +100,11 @@ export default function AdminUsersPage() {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4 mt-8">
-          <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page <= 1}
-            className="btn-ghost-light px-5 py-2.5 rounded-xl text-[14px] disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Anterior
-          </button>
+        <div className="flex flex-col items-center gap-3 mt-8">
           <span className="font-mono text-[12px]" style={{ color: '#4A70CC' }}>
             Página {page} de {totalPages} · {total} usuarios
           </span>
-          <button
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            disabled={page >= totalPages}
-            className="btn-ghost-light px-5 py-2.5 rounded-xl text-[14px] disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Siguiente
-          </button>
+          <ContinuousPagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
         </div>
       )}
     </PageShell>

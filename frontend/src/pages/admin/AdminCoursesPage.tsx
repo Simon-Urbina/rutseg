@@ -7,6 +7,9 @@ import { IconPlus, IconChevronRight } from './AdminIcons'
 import { PageShell, Breadcrumb } from './AdminCourseDetailPage'
 import { CourseFilterPanel } from '../../components/CourseFilters'
 import { emptyCourseFilters, courseMatchesFilters, hasActiveCourseFilters, type CourseFilterState } from '../../lib/courseFilters'
+import { ContinuousPagination } from '../../components/ContinuousPagination'
+
+const PAGE_SIZE = 10
 
 const DIFFICULTIES = [
   { value: 'principiante', label: 'Principiante' },
@@ -26,6 +29,7 @@ export default function AdminCoursesPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<CourseFilterState>(emptyCourseFilters())
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
     setLoading(true)
@@ -39,6 +43,16 @@ export default function AdminCoursesPage() {
   const filteredCourses = courses
     .filter(c => !query || c.title.toLowerCase().includes(query) || (c.description ?? '').toLowerCase().includes(query))
     .filter(c => courseMatchesFilters(c, filters))
+
+  // Este endpoint no pagina en el backend (la lista completa de cursos es
+  // chica) — se pagina del lado del cliente sobre el resultado ya filtrado.
+  const totalPages = Math.max(1, Math.ceil(filteredCourses.length / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const pageCourses = filteredCourses.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
+  useEffect(() => {
+    setPage(1)
+  }, [searchQuery, filters])
 
   return (
     <PageShell isDark={isDark}>
@@ -95,7 +109,7 @@ export default function AdminCoursesPage() {
       )}
 
       <div className="mt-8 flex flex-col gap-3">
-        {filteredCourses.map(course => (
+        {pageCourses.map(course => (
           <button
             key={course.id}
             onClick={() => navigate(`/admin/courses/${course.slug}`)}
@@ -122,6 +136,15 @@ export default function AdminCoursesPage() {
           </button>
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex flex-col items-center gap-3 mt-8">
+          <span className="font-mono text-[12px]" style={{ color: '#4A70CC' }}>
+            Página {safePage} de {totalPages} · {filteredCourses.length} cursos
+          </span>
+          <ContinuousPagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
+        </div>
+      )}
     </PageShell>
   )
 }

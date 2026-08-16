@@ -6,14 +6,15 @@ import { api } from '../lib/api'
 import Header from '../components/Header'
 import Ranking from '../components/Ranking'
 import Footer from '../components/Footer'
+import { FeatureCarousel, type FeatureCarouselCard } from '../components/FeatureCarousel'
 
-const FEATURES = [
+const FEATURES: FeatureCarouselCard[] = [
   {
+    id: 'practica-real',
     title: 'Aprende practicando',
     kicker: '// PRÁCTICA REAL',
     body: 'Laboratorios interactivos basados en escenarios reales de ciberseguridad. Sin teoría plana ni presentaciones: acceso directo a terminales y sistemas vulnerables.',
     accent: '#1A3F96',
-    gridSpan: 'col-span-12 lg:col-span-7',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="4 17 10 11 4 5"/>
@@ -22,11 +23,11 @@ const FEATURES = [
     ),
   },
   {
+    id: 'clasificacion',
     title: 'Compite en el ranking',
     kicker: '// CLASIFICACIÓN',
     body: 'Cada laboratorio completado otorga puntos de experiencia. Escala posiciones en la tabla general de la universidad y mide tu nivel técnico.',
     accent: '#F5C500',
-    gridSpan: 'col-span-12 lg:col-span-5',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
@@ -39,11 +40,11 @@ const FEATURES = [
     ),
   },
   {
+    id: 'sin-relleno',
     title: 'Cero relleno teórico',
     kicker: '// HABILIDADES CLAVE',
     body: 'Formación hands-on orientada al ejercicio profesional de la ciberseguridad. Cada actividad enseña conceptos prácticos directamente aplicables.',
     accent: '#2596be',
-    gridSpan: 'col-span-12 lg:col-span-5',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
@@ -51,17 +52,74 @@ const FEATURES = [
     ),
   },
   {
+    id: 'infraestructura',
     title: 'Entornos de ejecución aislados',
     kicker: '// INFRAESTRUCTURA',
     body: 'Contenedores dedicados y seguros en la nube para ejecutar pruebas de seguridad de la información sin necesidad de configuraciones locales complejas.',
     accent: '#1A3F96',
-    gridSpan: 'col-span-12 lg:col-span-7',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
         <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
         <line x1="6" y1="6" x2="6.01" y2="6"/>
         <line x1="6" y1="18" x2="6.01" y2="18"/>
+      </svg>
+    ),
+  },
+]
+
+const METHODOLOGY: FeatureCarouselCard[] = [
+  {
+    id: 'crea-cuenta',
+    title: 'Crea tu cuenta',
+    kicker: '// PASO 01',
+    body: 'Regístrate gratis en menos de 2 minutos con tu correo universitario o personal.',
+    accent: '#1A3F96',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/>
+        <line x1="19" y1="8" x2="19" y2="14"/>
+        <line x1="16" y1="11" x2="22" y2="11"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'elige-curso',
+    title: 'Elige un curso',
+    kicker: '// PASO 02',
+    body: 'Inscríbete en los cursos según tu nivel de conocimiento, desde principiante hasta avanzado.',
+    accent: '#2596be',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'trabaja-labs',
+    title: 'Trabaja los labs',
+    kicker: '// PASO 03',
+    body: 'Ejecuta actividades en entornos seguros, resuelve los retos y responde las evaluaciones.',
+    accent: '#1A3F96',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 2v6.5L4 18a2 2 0 0 0 1.8 3h12.4a2 2 0 0 0 1.8-3l-5-9.5V2"/>
+        <line x1="8" y1="2" x2="16" y2="2"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'sube-ranking',
+    title: 'Sube en el ranking',
+    kicker: '// PASO 04',
+    body: 'Obtén puntos por cada laboratorio completado y destaca en la clasificación general.',
+    accent: '#F5C500',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+        <polyline points="17 6 23 6 23 12"/>
       </svg>
     ),
   },
@@ -249,54 +307,7 @@ export default function LandingPage() {
             </h2>
           </div>
 
-          {/* Grilla Bento Asimétrica Formal */}
-          <div className="grid grid-cols-12 gap-6">
-            {FEATURES.map(({ title, kicker, body, icon, accent, gridSpan }) => (
-              <div
-                key={title}
-                className={`${gridSpan} hud-panel p-8 flex flex-col justify-between`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center"
-                      style={{
-                        background: isDark ? 'rgba(26,63,150,0.15)' : 'rgba(26,63,150,0.08)',
-                        border: `1px solid ${accent}40`,
-                        color: accent,
-                      }}
-                    >
-                      {icon}
-                    </div>
-                    <span
-                      className="font-mono text-[10px] tracking-[0.18em] uppercase px-3 py-1 rounded border font-semibold"
-                      style={{
-                        color: accent,
-                        background: `${accent}10`,
-                        borderColor: `${accent}30`,
-                      }}
-                    >
-                      {kicker}
-                    </span>
-                  </div>
-
-                  <h3
-                    className="font-display text-2xl font-bold mb-3"
-                    style={{ color: isDark ? '#EEF3FC' : '#0A1545' }}
-                  >
-                    {title}
-                  </h3>
-
-                  <p
-                    className="text-sm font-light leading-relaxed"
-                    style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}
-                  >
-                    {body}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <FeatureCarousel cards={FEATURES} />
         </div>
       </section>
 
@@ -326,60 +337,7 @@ export default function LandingPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                step: '01',
-                title: 'Crea tu cuenta',
-                body: 'Regístrate gratis en menos de 2 minutos con tu correo universitario o personal.',
-                accent: '#1A3F96',
-              },
-              {
-                step: '02',
-                title: 'Elige un curso',
-                body: 'Inscríbete en los cursos según tu nivel de conocimiento, desde principiante hasta avanzado.',
-                accent: '#2596be',
-              },
-              {
-                step: '03',
-                title: 'Trabaja los labs',
-                body: 'Ejecuta actividades en entornos seguros, resuelve los retos y responde las evaluaciones.',
-                accent: '#1A3F96',
-              },
-              {
-                step: '04',
-                title: 'Sube en el ranking',
-                body: 'Obtén puntos por cada laboratorio completado y destaca en la clasificación general.',
-                accent: '#F5C500',
-              },
-            ].map(({ step, title, body, accent }) => (
-              <div
-                key={step}
-                className="hud-panel p-7 relative flex flex-col justify-between"
-              >
-                <div>
-                  <span
-                    className="font-mono text-xs font-semibold tracking-[0.2em] uppercase block mb-4"
-                    style={{ color: accent }}
-                  >
-                    // PASO {step}
-                  </span>
-                  <h3
-                    className="font-display text-xl font-bold mb-2"
-                    style={{ color: isDark ? '#EEF3FC' : '#0A1545' }}
-                  >
-                    {title}
-                  </h3>
-                  <p
-                    className="text-xs sm:text-sm font-light leading-relaxed"
-                    style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}
-                  >
-                    {body}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <FeatureCarousel cards={METHODOLOGY} />
         </div>
       </section>
 

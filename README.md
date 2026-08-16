@@ -8,6 +8,7 @@ Plataforma de aprendizaje en ciberseguridad donde los usuarios se inscriben en c
 |------|-----------|
 | Runtime | [Bun](https://bun.sh/) |
 | Frontend | React 19 + TypeScript + Vite + Tailwind CSS v4 |
+| Animaciones/UI | [motion](https://motion.dev/) (`motion/react`) — componentes de paginación y carrusel adaptados de [Watermelon UI](https://ui.watermelon.sh/home) |
 | Backend | Hono 4 |
 | Email | Gmail API (OAuth2 via HTTP) |
 | Chatbot | FastAPI + Python + Groq (llama-3.3-70b-versatile) |
