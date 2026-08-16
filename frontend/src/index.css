@@ -83,21 +83,26 @@
 .hud-panel {
   position: relative;
   background: rgba(13, 27, 70, 0.85);
-  border: 1px solid rgba(26, 63, 150, 0.22);
+  border: 1px solid var(--hud-border, rgba(26, 63, 150, 0.22));
   border-radius: 16px;
   transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 html:not(.dark) .hud-panel {
   background: #FFFFFF;
-  border: 1px solid rgba(26, 63, 150, 0.30);
+  border: 1px solid var(--hud-border, rgba(26, 63, 150, 0.30));
   box-shadow: 0 4px 20px rgba(26, 63, 150, 0.08);
 }
 
 .hud-panel:hover {
   transform: translateY(-3px);
-  border-color: rgba(26, 63, 150, 0.45);
+  border-color: var(--hud-border-hover, rgba(26, 63, 150, 0.45));
   box-shadow: 0 12px 32px rgba(26, 63, 150, 0.12);
+}
+
+/* Paneles grandes (formularios, modales) que no deben "saltar" al hover */
+.hud-panel.hud-static:hover {
+  transform: none;
 }
 
 .hud-corner-tag {
@@ -110,6 +115,31 @@ html:not(.dark) .hud-panel {
   text-transform: uppercase;
   font-weight: 600;
   opacity: 0.85;
+}
+
+/* ────────────────────────────────────────────────
+   TECH INPUT — inputs/textareas/selects fuera del
+   .input-terminal de las páginas de auth (ver
+   Documentacion-Frontend.md §9.1)
+──────────────────────────────────────────────── */
+.tech-input {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--tech-input-border, rgba(26, 63, 150, 0.30));
+  border-left: 2px solid var(--tech-input-accent, #1A3F96);
+  border-radius: 2px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tech-input::placeholder { color: rgba(123, 159, 232, 0.45); }
+html:not(.dark) .tech-input::placeholder { color: rgba(74, 112, 204, 0.45); }
+
+.tech-input:focus,
+.tech-input:focus-visible {
+  border-color: var(--tech-input-focus, #2596be);
+  border-left-color: var(--tech-input-focus, #2596be);
+  box-shadow: 0 0 0 3px var(--tech-input-glow, rgba(37, 150, 190, 0.15));
 }
 
 /* ────────────────────────────────────────────────

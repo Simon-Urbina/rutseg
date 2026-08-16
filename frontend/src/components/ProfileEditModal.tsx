@@ -52,9 +52,11 @@ function Field({
           className="input-terminal w-full text-[15px]"
           style={{
             color: isDark ? '#C8D5EE' : '#0A1545',
+            borderBottomWidth: '1.5px',
+            borderBottomStyle: 'solid',
             borderBottomColor: focused
               ? 'transparent'
-              : isDark ? 'rgba(26,63,150,0.20)' : 'rgba(26,63,150,0.22)',
+              : isDark ? 'rgba(123,159,232,0.45)' : 'rgba(36,81,200,0.42)',
           }}
         />
         <div
