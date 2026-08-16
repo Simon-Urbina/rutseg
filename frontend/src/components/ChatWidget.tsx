@@ -12,7 +12,11 @@ const CHATBOT_URL = import.meta.env.VITE_CHATBOT_URL ?? 'http://localhost:8001'
 const MAX_HISTORY = 20
 
 // Reconoce enlaces estilo Markdown que Uchi genera para redirigir dentro de la plataforma: [texto](/ruta)
-const LINK_PATTERN = /\[([^\]]+)\]\((\/[^\s)]+|https?:\/\/[^\s)]+)\)/g
+// y negrillas **texto** — combinados en un solo patrón para que compartan el recorrido del string
+// (si no, procesar cada uno por separado desordena los índices del otro).
+const LINK_PATTERN = /\[([^\]]+)\]\((\/[^\s)]+|https?:\/\/[^\s)]+)\)/
+const BOLD_PATTERN = /\*\*([^*]+)\*\*/
+const TOKEN_PATTERN = new RegExp(`${LINK_PATTERN.source}|${BOLD_PATTERN.source}`, 'g')
 
 function renderMessageContent(content: string, onNavigate: (path: string) => void, linkColor: string): ReactNode[] {
   const nodes: ReactNode[] = []
@@ -20,24 +24,28 @@ function renderMessageContent(content: string, onNavigate: (path: string) => voi
   let key = 0
   let match: RegExpExecArray | null
 
-  LINK_PATTERN.lastIndex = 0
-  while ((match = LINK_PATTERN.exec(content)) !== null) {
+  TOKEN_PATTERN.lastIndex = 0
+  while ((match = TOKEN_PATTERN.exec(content)) !== null) {
     if (match.index > lastIndex) nodes.push(content.slice(lastIndex, match.index))
 
-    const [full, label, href] = match
-    const isInternal = href.startsWith('/')
-    nodes.push(
-      <a
-        key={key++}
-        href={href}
-        onClick={isInternal ? (e) => { e.preventDefault(); onNavigate(href) } : undefined}
-        target={isInternal ? undefined : '_blank'}
-        rel={isInternal ? undefined : 'noopener noreferrer'}
-        style={{ color: linkColor, textDecoration: 'underline', textUnderlineOffset: '2px', fontWeight: 600, cursor: 'pointer' }}
-      >
-        {label}
-      </a>,
-    )
+    const [full, label, href, bold] = match
+    if (label !== undefined) {
+      const isInternal = href.startsWith('/')
+      nodes.push(
+        <a
+          key={key++}
+          href={href}
+          onClick={isInternal ? (e) => { e.preventDefault(); onNavigate(href) } : undefined}
+          target={isInternal ? undefined : '_blank'}
+          rel={isInternal ? undefined : 'noopener noreferrer'}
+          style={{ color: linkColor, textDecoration: 'underline', textUnderlineOffset: '2px', fontWeight: 600, cursor: 'pointer' }}
+        >
+          {label}
+        </a>,
+      )
+    } else {
+      nodes.push(<strong key={key++}>{bold}</strong>)
+    }
     lastIndex = match.index + full.length
   }
   if (lastIndex < content.length) nodes.push(content.slice(lastIndex))
