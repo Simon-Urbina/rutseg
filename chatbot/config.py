@@ -9,4 +9,4 @@ client = AsyncOpenAI(
     api_key=os.getenv("GROQ_API_KEY", ""),
 )
 
-MODEL = "deepseek-r1-distill-llama-70b"
+MODEL = "llama-3.3-70b-versatile"
