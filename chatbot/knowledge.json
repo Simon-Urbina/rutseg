@@ -173,7 +173,7 @@
   },
   {
     "q": "¿Qué tecnologías usa RutSeg?",
-    "a": "RutSeg usa: React 19 con TypeScript en el frontend (Vercel), Hono + Bun en el backend (Railway), PostgreSQL en Supabase como base de datos, y un chatbot con FastAPI + Python + Groq usando el modelo llama-3.3-70b-versatile."
+    "a": "RutSeg usa: React 19 con TypeScript en el frontend (Vercel), Hono + Bun en el backend (Railway), PostgreSQL en Supabase como base de datos, y un chatbot con FastAPI + Python + Groq usando el modelo openai/gpt-oss-120b."
   },
   {
     "q": "¿Puedo ver los cursos sin iniciar sesión?",

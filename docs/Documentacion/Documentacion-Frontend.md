@@ -828,7 +828,9 @@ FastAPI lifespan (arranque)
 
 ### Proveedor LLM
 
-El chatbot usa **Groq** con el modelo `llama-3.3-70b-versatile`. Requiere la variable `GROQ_API_KEY` en `chatbot/.env`.
+El chatbot usa **Groq** con el modelo `openai/gpt-oss-120b`. Requiere la variable `GROQ_API_KEY` en `chatbot/.env`.
+
+> **Nota sobre cambios de modelo:** Groq ha descontinuado varios modelos usados previamente por Uchi (`deepseek-r1-distill-llama-70b`, luego `llama-3.3-70b-versatile`). Antes de fijar un modelo nuevo en `chatbot/config.py`, verificar su estado actual en [console.groq.com/docs/deprecations](https://console.groq.com/docs/deprecations) — Groq suele avisar por correo con semanas de antelación antes de apagar un modelo.
 
 Groq expone una API compatible con OpenAI, por lo que se usa el cliente `openai.AsyncOpenAI` apuntando a `https://api.groq.com/openai/v1`.
 
