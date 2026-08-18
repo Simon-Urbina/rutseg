@@ -38,20 +38,118 @@ const INTERESTS = [
 ]
 
 const STACK = [
-  { name: 'React 19', category: 'Frontend' },
-  { name: 'TypeScript', category: 'Frontend' },
-  { name: 'Tailwind CSS v4', category: 'Frontend' },
-  { name: 'Vite', category: 'Frontend' },
-  { name: 'Hono', category: 'Backend' },
-  { name: 'Bun', category: 'Backend' },
-  { name: 'PostgreSQL', category: 'Backend' },
-  { name: 'Supabase', category: 'Backend' },
-  { name: 'Gmail API', category: 'Backend' },
-  { name: 'Railway', category: 'Infra' },
-  { name: 'Vercel', category: 'Infra' },
-  { name: 'FastAPI', category: 'IA' },
-  { name: 'Python', category: 'IA' },
-  { name: 'Groq', category: 'IA' },
+  {
+    name: 'React 19',
+    category: 'Frontend',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="2.2" fill="#61DAFB" />
+        <g fill="none" stroke="#61DAFB" strokeWidth="1.2">
+          <ellipse cx="12" cy="12" rx="10" ry="4.4" />
+          <ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(60 12 12)" />
+          <ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(120 12 12)" />
+        </g>
+      </svg>
+    ),
+  },
+  {
+    name: 'TypeScript',
+    category: 'Frontend',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24">
+        <rect width="24" height="24" rx="5" fill="#3178C6" />
+        <text x="12" y="16.5" textAnchor="middle" fontFamily="ui-monospace, monospace" fontSize="11" fontWeight="700" fill="#fff">TS</text>
+      </svg>
+    ),
+  },
+  {
+    name: 'Tailwind CSS v4',
+    category: 'Frontend',
+    icon: (
+      <svg width="16" height="15" viewBox="0 0 24 24" fill="#38BDF8">
+        <path d="M12 6c-2.67 0-4.33 1.33-5 4 1-1.33 2.17-1.83 3.5-1.5.76.19 1.31.74 1.91 1.35.98 1 2.11 2.15 4.59 2.15 2.67 0 4.33-1.33 5-4-1 1.33-2.17 1.83-3.5 1.5-.76-.19-1.31-.74-1.91-1.35C15.61 7.15 14.48 6 12 6zM7 12c-2.67 0-4.33 1.33-5 4 1-1.33 2.17-1.83 3.5-1.5.76.19 1.31.74 1.91 1.35.98 1 2.11 2.15 4.59 2.15 2.67 0 4.33-1.33 5-4-1 1.33-2.17 1.83-3.5 1.5-.76-.19-1.31-.74-1.91-1.35-.98-1-2.11-2.15-4.59-2.15z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Hono',
+    category: 'Backend',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="#e36002">
+        <path d="M12.5 2c.7 2.4-.6 3.6-1.8 5.1-.6-.7-.9-2-.9-2C7.8 6.9 6.5 9.6 6.5 12a5.5 5.5 0 0 0 11 0c0-3.4-2.6-5.4-2.9-7.2 0 0-.9 1.6-2.4.9.2-1.4.4-2.6.3-3.7z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Bun',
+    category: 'Backend',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24">
+        <ellipse cx="12" cy="13" rx="9" ry="7.5" fill="#FBF0DF" />
+        <path d="M3.3 11.2a8.7 6 0 0 1 17.4 0" fill="none" stroke="#3a2f28" strokeWidth="1.6" />
+        <circle cx="9" cy="13.5" r="1.1" fill="#3a2f28" />
+        <circle cx="15" cy="13.5" r="1.1" fill="#3a2f28" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Supabase',
+    category: 'Backend',
+    icon: (
+      <svg width="13" height="15" viewBox="0 0 24 24" fill="#3ECF8E">
+        <path d="M13.5 2 4 14.5h7L10.5 22 20 9.5h-7L13.5 2Z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'FastAPI',
+    category: 'IA',
+    icon: (
+      <svg width="13" height="15" viewBox="0 0 24 24" fill="#009688">
+        <path d="M12.5 2 4.5 13h6l-1.5 9L18.5 11h-6l2-9-2 0Z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Python',
+    category: 'IA',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24">
+        <path fill="#3776AB" d="M12 2c-1.5 0-2.9.2-4 .5C6.8 3 6.5 4 6.5 5.3v1.9h5.5v.7H4.7C3.2 8 2 9.4 2 12s1.2 4 2.7 4h1.8v-2.3c0-1.7 1.5-3.2 3.3-3.2h4.4c1.4 0 2.5-1.1 2.5-2.5V5.3C16.7 4 16.4 3 15.2 2.5 14.1 2.2 12.7 2 12 2z" />
+        <path fill="#FFD43B" d="M12 22c1.5 0 2.9-.2 4-.5.7-.3 1-1.3 1-2.6v-1.9H11.5v-.7h6.8c1.5 0 2.7-1.4 2.7-4s-1.2-4-2.7-4h-1.8v2.3c0 1.7-1.5 3.2-3.3 3.2H8.8c-1.4 0-2.5 1.1-2.5 2.5v3.4c0 1.3.3 2.3 1.5 2.6 1.1.3 2.5.5 4.2.5z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Groq',
+    category: 'IA',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="11" fill="#F55036" />
+        <text x="12" y="16.5" textAnchor="middle" fontFamily="ui-monospace, monospace" fontSize="12" fontWeight="700" fill="#fff">G</text>
+      </svg>
+    ),
+  },
+  {
+    name: 'Vercel',
+    category: 'Infra',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24">
+        <rect width="24" height="24" rx="5" fill="#000" />
+        <path d="M12 6 19 18H5L12 6Z" fill="#fff" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Railway',
+    category: 'Infra',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24">
+        <rect width="24" height="24" rx="5" fill="#0B0D0E" />
+        <text x="12" y="16.5" textAnchor="middle" fontFamily="ui-monospace, monospace" fontSize="11" fontWeight="700" fill="#fff">R</text>
+      </svg>
+    ),
+  },
 ]
 
 const SOCIAL = [
@@ -90,12 +188,35 @@ const SOCIAL = [
   },
 ]
 
-const CATEGORY_COLOR: Record<string, string> = {
-  Frontend: '#2596be',
-  Backend: '#1A3F96',
-  Infra: '#F5C500',
-  IA: '#a855f7',
-}
+const EMAILS = [
+  {
+    label: 'Google',
+    handle: 'jacobitourbinalol@gmail.com',
+    href: 'mailto:jacobitourbinalol@gmail.com',
+    accent: '#4285F4',
+    logo: (
+      <svg width="24" height="24" viewBox="0 0 48 48">
+        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.9 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.5 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z" />
+        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.5 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
+        <path fill="#4CAF50" d="M24 44c5.4 0 10.3-2.1 14-5.5l-6.5-5.4C29.4 34.6 26.8 35.5 24 35.5c-5.4 0-9.9-3.6-11.5-8.5l-6.6 5.1C9.6 39.6 16.2 44 24 44z" />
+        <path fill="#1976D2" d="M43.6 20.5H24v8h11.3c-1.1 3.1-3.3 5.6-6.1 7.1l6.5 5.4C39.9 37.9 44 32 44 24c0-1.3-.1-2.7-.4-3.5z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Outlook',
+    handle: 'simon.urbinam@hotmail.com',
+    href: 'mailto:simon.urbinam@hotmail.com',
+    accent: '#0078D4',
+    logo: (
+      <svg width="24" height="24" viewBox="0 0 24 24">
+        <rect width="24" height="24" rx="5" fill="#0078D4" />
+        <circle cx="9.5" cy="12" r="4.5" fill="none" stroke="#fff" strokeWidth="2" />
+        <path d="M13 8.2h6.3c.5 0 .9.4.9.9v5.8c0 .5-.4.9-.9.9H13" fill="none" stroke="#fff" strokeWidth="1.3" opacity="0.9" />
+      </svg>
+    ),
+  },
+]
 
 export default function AboutPage() {
   const { theme } = useTheme()
@@ -348,35 +469,52 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              {/* Docente */}
+              {/* Docentes */}
               <div
-                className="hud-panel hud-static mt-8 p-6 flex items-start gap-4"
+                className="hud-panel hud-static mt-8 p-6"
                 style={{
                   background: isDark ? 'rgba(37,150,190,0.07)' : 'rgba(37,150,190,0.06)',
                   '--hud-border': isDark ? 'rgba(37,150,190,0.35)' : 'rgba(37,150,190,0.30)',
                   '--hud-border-hover': isDark ? 'rgba(37,150,190,0.35)' : 'rgba(37,150,190,0.30)',
                 } as React.CSSProperties}
               >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: isDark ? 'rgba(37,150,190,0.15)' : 'rgba(37,150,190,0.10)', color: '#2596be' }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-mono text-[10px] tracking-[0.18em] uppercase mb-1.5" style={{ color: '#2596be' }}>
-                    // iniciativa y dirección académica
-                  </p>
-                  <p className="font-semibold text-[15px] mb-0.5" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
-                    Harrizon Alexander Soler Galindo
-                  </p>
-                  <p className="text-[13px]" style={{ color: isDark ? '#4A70CC' : '#2451C8' }}>
-                    Docente — Universidad Santo Tomás, Tunja<br />
-                    Semillero de Investigación en Ciberseguridad y Desarrollo de Software
-                  </p>
+                <p className="font-mono text-[10px] tracking-[0.18em] uppercase mb-4" style={{ color: '#2596be' }}>
+                  // iniciativa y dirección académica
+                </p>
+                <div className="space-y-5">
+                  {[
+                    {
+                      name: 'Harrizon Alexander Soler Galindo',
+                      role: 'Docente — Universidad Santo Tomás, Tunja',
+                      extra: 'Semillero de Investigación en Ciberseguridad y Desarrollo de Software',
+                    },
+                    {
+                      name: 'Sergio Arley Puerto Moreno',
+                      role: 'Docente — Universidad Santo Tomás, Tunja',
+                      extra: 'Semillero de Investigación en Ciberseguridad y Desarrollo de Software',
+                    },
+                  ].map(({ name, role, extra }) => (
+                    <div key={name} className="flex items-start gap-4">
+                      <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                        style={{ background: isDark ? 'rgba(37,150,190,0.15)' : 'rgba(37,150,190,0.10)', color: '#2596be' }}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-[15px] mb-0.5" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
+                          {name}
+                        </p>
+                        <p className="text-[13px]" style={{ color: isDark ? '#4A70CC' : '#2451C8' }}>
+                          {role}<br />
+                          {extra}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -387,23 +525,20 @@ export default function AboutPage() {
                 // construido con
               </p>
               <div className="flex flex-wrap gap-2.5">
-                {STACK.map(({ name, category }) => {
-                  const color = CATEGORY_COLOR[category]
-                  return (
-                    <div
-                      key={name}
-                      className="flex items-center gap-2 px-3.5 py-2 rounded-xl"
-                      style={{
-                        background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                        border: `1px solid ${isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.14)'}`,
-                      }}
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: color }} />
-                      <span className="font-mono text-[12px]" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>{name}</span>
-                      <span className="font-mono text-[10px]" style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}>{category}</span>
-                    </div>
-                  )
-                })}
+                {STACK.map(({ name, category, icon }) => (
+                  <div
+                    key={name}
+                    className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl"
+                    style={{
+                      background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+                      border: `1px solid ${isDark ? 'rgba(26,63,150,0.18)' : 'rgba(26,63,150,0.14)'}`,
+                    }}
+                  >
+                    <span className="flex items-center justify-center shrink-0" style={{ width: 15, height: 15 }}>{icon}</span>
+                    <span className="font-mono text-[12px]" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>{name}</span>
+                    <span className="font-mono text-[10px]" style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}>{category}</span>
+                  </div>
+                ))}
               </div>
 
               {/* University card */}
@@ -452,65 +587,65 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {/* Email */}
-            <a
-              href="mailto:jacobitourbinalol@gmail.com"
-              className="hud-panel p-7 flex flex-col gap-4"
-              style={{
-                background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
-                textDecoration: 'none',
-                '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
-                '--hud-border-hover': 'rgba(37,150,190,0.75)',
-                '--hud-focus': '#2596be',
-              } as React.CSSProperties}
-            >
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center"
-                style={{ background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.03)', border: '1px solid rgba(37,150,190,0.30)', color: '#2596be' }}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {/* Correos */}
+            {EMAILS.map(({ label, handle, href, accent, logo }) => (
+              <a
+                key={label}
+                href={href}
+                className="hud-panel p-6 flex items-center gap-4"
+                style={{
+                  background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
+                  textDecoration: 'none',
+                  '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
+                  '--hud-border-hover': `${accent}BF`,
+                  '--hud-focus': accent,
+                } as React.CSSProperties}
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </div>
-              <div>
-                <p className="font-mono text-[10px] tracking-[0.18em] uppercase mb-1.5" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
-                  // correo directo
-                </p>
-                <p className="font-mono text-[13px]" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
-                  jacobitourbinalol@gmail.com
-                </p>
-              </div>
-            </a>
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 overflow-hidden"
+                  style={{ background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.03)', border: `1px solid ${accent}30` }}
+                >
+                  {logo}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-mono text-[10px] tracking-[0.18em] uppercase mb-1.5" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
+                    // {label.toLowerCase()}
+                  </p>
+                  <p className="font-mono text-[13px] truncate" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
+                    {handle}
+                  </p>
+                </div>
+              </a>
+            ))}
 
             {/* LinkedIn */}
             <a
               href="https://www.linkedin.com/in/simon-urbina-martinez/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hud-panel p-7 flex flex-col gap-4"
+              className="hud-panel p-6 flex items-center gap-4"
               style={{
                 background: isDark ? 'rgba(13,27,70,0.85)' : '#f8faff',
                 textDecoration: 'none',
                 '--hud-border': isDark ? 'rgba(26,63,150,0.30)' : 'rgba(26,63,150,0.22)',
-                '--hud-border-hover': 'rgba(96,165,250,0.65)',
+                '--hud-border-hover': 'rgba(96,165,250,0.75)',
                 '--hud-focus': '#60a5fa',
               } as React.CSSProperties}
             >
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center"
+                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                 style={{ background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.03)', border: '1px solid rgba(96,165,250,0.25)', color: '#60a5fa' }}
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.26 2.36 4.26 5.43v6.31ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0Z"/>
                 </svg>
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="font-mono text-[10px] tracking-[0.18em] uppercase mb-1.5" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
                   // linkedin
                 </p>
-                <p className="font-mono text-[13px]" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
+                <p className="font-mono text-[13px] truncate" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
                   simon-urbina-martinez
                 </p>
               </div>
