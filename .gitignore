@@ -28,6 +28,9 @@ frontend/.env.*
 backend/.env
 backend/.env.*
 
+# Datos confidenciales de seed (contiene info del admin)
+/backend/database/seed.sql
+
 # Claude Code local config
 .claude/
 
