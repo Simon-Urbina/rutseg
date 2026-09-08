@@ -90,8 +90,9 @@ export default function Header() {
 
           {user ? (
             <div className="flex items-center gap-4">
-              <div
-                className="flex items-center gap-2 rounded-full border pl-1.5 pr-3.5 py-1"
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 rounded-full border pl-1.5 pr-3.5 py-1 transition-colors hover:brightness-110"
                 style={{
                   background: isDark ? 'rgba(26,63,150,0.10)' : 'rgba(26,63,150,0.05)',
                   borderColor: isDark ? 'rgba(26,63,150,0.20)' : 'rgba(26,63,150,0.20)',
@@ -104,7 +105,7 @@ export default function Header() {
                 >
                   {user.username}
                 </span>
-              </div>
+              </Link>
 
               <button
                 onClick={handleLogout}
@@ -174,8 +175,10 @@ export default function Header() {
         >
           {user ? (
             <div className="flex flex-col gap-3">
-              <div
-                className="w-full flex items-center justify-center gap-2 font-mono text-[13px] px-4 py-2 rounded-full border"
+              <Link
+                to="/dashboard"
+                onClick={() => setMenuOpen(false)}
+                className="w-full flex items-center justify-center gap-2 font-mono text-[13px] px-4 py-2 rounded-full border transition-colors hover:brightness-110"
                 style={{
                   background: isDark ? 'rgba(26,63,150,0.10)' : 'rgba(26,63,150,0.05)',
                   borderColor: isDark ? 'rgba(26,63,150,0.20)' : 'rgba(26,63,150,0.20)',
@@ -184,7 +187,7 @@ export default function Header() {
               >
                 <AvatarCircle avatarImage={avatarImage} isDark={isDark} />
                 {user.username}
-              </div>
+              </Link>
               <Link
                 to="/forum"
                 onClick={() => setMenuOpen(false)}
