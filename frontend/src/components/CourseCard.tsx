@@ -27,9 +27,10 @@ interface Props {
   course: Course
   onEnroll: (course: Course) => void
   onContinue?: (course: Course) => void
+  onAbandon?: (course: Course) => void
 }
 
-export default function CourseCard({ course, onEnroll, onContinue }: Props) {
+export default function CourseCard({ course, onEnroll, onContinue, onAbandon }: Props) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
   const diff = DIFFICULTY_META[course.difficulty]
@@ -143,12 +144,29 @@ export default function CourseCard({ course, onEnroll, onContinue }: Props) {
 
         {/* Action Button */}
         {course.isEnrolled ? (
-          <button
-            onClick={() => onContinue?.(course)}
-            className="w-full btn-ghost-light text-sm font-semibold py-2.5"
-          >
-            Continuar curso →
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onContinue?.(course)}
+              className="flex-1 btn-ghost-light text-sm font-semibold py-2.5"
+            >
+              Continuar curso →
+            </button>
+            <button
+              onClick={() => onAbandon?.(course)}
+              className="shrink-0 px-3 py-2.5 rounded-xl border text-[12px] font-semibold transition-colors"
+              style={{ borderColor: 'rgba(220,38,38,0.4)', color: '#dc2626', background: 'transparent' }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(220,38,38,0.10)'
+                e.currentTarget.style.borderColor = 'rgba(220,38,38,0.6)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.borderColor = 'rgba(220,38,38,0.4)'
+              }}
+            >
+              Abandonar
+            </button>
+          </div>
         ) : (
           <button
             onClick={() => onEnroll(course)}

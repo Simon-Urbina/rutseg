@@ -16,6 +16,12 @@ export class CourseEnrollmentDAO {
     return row
   }
 
+  static async delete(userId: string, courseId: string): Promise<void> {
+    await sql`
+      DELETE FROM course_enrollments WHERE user_id = ${userId} AND course_id = ${courseId}
+    `
+  }
+
   static async findByUserId(userId: string): Promise<CourseEnrollment[]> {
     return sql<CourseEnrollment[]>`
       SELECT * FROM course_enrollments WHERE user_id = ${userId}

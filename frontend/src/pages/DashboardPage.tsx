@@ -7,6 +7,7 @@ import ProfileEditModal from '../components/ProfileEditModal'
 import Ranking from '../components/Ranking'
 import CourseCard, { type Course } from '../components/CourseCard'
 import EnrollConfirmModal from '../components/EnrollConfirmModal'
+import AbandonCourseModal from '../components/AbandonCourseModal'
 import Footer from '../components/Footer'
 import { CourseFilterPanel } from '../components/CourseFilters'
 import { emptyCourseFilters, courseMatchesFilters, hasActiveCourseFilters, type CourseFilterState } from '../lib/courseFilters'
@@ -44,6 +45,7 @@ export default function DashboardPage() {
   const [coursesLoading, setCoursesLoading] = useState(true)
   const [coursesError, setCoursesError] = useState<string | null>(null)
   const [pendingEnroll, setPendingEnroll] = useState<Course | null>(null)
+  const [pendingAbandon, setPendingAbandon] = useState<Course | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<CourseFilterState>(emptyCourseFilters())
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -296,6 +298,7 @@ export default function DashboardPage() {
                       course={course}
                       onEnroll={() => {}}
                       onContinue={c => navigate(`/courses/${c.slug}`)}
+                      onAbandon={c => setPendingAbandon(c)}
                     />
                   ))}
                 </div>
@@ -443,6 +446,15 @@ export default function DashboardPage() {
         onEnrolled={enrolled => {
           setCourses(prev => prev.map(c => c.id === enrolled.id ? { ...c, isEnrolled: true } : c))
           setPendingEnroll(null)
+        }}
+      />
+
+      <AbandonCourseModal
+        course={pendingAbandon}
+        onClose={() => setPendingAbandon(null)}
+        onAbandoned={abandoned => {
+          setCourses(prev => prev.map(c => c.id === abandoned.id ? { ...c, isEnrolled: false } : c))
+          setPendingAbandon(null)
         }}
       />
     </div>

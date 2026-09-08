@@ -24,6 +24,12 @@ export class CourseController {
     return c.json(enrollment, 201)
   }
 
+  static async unenroll(c: Context) {
+    const user = c.get('user') as TokenPayload
+    await CourseService.unenrollUser(user.id, c.req.param('slug')!)
+    return c.body(null, 204)
+  }
+
   static async getModules(c: Context) {
     const user = c.get('user') as TokenPayload | undefined
     return c.json(await CourseService.getModules(c.req.param('slug')!, user?.role))

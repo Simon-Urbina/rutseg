@@ -55,6 +55,14 @@ export class CourseService {
     return CourseEnrollmentDAO.create(userId, course.id)
   }
 
+  static async unenrollUser(userId: string, courseSlug: string): Promise<void> {
+    const course = await CourseDAO.findBySlug(courseSlug)
+    if (!course) throw new NotFoundError('Curso no encontrado.')
+    if (!(await CourseEnrollmentDAO.find(userId, course.id)))
+      throw new NotFoundError('No estás inscrito en este curso.')
+    await CourseEnrollmentDAO.delete(userId, course.id)
+  }
+
   static async getModules(courseSlug: string, role?: UserRole) {
     const course = await CourseDAO.findBySlug(courseSlug)
     if (!course || (!course.isPublished && role !== 'admin'))
