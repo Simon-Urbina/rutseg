@@ -17,8 +17,8 @@ const SECTIONS = [
         <div className="mt-4 space-y-1">
           {[
             { k: 'Nombre', v: 'Simón Jacobo Urbina Martínez' },
-            { k: 'Institución', v: 'Universidad Santo Tomás — Tunja, Colombia' },
-            { k: 'Proyecto', v: 'Semillero de Investigación en Ciberseguridad y Desarrollo de Software' },
+            { k: 'Calidad', v: 'Persona natural — desarrollador independiente' },
+            { k: 'País', v: 'Colombia' },
             { k: 'Correo de contacto', v: 'jacobitourbinalol@gmail.com' },
             { k: 'Sitio web', v: 'https://rutseg.vercel.app' },
           ].map(({ k, v }) => (

@@ -13,7 +13,7 @@
 
 SSDLC = Secure Software Development Life Cycle. La idea de la ponencia es mostrar que la
 seguridad no fue una capa pegada al final, sino una decisión presente en cada fase — natural,
-además, porque el proyecto nace de un semillero de **ciberseguridad**. Voy a narrar en 6 fases:
+además, porque es un proyecto de **ciberseguridad**. Voy a narrar en 6 fases:
 
 1. Concepción / Requisitos
 2. Diseño (arquitectura + elección de stack)
@@ -32,14 +32,13 @@ Cierre con el guion sugerido de exposición (sección 7).
   laboratorios prácticos → quiz de 5 preguntas por laboratorio. Gamificación por puntos,
   ranking global, certificado PDF al completar el 100% de un curso, foro comunitario, y un
   asistente de IA (Uchi) disponible en toda la plataforma.
-- **Origen:** proyecto del Semillero de Investigación en Ciberseguridad y Desarrollo de
-  Software, USTA Tunja, dirigido por el docente Harrizon Alexander Soler Galindo.
+- **Origen:** proyecto independiente, desarrollado de forma autónoma por Simón Urbina.
 - **Problema que resuelve:** enseñar conceptos de ciberseguridad (OWASP: control de acceso,
   inyección, fallos de autenticación) de forma práctica, no solo teórica — los laboratorios
   OWASP existen como *contenido* (markdown) dentro de la plataforma, no como vulnerabilidades
   reales explotables (ver §4, decisión de diseño importante para la charla de seguridad).
 - **Requisitos no funcionales que guiaron todo el diseño posterior:**
-  - Seguridad desde el día uno (es un proyecto de un semillero de ciberseguridad — "dogfooding":
+  - Seguridad desde el día uno (es un proyecto de ciberseguridad — "dogfooding":
     predicar con el ejemplo).
   - Debía poder desplegarse gratis/barato (stack pensado para tiers gratuitos: Supabase, Railway,
     Vercel).
@@ -295,7 +294,7 @@ disciplinado (documentar causa raíz, no solo "ya quedó") importa más que "fun
    (conecta directo con la sección de seguridad, sembrar la idea aquí).
 5. **Desarrollo: frontend** (§3.3) — demo en vivo si es posible (dashboard, un lab, el chat de
    Uchi, el panel admin).
-6. **Seguridad y pruebas** (§4) — el bloque diferenciador para un semillero de ciberseguridad.
+6. **Seguridad y pruebas** (§4) — el bloque diferenciador para un proyecto de ciberseguridad.
    Auditoría (§4.1) + 2-3 anécdotas de incidentes reales (§4.2, especialmente el falso-CORS).
 7. **Despliegue** (§5) — rápido, con el diagrama de infraestructura.
 8. **Cierre: mantenimiento y roadmap** (§6) — qué falta, qué se evaluó y por qué no se hizo

@@ -37,7 +37,7 @@ El frontend de Cybersec Labs es una **SPA** (*Single Page Application*) construi
 - Proveer un foro comunitario donde los usuarios autenticados pueden publicar comentarios y respuestas.
 - Permitir descargar el certificado de finalización de un curso y verificarlo públicamente.
 
-> **Iniciativa académica:** RutSeg nació como proyecto del **Semillero de Investigación en Ciberseguridad y Desarrollo de Software** de la Universidad Santo Tomás — Tunja, bajo la iniciativa y dirección del docente **Harrizon Alexander Soler Galindo**.
+> **Origen:** RutSeg es un proyecto independiente, desarrollado de forma autónoma por **Simón Urbina**.
 
 El frontend es completamente estático una vez compilado: solo contiene HTML, CSS y JavaScript. Toda la lógica de negocio y el acceso a la base de datos ocurre en el backend (Railway). El chatbot Uchi se comunica con un microservicio Python separado.
 

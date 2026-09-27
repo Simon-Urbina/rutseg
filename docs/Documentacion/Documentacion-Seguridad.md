@@ -1,7 +1,6 @@
 # Documentación de Seguridad — RutSeg
 
-> **Audience:** Equipo del proyecto (Semillero de Investigación en Ciberseguridad y Desarrollo de
-> Software, USTA Tunja) y cualquier revisor técnico que evalúe la postura de seguridad de la
+> **Audience:** Autor del proyecto y cualquier revisor técnico que evalúe la postura de seguridad de la
 > plataforma.
 > **Fecha:** 2026-08-14
 > **Alcance:** Auditoría manual del código fuente actual (`backend/`, `frontend/`, `chatbot/`) más

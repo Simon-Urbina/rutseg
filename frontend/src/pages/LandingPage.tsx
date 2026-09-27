@@ -27,7 +27,7 @@ const FEATURES: FeatureCarouselCard[] = [
     id: 'clasificacion',
     title: 'Compite en el ranking',
     kicker: '// CLASIFICACIÓN',
-    body: 'Cada laboratorio completado otorga puntos de experiencia. Escala posiciones en la tabla general de la universidad y mide tu nivel técnico.',
+    body: 'Cada laboratorio completado otorga puntos de experiencia. Escala posiciones en la tabla general y mide tu nivel técnico.',
     accent: '#F5C500',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">

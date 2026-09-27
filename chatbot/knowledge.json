@@ -1,7 +1,7 @@
 [
   {
     "q": "¿Qué es RutSeg?",
-    "a": "RutSeg es una plataforma de aprendizaje de ciberseguridad práctica de la Universidad Santo Tomás Tunja. Los estudiantes completan laboratorios interactivos con escenarios reales, ganan puntos y compiten en un ranking global."
+    "a": "RutSeg es una plataforma de aprendizaje de ciberseguridad práctica, gratuita e independiente. Los estudiantes completan laboratorios interactivos con escenarios reales, ganan puntos y compiten en un ranking global."
   },
   {
     "q": "¿RutSeg se llamaba antes de otra forma?",
@@ -121,11 +121,11 @@
   },
   {
     "q": "¿Quién creó RutSeg?",
-    "a": "RutSeg fue creada por Simón Urbina, estudiante de Ingeniería de Sistemas de la Universidad Santo Tomás seccional Tunja, como proyecto del Semillero de Investigación en Ciberseguridad y Desarrollo de Software, bajo la dirección del docente Harrizon Alexander Soler Galindo. Más info en /about."
+    "a": "RutSeg fue creada por Simón Urbina, estudiante de Ingeniería de Sistemas, como un proyecto independiente desarrollado de forma autónoma. Más info en /about."
   },
   {
-    "q": "¿De dónde nace RutSeg? ¿Es un proyecto académico?",
-    "a": "Sí. RutSeg nació en el Semillero de Investigación en Ciberseguridad y Desarrollo de Software de la Universidad Santo Tomás — Tunja, como proyecto de Simón Urbina dirigido por el docente Harrizon Alexander Soler Galindo."
+    "q": "¿De dónde nace RutSeg? ¿Es un proyecto institucional?",
+    "a": "No. RutSeg es un proyecto independiente de Simón Urbina, desarrollado de forma autónoma y sin afiliación institucional."
   },
   {
     "q": "¿La plataforma es gratuita?",

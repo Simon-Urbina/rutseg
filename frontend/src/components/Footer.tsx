@@ -20,13 +20,6 @@ const FOOTER_COLUMNS = [
       { label: 'Acerca de', to: '/about' },
     ],
   },
-  {
-    label: 'Universidad',
-    links: [
-      { label: 'Santoto Tunja', to: 'https://santototunja.edu.co/', external: true },
-      { label: 'Ing. de Sistemas', to: 'https://santototunja.edu.co/pregrados/ingenieria-de-sistemas', external: true },
-    ],
-  },
 ]
 
 const SOCIAL = [

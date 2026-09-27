@@ -38,7 +38,7 @@ El backend de RutSeg es una **API REST** (Interfaz de Programación basada en HT
 - Gestionar el foro comunitario: comentarios raíz y respuestas de un solo nivel.
 - Generar y verificar certificados de finalización de curso en PDF.
 
-> **Iniciativa académica:** RutSeg nació como proyecto del **Semillero de Investigación en Ciberseguridad y Desarrollo de Software** de la Universidad Santo Tomás — Tunja, bajo la iniciativa y dirección del docente **Harrizon Alexander Soler Galindo**.
+> **Origen:** RutSeg es un proyecto independiente, desarrollado de forma autónoma por **Simón Urbina**.
 
 El servidor escucha peticiones HTTP del frontend (React) y responde siempre en formato **JSON**.
 

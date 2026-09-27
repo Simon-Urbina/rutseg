@@ -1,7 +1,6 @@
 # Documentación de Errores Históricos — RutSeg
 
-> **Audience:** Equipo del proyecto (Semillero de Investigación en Ciberseguridad y Desarrollo de
-> Software, USTA Tunja) y cualquier persona que necesite entender qué problemas reales ha tenido la
+> **Audience:** Autor del proyecto y cualquier persona que necesite entender qué problemas reales ha tenido la
 > plataforma en producción y cómo se resolvieron.
 > **Fecha:** 2026-08-15
 > **Alcance:** Reconstrucción a partir del historial de `git` (122 commits, desde el primer commit
@@ -216,7 +215,7 @@ Incluye reenvío de código con el mismo patrón anti-enumeración que ya usaba 
 
 ### 5.4 Tamaño de tarjeta inconsistente entre temas + placeholder invisible en modo claro
 
-**Commit:** `82b0248` "fix: rebrand login/registro a paleta USTA y corregir tamaño en light mode" (2026-05-07)
+**Commit:** `82b0248` — rebrand de login/registro a la paleta azul/dorado y corrección de tamaño en light mode (2026-05-07)
 
 **Qué estaba roto:** la tarjeta de login/registro cambiaba de tamaño entre modo claro y oscuro (padding/radio de borde distintos); el placeholder del input estilo terminal era invisible en modo claro.
 

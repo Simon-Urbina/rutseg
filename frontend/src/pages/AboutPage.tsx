@@ -289,7 +289,7 @@ export default function AboutPage() {
                 className="text-lg font-light max-w-lg mb-8 animate-fade-up-3"
                 style={{ color: isDark ? '#7B9FE8' : '#2451C8', lineHeight: 1.7 }}
               >
-                Estudiante de <strong style={{ color: isDark ? '#C8D5EE' : '#0A1545', fontWeight: 600 }}>Ingeniería de Sistemas</strong> en la Universidad Santo Tomás de Aquino, Tunja. Construyo software enfocado en seguridad, aprendizaje y sistemas inteligentes.
+                Estudiante de <strong style={{ color: isDark ? '#C8D5EE' : '#0A1545', fontWeight: 600 }}>Ingeniería de Sistemas</strong> en Colombia. Construyo software enfocado en seguridad, aprendizaje y sistemas inteligentes.
               </p>
 
               {/* Tags */}
@@ -375,7 +375,6 @@ export default function AboutPage() {
                   {[
                     { key: 'nombre', value: 'Simón Jacobo Urbina Martínez' },
                     { key: 'rol', value: 'Estudiante / Desarrollador' },
-                    { key: 'universidad', value: 'USTA — Tunja, Colombia' },
                     { key: 'carrera', value: 'Ing. de Sistemas' },
                     { key: 'intereses', value: 'IA · Ciberseguridad · Desarrollo' },
                     { key: 'proyecto', value: 'RutSeg (UCHIE)' },
@@ -462,61 +461,13 @@ export default function AboutPage() {
                   Aprender ciberseguridad en Colombia es difícil. La mayoría de recursos son en inglés, costosos o puramente teóricos. Los estudiantes terminan viendo diapositivas sobre conceptos que nunca ponen en práctica.
                 </p>
                 <p>
-                  RutSeg nació como proyecto del semillero de investigación en USTA Tunja para cambiar eso: una plataforma en español, gratuita, basada en <strong style={{ color: isDark ? '#C8D5EE' : '#0A1545', fontWeight: 600 }}>laboratorios prácticos reales</strong> donde aprendes haciendo, no leyendo.
+                  RutSeg nació como un proyecto independiente, construido de forma autónoma, para cambiar eso: una plataforma en español, gratuita, basada en <strong style={{ color: isDark ? '#C8D5EE' : '#0A1545', fontWeight: 600 }}>laboratorios prácticos reales</strong> donde aprendes haciendo, no leyendo.
                 </p>
                 <p>
                   Cada lab está diseñado para enseñar algo concreto que puedas aplicar. Sin relleno, sin teoría plana. Solo terminales, problemas, y el progreso que acumulas al resolverlos.
                 </p>
               </div>
 
-              {/* Docentes */}
-              <div
-                className="hud-panel hud-static mt-8 p-6"
-                style={{
-                  background: isDark ? 'rgba(37,150,190,0.07)' : 'rgba(37,150,190,0.06)',
-                  '--hud-border': isDark ? 'rgba(37,150,190,0.35)' : 'rgba(37,150,190,0.30)',
-                  '--hud-border-hover': isDark ? 'rgba(37,150,190,0.35)' : 'rgba(37,150,190,0.30)',
-                } as React.CSSProperties}
-              >
-                <p className="font-mono text-[10px] tracking-[0.18em] uppercase mb-4" style={{ color: '#2596be' }}>
-                  // iniciativa y dirección académica
-                </p>
-                <div className="space-y-5">
-                  {[
-                    {
-                      name: 'Harrizon Alexander Soler Galindo',
-                      role: 'Docente — Universidad Santo Tomás, Tunja',
-                      extra: 'Semillero de Investigación en Ciberseguridad y Desarrollo de Software',
-                    },
-                    {
-                      name: 'Sergio Arley Puerto Moreno',
-                      role: 'Docente — Universidad Santo Tomás, Tunja',
-                      extra: 'Semillero de Investigación en Ciberseguridad y Desarrollo de Software',
-                    },
-                  ].map(({ name, role, extra }) => (
-                    <div key={name} className="flex items-start gap-4">
-                      <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                        style={{ background: isDark ? 'rgba(37,150,190,0.15)' : 'rgba(37,150,190,0.10)', color: '#2596be' }}
-                      >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-                          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="font-semibold text-[15px] mb-0.5" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
-                          {name}
-                        </p>
-                        <p className="text-[13px]" style={{ color: isDark ? '#4A70CC' : '#2451C8' }}>
-                          {role}<br />
-                          {extra}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
 
             {/* Stack */}
@@ -541,7 +492,7 @@ export default function AboutPage() {
                 ))}
               </div>
 
-              {/* University card */}
+              {/* Project card */}
               <div
                 className="hud-panel hud-static mt-8 p-6"
                 style={{
@@ -551,16 +502,16 @@ export default function AboutPage() {
                 } as React.CSSProperties}
               >
                 <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-3" style={{ color: isDark ? '#3A5AB8' : '#1A3F96' }}>
-                  // institución
+                  // proyecto
                 </p>
                 <p className="font-display text-xl mb-1" style={{ color: isDark ? '#C8D5EE' : '#0A1545' }}>
-                  Universidad Santo Tomás
+                  Proyecto independiente
                 </p>
                 <p className="text-[14px]" style={{ color: isDark ? '#4A70CC' : '#2451C8' }}>
-                  Ingeniería de Sistemas — Tunja, Boyacá, Colombia
+                  Desarrollado de forma autónoma por Simón Urbina — Colombia
                 </p>
                 <p className="font-mono text-[11px] mt-3" style={{ color: isDark ? '#3A5AB8' : '#4A70CC' }}>
-                  Semillero de Investigación · Ciberseguridad y Desarrollo de Software
+                  Sin afiliación institucional · Gratuito y en español
                 </p>
               </div>
             </div>

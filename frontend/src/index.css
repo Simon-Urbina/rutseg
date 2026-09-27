@@ -7,7 +7,7 @@
   --font-display: 'Syne', sans-serif;
   --font-numeric: 'IBM Plex Mono', monospace;
 
-  /* ── USTA Blue — Principal */
+  /* ── Azul — Principal */
   --color-rosewood-50:  #EEF3FC;
   --color-rosewood-100: #D6E5FF;
   --color-rosewood-200: #A8C5FF;
@@ -33,7 +33,7 @@
   --color-violet-900: #0D1A4A;
   --color-violet-950: #060D1F;
 
-  /* ── USTA Gold — Acento especial */
+  /* ── Dorado — Acento especial */
   --color-gold-50:  #fffbe5;
   --color-gold-100: #fff6cc;
   --color-gold-200: #ffee99;
@@ -143,7 +143,7 @@ html:not(.dark) .tech-input::placeholder { color: rgba(74, 112, 204, 0.45); }
 }
 
 /* ────────────────────────────────────────────────
-   BOTONES INSTITUCIONALES (USTA BLUE & GOLD)
+   BOTONES PRINCIPALES (AZUL & DORADO)
 ──────────────────────────────────────────────── */
 .btn-neon {
   background: linear-gradient(110deg, #1A3F96 0%, #2451C8 45%, #1A3F96 55%, #0F2A6B 100%);

@@ -103,7 +103,7 @@ Sin entrar en el cómo — solo lo que la plataforma **logra**:
   por completo, no obtendría ningún acceso a los datos de usuarios.
 - **Transparencia sobre lo que falta:** hay un pendiente declarado (confirmar una configuración
   de seguridad adicional en el panel de la base de datos en la nube) — se documenta abiertamente
-  en vez de ocultarlo, que es justo la postura que un proyecto de un semillero de ciberseguridad
+  en vez de ocultarlo, que es justo la postura que un proyecto de ciberseguridad
   debería mostrar.
 
 ---
@@ -119,7 +119,7 @@ Sin entrar en el cómo — solo lo que la plataforma **logra**:
 - **Costo de operación mínimo:** todo el stack corre en planes gratuitos/económicos, así que la
   plataforma se sostiene sin presupuesto de infraestructura.
 - **Un caso de estudio real de buenas prácticas:** la propia plataforma es evidencia de lo que
-  enseña — un semillero de ciberseguridad construyó una herramienta de ciberseguridad aplicando
+  enseña — un proyecto de ciberseguridad construido de forma autónoma, aplicando
   los mismos principios que enseña en sus laboratorios.
 - **Espacio para crecer sin rehacer nada:** ya hay ideas evaluadas para el futuro (audio de
   laboratorios para accesibilidad, más cursos, traducción) que se apoyan en lo que ya existe.

@@ -11,9 +11,8 @@ const SECTIONS = [
       <>
         <p>
           Los presentes Términos de Uso regulan el acceso y la utilización de la plataforma{' '}
-          <strong>RutSeg</strong>, desarrollada como proyecto académico en el marco del
-          Semillero de Investigación en Ciberseguridad y Desarrollo de Software de la{' '}
-          <strong>Universidad Santo Tomás — Tunja, Colombia</strong>.
+          <strong>RutSeg</strong>, un proyecto independiente desarrollado de forma autónoma por
+          <strong> Simón Jacobo Urbina Martínez</strong> (Colombia).
         </p>
         <p className="mt-4">
           Al registrarte o usar RutSeg, aceptas estos términos en su totalidad. Esto aplica
@@ -174,7 +173,7 @@ const SECTIONS = [
         <div className="mt-4 space-y-1">
           {[
             { k: 'Correo', v: 'jacobitourbinalol@gmail.com' },
-            { k: 'Proyecto', v: 'Semillero de Investigación — USTA Tunja' },
+            { k: 'Proyecto', v: 'RutSeg — proyecto independiente' },
           ].map(({ k, v }) => (
             <p key={k} className="font-mono text-[13px]">
               <span style={{ color: '#2596be' }}>{k}</span>

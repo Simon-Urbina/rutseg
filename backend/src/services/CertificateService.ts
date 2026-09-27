@@ -115,8 +115,7 @@ export class CertificateService {
 
       doc.font('Helvetica').fontSize(12).fillColor(COLORS.muted)
         .text(
-          'en RutSeg, plataforma de laboratorios prácticos en ciberseguridad del Semillero de\n' +
-          'Investigación en Ciberseguridad y Desarrollo de Software — Universidad Santo Tomás, Tunja.',
+          'en RutSeg, plataforma independiente de laboratorios prácticos en ciberseguridad.',
           80, bodyY + 130, { align: 'center', width: pageWidth - 160, lineGap: 4 },
         )
 
