@@ -554,3 +554,15 @@ CREATE TABLE IF NOT EXISTS user_oauth_accounts (
 );
 
 CREATE INDEX IF NOT EXISTS idx_user_oauth_accounts_user_id ON user_oauth_accounts(user_id);
+
+-- SEGURIDAD: esta app nunca usa la Data API de Supabase (PostgREST/supabase-js);
+-- todo el acceso pasa por backend/src/db (conexión directa con el rol `postgres`,
+-- que tiene BYPASSRLS). Sin RLS, cualquiera con la URL del proyecto y la anon key
+-- puede leer/escribir estas tablas saltándose por completo el backend.
+-- Se revocan los grants a anon/authenticated y se habilita RLS sin policies
+-- (deniega todo por defecto a esos roles); el backend sigue funcionando igual.
+REVOKE ALL ON TABLE forum_comments FROM anon, authenticated;
+REVOKE ALL ON TABLE user_oauth_accounts FROM anon, authenticated;
+
+ALTER TABLE forum_comments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_oauth_accounts ENABLE ROW LEVEL SECURITY;
