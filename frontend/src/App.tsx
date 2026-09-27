@@ -18,6 +18,8 @@ import AboutPage from './pages/AboutPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfUsePage from './pages/TermsOfUsePage'
 import ForumPage from './pages/ForumPage'
+import DonatePage from './pages/DonatePage'
+import DonationResultPage from './pages/DonationResultPage'
 import TrialLabPage from './pages/TrialLabPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ChatWidget from './components/ChatWidget'
@@ -115,6 +117,10 @@ function AppShell() {
 
         {/* Forum */}
         <Route path="/forum" element={<ForumPage />} />
+
+        {/* Donaciones — públicas, sin login */}
+        <Route path="/donar" element={<DonatePage />} />
+        <Route path="/donar/gracias" element={<DonationResultPage />} />
 
         {/* Laboratorio de prueba — público, sin login, sin backend */}
         <Route path="/demo" element={<TrialLabPage />} />

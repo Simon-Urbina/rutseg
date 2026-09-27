@@ -4,6 +4,7 @@ import { useTheme } from '../context/ThemeContext'
 import { useAuth } from '../context/AuthContext'
 import { LogoWordmark } from './Logo'
 import ThemeToggle from './ThemeToggle'
+import PixelHeart from './PixelHeart'
 
 function AvatarCircle({ avatarImage, isDark, size = 28 }: { avatarImage: string | null; isDark: boolean; size?: number }) {
   return (
@@ -73,6 +74,16 @@ export default function Header() {
             }`}
           >
             Foro
+          </Link>
+
+          <Link
+            to="/donar"
+            className={`nav-link flex items-center gap-1.5 text-[14px] tracking-wide font-medium transition-colors ${
+              isDark ? 'text-violet-300 hover:text-rosewood-400' : 'text-rosewood-700 hover:text-rosewood-500'
+            }`}
+          >
+            <PixelHeart size={14} />
+            Donar
           </Link>
 
           {user?.role === 'admin' && (
@@ -197,6 +208,16 @@ export default function Header() {
               >
                 Foro
               </Link>
+              <Link
+                to="/donar"
+                onClick={() => setMenuOpen(false)}
+                className={`flex w-full items-center justify-center gap-2 px-4 py-2.5 rounded-full text-[14px] font-medium transition-all ${
+                  isDark ? 'text-violet-300 hover:bg-white/5' : 'text-rosewood-700 hover:bg-black/5'
+                }`}
+              >
+                <PixelHeart size={14} />
+                Donar
+              </Link>
               {user.role === 'admin' && (
                 <Link
                   to="/admin"
@@ -227,6 +248,16 @@ export default function Header() {
                 }`}
               >
                 Foro
+              </Link>
+              <Link
+                to="/donar"
+                onClick={() => setMenuOpen(false)}
+                className={`flex w-full items-center justify-center gap-2 px-4 py-2.5 rounded-full text-[14px] font-medium transition-all ${
+                  isDark ? 'text-violet-300 hover:bg-white/5' : 'text-rosewood-700 hover:bg-black/5'
+                }`}
+              >
+                <PixelHeart size={14} />
+                Donar
               </Link>
               <Link
                 to="/login"

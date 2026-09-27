@@ -1,6 +1,6 @@
 # RutSeg — Laboratorios de Ciberseguridad
 
-Plataforma de aprendizaje en ciberseguridad donde los usuarios se inscriben en cursos, trabajan laboratorios prácticos, completan actividades interactivas y responden quizzes. Los usuarios acumulan puntos al completar laboratorios y pueden descargar un certificado en PDF al completar un curso al 100%. Incluye un panel de administración para gestionar cursos/módulos/labs/preguntas y usuarios.
+Plataforma de aprendizaje en ciberseguridad donde los usuarios se inscriben en cursos, trabajan laboratorios prácticos, completan actividades interactivas y responden quizzes. Los usuarios acumulan puntos al completar laboratorios y pueden descargar un certificado en PDF al completar un curso al 100%. Incluye un panel de administración para gestionar cursos/módulos/labs/preguntas y usuarios, y una página pública de donaciones (`/donar`) para sostener la plataforma.
 
 ## Stack tecnológico
 
@@ -54,7 +54,8 @@ cybersec-labs/
         └── pages/               # Landing, Login, Register, ForgotPassword, ResetPassword,
                                  # Dashboard, CoursePage, LabPage, PublicProfilePage,
                                  # AboutPage, ForumPage, VerifyCertificatePage,
-                                 # PrivacyPolicyPage, TermsOfUsePage, NotFoundPage
+                                 # PrivacyPolicyPage, TermsOfUsePage, DonatePage,
+                                 # DonationResultPage, NotFoundPage
             └── admin/           # Panel de administración (solo rol admin): cursos/módulos/labs/
                                  # preguntas, gestión de usuarios y estadísticas — ver
                                  # docs/Documentacion/Documentacion-Frontend.md §5
@@ -94,7 +95,11 @@ GMAIL_CLIENT_ID=xxxxx.apps.googleusercontent.com
 GMAIL_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 GMAIL_REFRESH_TOKEN=1//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com
+WOMPI_PUBLIC_KEY=pub_test_xxxxxxxx
+WOMPI_INTEGRITY_SECRET=test_integrity_xxxxxxxx
 ```
+
+> `WOMPI_PUBLIC_KEY` y `WOMPI_INTEGRITY_SECRET` salen del panel de comercio de Wompi (Desarrolladores → Secretos para integración técnica). Con llaves `pub_test_` se usa el sandbox; con `pub_prod_`, producción. Si faltan, `/donar` sigue funcionando con la llave Bre-B y el botón de Wompi muestra un aviso.
 
 > `GOOGLE_CLIENT_ID` es para **login social** (Sign in with Google) — solo se usa para verificar la firma del `id_token` que manda el frontend, no requiere client secret en el backend. Puede ser el mismo OAuth Client que `GMAIL_CLIENT_ID` o uno nuevo — son usos independientes (enviar correo vs. login), pero comparten el mismo proyecto de Google Cloud si quieres.
 >
@@ -324,11 +329,50 @@ Base URL: `http://localhost:3000`
 | DELETE | `/api/admin/users/:id` | Borra un usuario (soft-delete; un admin no puede auto-eliminarse) |
 | GET | `/api/admin/analytics?range=7d\|1m\|1y\|5y` | KPIs y 11 gráficas del panel de estadísticas (usuarios, puntos, cursos, actividad) |
 
+### Donaciones (`/api/donations`)
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| POST | `/api/donations/checkout` | — | Recibe `{ amount }` en COP (2.000–5.000.000), firma la referencia con el secreto de integridad y devuelve `checkoutUrl` de Wompi |
+| GET | `/api/donations/status/:id` | — | Estado de una transacción de Wompi (solo referencias `DON-…`), usado por `/donar/gracias` |
+
 ### Health check
 
 ```
 GET /health  →  { "status": "ok" }
 ```
+
+---
+
+## Donaciones
+
+RutSeg es gratuito y lo sostiene su autor. La página pública `/donar` (sin login) agradece la visita,
+explica el paso a paso y ofrece dos formas de aportar:
+
+1. **Llave Bre-B `@3002167247`** (opción recomendada, sin comisión) — a nombre de Simón Urbina. El
+   donante copia la llave y envía desde la app de su banco o billetera. No pasa por el backend.
+2. **Wompi** (tarjeta, PSE, Nequi) — vía [Web Checkout](https://docs.wompi.co/docs/colombia/widget-checkout-web/):
+
+```
+/donar ──POST /api/donations/checkout { amount }──▶ backend
+        ◀── checkoutUrl (referencia DON-<uuid> + firma de integridad SHA256) ──
+       ──▶ checkout.wompi.co (el donante paga; RutSeg nunca ve la tarjeta)
+       ──▶ /donar/gracias?id=<transacción> ──GET /api/donations/status/:id──▶ estado
+```
+
+- La firma es `SHA256(referencia + monto_en_centavos + "COP" + WOMPI_INTEGRITY_SECRET)`: el monto
+  queda sellado y el donante no puede alterarlo en el checkout. El secreto **solo** vive en el backend.
+- Montos permitidos: $2.000 a $5.000.000 COP (validados en el backend).
+- `/donar/gracias` muestra aprobada / en proceso / rechazada consultando la API pública de
+  transacciones de Wompi; solo expone referencias creadas por esta página (`DON-…`).
+- No se guarda nada en la base de datos: el registro oficial de cada donación está en el panel de
+  comercio de Wompi.
+- Sandbox vs. producción se detecta por el prefijo de `WOMPI_PUBLIC_KEY` (`pub_test_` / `pub_prod_`).
+  Sin las variables configuradas, `/donar` sigue funcionando con Bre-B y el botón de Wompi muestra un aviso.
+
+Código: `backend/src/services/DonationService.ts`, `controllers/DonationController.ts`,
+`routes/donations.ts`; `frontend/src/pages/DonatePage.tsx`, `DonationResultPage.tsx` y
+`components/PixelHeart.tsx` (corazón pixel art, también usado en el enlace "Donar" del header).
 
 ---
 
@@ -402,6 +446,8 @@ GMAIL_CLIENT_ID
 GMAIL_CLIENT_SECRET
 GMAIL_REFRESH_TOKEN
 GOOGLE_CLIENT_ID
+WOMPI_PUBLIC_KEY
+WOMPI_INTEGRITY_SECRET
 ```
 
 > El email se envía directo por la **API HTTP de Gmail con OAuth2** (no SMTP — Railway bloquea los puertos SMTP salientes). El correo sale firmado por Google mismo desde `GMAIL_SENDER_EMAIL`, por lo que no necesita dominio propio ni verificación de remitente en un tercero. `GMAIL_CLIENT_ID`/`GMAIL_CLIENT_SECRET` salen de un OAuth Client en Google Cloud Console, y `GMAIL_REFRESH_TOKEN` se obtiene una sola vez autorizando el scope `gmail.send` para `GMAIL_SENDER_EMAIL`.

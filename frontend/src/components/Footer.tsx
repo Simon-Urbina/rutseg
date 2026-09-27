@@ -20,6 +20,12 @@ const FOOTER_COLUMNS = [
       { label: 'Acerca de', to: '/about' },
     ],
   },
+  {
+    label: 'Apoya',
+    links: [
+      { label: 'Donar ♥', to: '/donar' },
+    ],
+  },
 ]
 
 const SOCIAL = [
@@ -93,7 +99,7 @@ export default function Footer() {
               className="text-[14px] font-light max-w-sm leading-relaxed mb-6"
               style={{ color: isDark ? '#7B9FE8' : '#2451C8' }}
             >
-              La plataforma institucional de laboratorios prácticos en ciberseguridad.
+              La plataforma independiente de laboratorios prácticos en ciberseguridad.
             </p>
 
             {/* Social */}

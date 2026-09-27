@@ -401,3 +401,18 @@ html:not(.dark) .tech-terminal {
 .lab-prose[data-dark="false"] .md-table th { color: #1A3F96; background: rgba(26,63,150,0.05); }
 .lab-prose[data-dark="true"]  .md-table td { color: #C8D5EE; border-color: rgba(26,63,150,0.16); }
 .lab-prose[data-dark="false"] .md-table td { color: #0A1545; border-color: rgba(26,63,150,0.12); }
+
+/* Latido del corazón pixel art de /donar. Pasos discretos para que se sienta "8-bit". */
+@keyframes pixelHeartBeat {
+  0%, 60%, 100% { transform: scale(1); }
+  15%           { transform: scale(1.12); }
+  30%           { transform: scale(1); }
+  45%           { transform: scale(1.08); }
+}
+.pixel-heart-beat {
+  animation: pixelHeartBeat 1.6s steps(4, end) infinite;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pixel-heart-beat { animation: none; }
+}
